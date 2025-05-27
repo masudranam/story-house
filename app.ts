@@ -1,18 +1,22 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { User, Auth} from './database';
-
-dotenv.config();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
+import {sequelize} from './database.ts';
+import userRoutes from './routes/user.route.ts';
+import { defineUserModel } from './models/user.models.ts';
  
+dotenv.config();
+const PORT = process.env.PORT || 3000;
+const app = express();
 
-app.get('/', async(req, res) =>{
-    const users = await User.findAll();
-    res.status(200).json(users);
-});
+app.use(express.json());
+app.use('/users',userRoutes);
 
-app.listen(PORT, () =>{
-    console.log(`Server is running on port ${PORT}`);
+defineUserModel(sequelize);
+
+app.get('/',(req, res)=>{
+    res.json({message: 'hello'});
 })
+
+app.listen(PORT);
+ 
+export default app;
