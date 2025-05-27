@@ -11,12 +11,12 @@ export const sequelize = new Sequelize('test','postgres','admin',{
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 
-await sequelize.sync();
+ sequelize.sync();
 
 //Database connection check
 try{
-    await db.authenticate();
+     sequelize.authenticate();
     console.log('Yeeeee! connection has been stublished!');
 }catch(err){
-    console.err('Unable to connect', err);
+    console.log('Unable to connect', err);
 }

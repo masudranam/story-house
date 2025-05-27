@@ -1,11 +1,17 @@
 import express from 'express';
-console.log('Hello');
-const app = express();
-const PORT = 3000;
+import dotenv from 'dotenv';
+import { User, Auth} from './database';
 
-app.get('/', (req, res) =>{
-    res.status(200).send('Hello from the server!');
-})
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+ 
+
+app.get('/', async(req, res) =>{
+    const users = await User.findAll();
+    res.status(200).json(users);
+});
 
 app.listen(PORT, () =>{
     console.log(`Server is running on port ${PORT}`);
