@@ -1,6 +1,8 @@
+import { DataTypes, Sequelize  } from 'sequelize';
 //user table
-const User = db.define('user',{
-    id:{
+export const defineUserModel = (sequelize: Sequelize ) => {
+   return sequelize.define('user',{
+     id:{
         type: DataTypes.STRING,
         primaryKey: true,
         allowNull:false
@@ -34,6 +36,5 @@ const User = db.define('user',{
 },{
     freezeTableName: true,
     tableName: 'user'
-})
-
-await User.sync( );
+});
+};

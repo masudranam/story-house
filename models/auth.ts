@@ -1,5 +1,7 @@
+import { DataTypes, Sequelize } from "sequelize";
 //auth table
-const Auth = db.define('auth',{
+export const defineAuthModel = (sequelize: Sequelize) =>{
+    return sequelize.define('auth',{
     id:{
         type:DataTypes.STRING,
         primaryKey: true
@@ -18,7 +20,6 @@ const Auth = db.define('auth',{
         tableName: 'auth',
         createdAt: false,
         updatedAt: false
-    }
-);
-
-await Auth.sync( );
+    });
+};
+ 
