@@ -1,4 +1,24 @@
 {
+  "name": "cphub-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "dev": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masudranam/cphub-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/masudranam/cphub-backend/issues"
+  },
+  "homepage": "https://github.com/masudranam/cphub-backend#readme",
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
