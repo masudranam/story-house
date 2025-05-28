@@ -4,7 +4,7 @@ import {
   getUser,
   getUsers,
   updateUser,
-  deleteUser
+  deleteUser,
 } from '../controller/user.controller.ts';
 
 const router = express.Router();
@@ -15,4 +15,4 @@ router.get('/:id', getUser);
 router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
 
-export  default router;
+export default router;

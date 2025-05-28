@@ -23,5 +23,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   const deleted = await UserService.remove(req.params.id);
-  deleted ? res.json({ message: 'Deleted' }) : res.status(404).json({ error: 'User not found' });
+  deleted
+    ? res.json({ message: 'Deleted' })
+    : res.status(404).json({ error: 'User not found' });
 };

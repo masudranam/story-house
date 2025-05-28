@@ -1,22 +1,21 @@
-import {Sequelize }  from 'sequelize';
+import { Sequelize } from 'sequelize';
 import { defineAuthModel } from './models/auth';
 import { defineUserModel } from './models/user.models';
- 
- export const sequelize = new Sequelize('test','postgres','admin',{
-    host: 'localhost',
-    dialect: 'postgres'
-});
 
+export const sequelize = new Sequelize('test', 'postgres', 'admin', {
+  host: 'localhost',
+  dialect: 'postgres',
+});
 
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 
- sequelize.sync();
+sequelize.sync();
 
 //Database connection check
-try{
-     sequelize.authenticate();
-    console.log('Yeeeee! connection has been stublished!');
-}catch(err){
-    console.log('Unable to connect', err);
+try {
+  sequelize.authenticate();
+  console.log('Yeeeee! connection has been stublished!');
+} catch (err) {
+  console.log('Unable to connect', err);
 }
