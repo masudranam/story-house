@@ -2,7 +2,7 @@ import {Sequelize }  from 'sequelize';
 import { defineAuthModel } from './models/auth';
 import { defineUserModel } from './models/user.models';
  
-export const sequelize = new Sequelize('test','postgres','admin',{
+ export const sequelize = new Sequelize('test','postgres','admin',{
     host: 'localhost',
     dialect: 'postgres'
 });
