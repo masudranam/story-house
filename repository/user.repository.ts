@@ -1,4 +1,4 @@
-import { User } from './models/user.models.ts';
+import { User } from '../database/models/user.models.ts';
 
 export const createUser = async (data: Partial<User>) => await User.create(data);
 
