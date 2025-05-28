@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import { defineAuthModel } from './models/auth';
-import { defineUserModel } from './models/user.models';
+import { defineUserModel } from './models/user';
 
 export const sequelize = new Sequelize('test', 'postgres', 'admin', {
   host: 'localhost',
