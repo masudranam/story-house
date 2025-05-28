@@ -1,8 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import {sequelize} from './database.ts';
+import {sequelize} from './databases/database.ts';
 import userRoutes from './routes/user.route.ts';
-import { defineUserModel } from './models/user.models.ts';
+import { defineUserModel } from './databases/models/user.models.ts';
  
 dotenv.config();
 const PORT = process.env.PORT || 3000;
