@@ -20,8 +20,6 @@ export const defineAuthModel = (sequelize: Sequelize) => {
     {
       freezeTableName: true,
       tableName: 'auth',
-      createdAt: false,
-      updatedAt: false,
     },
   );
 };
