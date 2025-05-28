@@ -1,6 +1,7 @@
 import { User } from '../database/models/user.models.ts';
 
-export const createUser = async (data: Partial<User>) => await User.create(data);
+export const createUser = async (data: Partial<User>) =>
+  await User.create(data);
 
 export const getUserById = async (id: string) => await User.findByPk(id);
 
