@@ -6,6 +6,8 @@ export class Auth extends Model {
   declare userId: string;
   declare password: string;
 }
+
+
 //auth table
 export const defineAuthModel = (sequelize: Sequelize) =>{
     Auth.init({
