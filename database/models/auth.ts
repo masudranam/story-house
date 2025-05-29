@@ -1,7 +1,7 @@
-import { DataTypes, Sequelize , Model} from 'sequelize';
+import { DataTypes, Sequelize, Model } from 'sequelize';
 //auth table
 
-export class Auth extends Model{
+export class Auth extends Model {
   declare id: string;
   declare userId: string;
   declare password: string;

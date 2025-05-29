@@ -1,6 +1,6 @@
 // utils/ResponseFormatter.ts
 export class responseFormatter {
-   format(req: any, res: any, data: any) {
+  format(req: any, res: any, data: any) {
     const accept = req.headers.accept;
 
     if (accept?.includes('application/xml')) {
@@ -20,7 +20,7 @@ export class responseFormatter {
     return res.json(data);
   }
 
-   toXML(obj: any): string {
+  toXML(obj: any): string {
     let xml = '<?xml version="1.0" encoding="UTF-8"?><response>';
     for (const key in obj) {
       xml += `<${key}>${obj[key]}</${key}>`;
@@ -29,5 +29,3 @@ export class responseFormatter {
     return xml;
   }
 }
-
-

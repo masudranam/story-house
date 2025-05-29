@@ -7,7 +7,7 @@ import { defineUserModel } from './database/models/user.ts';
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
-
+const x = 1;
 app.use(express.json());
 app.use('/users', userRoutes);
 
@@ -16,7 +16,6 @@ defineUserModel(sequelize);
 app.get('/', (req, res) => {
   res.json({ message: 'Hello from the backend' });
 });
-
 
 app.listen(PORT);
 

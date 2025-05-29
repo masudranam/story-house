@@ -4,7 +4,7 @@ import { userService } from '../services/user';
 const userservice = new userService();
 
 export class userController {
-   async createUser(req: Request, res: Response) {
+  async createUser(req: Request, res: Response) {
     try {
       const user = await userservice.createUser(req.body);
       res.status(201).json(user);
@@ -13,7 +13,7 @@ export class userController {
     }
   }
 
-   async getUserById(req: Request, res: Response) {
+  async getUserById(req: Request, res: Response) {
     try {
       const user = await userservice.getUserById(req.params.id);
       user ? res.json(user) : res.status(404).json({ error: 'User not found' });
@@ -22,7 +22,7 @@ export class userController {
     }
   }
 
-   async getAllUsers(_: Request, res: Response) {
+  async getAllUsers(_: Request, res: Response) {
     try {
       const users = await userservice.getAllUser();
       res.json(users);
@@ -40,7 +40,7 @@ export class userController {
     }
   }
 
-   async deleteUserById(req: Request, res: Response) {
+  async deleteUserById(req: Request, res: Response) {
     try {
       const deleted = await userservice.deleteUser(req.params.id);
       deleted
