@@ -4,10 +4,11 @@ import { userController } from '../controller/user.ts';
 const router = express.Router();
 const usercontroller = new userController();
 
-router.post('/',usercontroller.createUser);
-router.get('/', usercontroller.getAllUsers);
-router.get('/:id', usercontroller.getUserById);
-router.put('/:id', usercontroller.updateUserById);
-router.delete('/:id', usercontroller.deleteUserById);
+router.post('/',usercontroller.createUser)
+      .get('/', usercontroller.getAllUsers);
+router.route('/:id')
+  .get(usercontroller.getUserById)
+  .put(usercontroller.updateUserById)
+  .delete(usercontroller.deleteUserById);
 
 export default router;

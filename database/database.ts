@@ -14,10 +14,10 @@ export const sequelize = new Sequelize(
   }
 );
 
-export const User = defineUserModel(sequelize);
-export const Auth = defineAuthModel(sequelize);
+export const User =   defineUserModel(sequelize);
+export const Auth =   defineAuthModel(sequelize);
 
-sequelize.sync();
+ sequelize.sync();
 
 //Database connection check
 try {
