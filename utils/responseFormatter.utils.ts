@@ -1,11 +1,11 @@
 // utils/ResponseFormatter.ts
 export class responseFormatter {
-  static format(req: any, res: any, data: any) {
+   format(req: any, res: any, data: any) {
     const accept = req.headers.accept;
 
     if (accept?.includes('application/xml')) {
       res.type('application/xml');
-      return res.send(responseFormatter.toXML(data));
+      return res.send(this.toXML(data));
     }
 
     if (accept?.includes('text/html')) {
@@ -17,12 +17,10 @@ export class responseFormatter {
       res.type('text/plain');
       return res.send(JSON.stringify(data, null, 2));
     }
-
-   
-    res.json(data);
+    return res.json(data);
   }
 
-  static toXML(obj: any): string {
+   toXML(obj: any): string {
     let xml = '<?xml version="1.0" encoding="UTF-8"?><response>';
     for (const key in obj) {
       xml += `<${key}>${obj[key]}</${key}>`;

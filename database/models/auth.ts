@@ -1,8 +1,14 @@
-import { DataTypes, Sequelize } from 'sequelize';
+import { DataTypes, Sequelize , Model} from 'sequelize';
 //auth table
+
+export class Auth extends Model{
+  declare id: string;
+  declare userId: string;
+  declare password: string;
+}
+
 export const defineAuthModel = (sequelize: Sequelize) => {
-  return sequelize.define(
-    'auth',
+  Auth.init(
     {
       id: {
         type: DataTypes.STRING,
@@ -18,8 +24,11 @@ export const defineAuthModel = (sequelize: Sequelize) => {
       },
     },
     {
+      sequelize,
       freezeTableName: true,
+      modelName: 'Auth',
       tableName: 'auth',
     },
   );
+  return Auth;
 };

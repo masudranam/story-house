@@ -17,8 +17,6 @@ app.get('/', (req, res) => {
   res.json({ message: 'Hello from the backend' });
 });
 
-app.listen(PORT, ()=>{
-  console.log('hello printing');
-});
+app.listen(PORT);
 
 export default app;
