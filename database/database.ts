@@ -10,14 +10,14 @@ export const sequelize = new Sequelize(
   process.env.DB_PASSWORD as string,
   {
     host: process.env.DB_HOST,
-    dialect: process.env.DB_DIALECT as any 
-  }
+    dialect: process.env.DB_DIALECT as any,
+  },
 );
 
-export const User =   defineUserModel(sequelize);
-export const Auth =   defineAuthModel(sequelize);
+export const User = defineUserModel(sequelize);
+export const Auth = defineAuthModel(sequelize);
 
- sequelize.sync();
+sequelize.sync();
 
 //Database connection check
 try {
