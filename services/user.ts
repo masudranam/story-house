@@ -1,7 +1,7 @@
 import  {userRepository} from '../repository/user.ts';
-
+ 
 export class userService{
-  static async createUser(data: any){
+   async createUser(data: any){
     try{
       return await userRepository.createUser(data);
     }catch(err){
@@ -9,7 +9,7 @@ export class userService{
     }
   }
   
-  static async getUserById(id: string){
+   async getUserById(id: string){
     try{
       return await userRepository.getUserById(id);
     }catch(err){
@@ -17,7 +17,7 @@ export class userService{
     }
   }
 
-  static async getAllUser(){
+   async getAllUser(){
     try{
       return await userRepository.getAllUsers();
     }catch(err){
@@ -25,7 +25,7 @@ export class userService{
     }
   }
 
-    static async updateUser(id: string, data: any){
+     async updateUser(id: string, data: any){
     try{
       return await userRepository.updateUserById(id, data);
     }catch(err){
@@ -33,7 +33,7 @@ export class userService{
     }
   }
 
-    static async deleteUser(id: string){
+     async deleteUser(id: string){
     try{
       return await userRepository.deleteUserById(id);
     }catch(err){
