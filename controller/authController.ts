@@ -35,10 +35,10 @@ async loginUser(req: any, res: any){
   const { userName, password } = req.body;
 
   const auth = await Auth.findByPk(userName);
-  if (!auth) return res.status(401).json({ error: 'Invalid credentials' });
+  if (!auth) return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Invalid credentials' });
 
   const isMatched = await securePassword.comparePassword(password, auth.password);
-  if (isMatched) return res.status(401).json({ error: 'Invalid credentials' });
+  if (isMatched) return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Invalid credentials' });
 
   const user = await User.findOne({ where: { userName } });
   res.json({ message: 'Login successful', user });

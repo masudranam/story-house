@@ -1,24 +1,25 @@
 // controllers/user.controller.ts
 import { Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
+import { httpStatus } from '../utils/httpStatus.ts';
 const userservice = new userService();
 
  class UserController {
   async createUser(req: Request, res: Response) {
     try {
       const user = await userservice.createUser(req.body);
-      res.status(201).json(user);
+      res.status(httpStatus.CREATED).json(user);
     } catch (err) {
-      res.status(500).json({ error: 'Failed to create user' });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to create user' });
     }
   }
 
   async getUserById(req: Request, res: Response) {
     try {
       const user = await userservice.getUserById(req.params.id);
-      user ? res.json(user) : res.status(404).json({ error: 'User not found' });
+      user ? res.json(user) : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
-      res.status(500).json({ error: 'Failed to get user' });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to get user' });
     }
   }
 
@@ -27,16 +28,16 @@ const userservice = new userService();
       const users = await userservice.getAllUser();
       res.json(users);
     } catch (err) {
-      res.status(500).json({ error: 'Failed to get users' });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to get users' });
     }
   }
 
   async updateUserById(req: Request, res: Response) {
     try {
       const user = await userservice.updateUser(req.params.id, req.body);
-      user ? res.json(user) : res.status(404).json({ error: 'User not found' });
+      user ? res.json(user) : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
-      res.status(500).json({ error: 'Failed to update user' });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to update user' });
     }
   }
 
@@ -45,9 +46,9 @@ const userservice = new userService();
       const deleted = await userservice.deleteUser(req.params.id);
       deleted
         ? res.json({ message: 'Deleted' })
-        : res.status(404).json({ error: 'User not found' });
+        : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
-      res.status(500).json({ error: 'Failed to delete user' });
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete user' });
     }
   }
 }
