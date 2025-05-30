@@ -43,9 +43,14 @@ async loginUser(req: any, res: any){
   const user = await User.findOne({ where: { userName } });
   res.json({ message: 'Login successful', user });
 };
-
-async getAllAuth(){
-
+ 
+async getAllAuth(req: any, res: any){
+  try{
+    const auths = await Auth.findAll();
+    res.send(auths);
+  }catch(err){
+    res.json({error:"There is no user exist!"});
+  }
 }
 }
 

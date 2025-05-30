@@ -1,11 +1,13 @@
+import js2xmlparser from 'js2xmlparser';
+
 // ResponseFormatter.ts
-export class responseFormatter {
+ class responseFormatter {
   format(req: any, res: any, data: any) {
     const accept = req.headers.accept;
 
     if (accept?.includes('application/xml')) {
       res.type('application/xml');
-      return res.send(this.toXML(data));
+      return res.send(js2xmlparser.parse('response',data));
     }
 
     if (accept?.includes('text/html')) {
@@ -19,13 +21,6 @@ export class responseFormatter {
     }
     return res.json(data);
   }
-
-  toXML(obj: any): string {
-    let xml = '<?xml version="1.0" encoding="UTF-8"?><response>';
-    for (const key in obj) {
-      xml += `<${key}>${obj[key]}</${key}>`;
-    }
-    xml += '</response>';
-    return xml;
-  }
 }
+
+export const contentType = new responseFormatter();
