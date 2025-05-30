@@ -1,4 +1,4 @@
-// utils/ResponseFormatter.ts
+// ResponseFormatter.ts
 export class responseFormatter {
   format(req: any, res: any, data: any) {
     const accept = req.headers.accept;

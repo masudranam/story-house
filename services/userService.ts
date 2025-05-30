@@ -1,4 +1,4 @@
-import { userRepository } from '../repository/user.ts';
+import { userRepository } from '../repository/userRepository.ts';
 const UserRepository = new userRepository();
 export class userService {
   async createUser(data: any) {
