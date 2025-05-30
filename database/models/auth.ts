@@ -1,6 +1,6 @@
 import { DataTypes, Sequelize, Model } from 'sequelize';
-//auth table
 
+//Auth table
 export class Auth extends Model {
   declare id: string;
   declare userId: string;

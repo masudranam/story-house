@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { sequelize } from './database/database.ts';
-import userRoutes from './routes/user.ts';
+import userRoutes from './routes/userRoutes.ts';
 import { defineUserModel } from './database/models/user.ts';
 
 dotenv.config();

@@ -1,6 +1,6 @@
 // controllers/user.controller.ts
 import { Request, Response } from 'express';
-import { userService } from '../services/user';
+import { userService } from '../services/userService';
 const userservice = new userService();
 
 export class userController {
