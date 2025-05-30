@@ -1,7 +1,6 @@
 import {userRepository  } from '../repository/userRepository.ts';
  
-
-export class userService {
+class UserService {
   async createUser(data: any) {
     try {
       return await userRepository.createUser(data);
@@ -42,3 +41,5 @@ export class userService {
     }
   }
 }
+
+export const userService = new UserService();
