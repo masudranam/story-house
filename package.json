@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.ts",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.26",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
@@ -22,7 +23,7 @@
     "lint": "eslint '**/*.{ts,js}'",
     "format": "prettier --write '**/*.{ts,js,json,md}'",
     "start": "ts-node-dev app.ts",
-    "dev": "node --no-warnings --loader ts-node/esm app.ts"
+    "dev": "nodemon --watch . --ext ts --exec \"node --no-warnings --loader ts-node/esm app.ts\""
   },
   "repository": {
     "type": "git",

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
 const userservice = new userService();
 
-export class userController {
+ class UserController {
   async createUser(req: Request, res: Response) {
     try {
       const user = await userservice.createUser(req.body);
@@ -51,3 +51,5 @@ export class userController {
     }
   }
 }
+
+export const userController = new UserController();

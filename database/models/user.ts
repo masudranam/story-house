@@ -1,10 +1,10 @@
 import { DataTypes, Sequelize, Model } from 'sequelize';
 
 export class User extends Model {
-  declare id: string;
-  declare userName: string;
+  declare id : string;
   declare name: string;
   declare email: string;
+  declare userName: string;
   declare joinDate: Date;
   declare role: number;
   declare passLastModificationTime: Date;
@@ -13,10 +13,10 @@ export class User extends Model {
 export const defineUserModel = (sequelize: Sequelize) => {
   User.init(
     {
-      id: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
-      userName: { type: DataTypes.STRING, allowNull: false },
+      id : { type: DataTypes.STRING, allowNull: false, primaryKey: true},
       name: { type: DataTypes.STRING, allowNull: false },
       email: { type: DataTypes.STRING, allowNull: false },
+      userName: { type: DataTypes.STRING,  allowNull: false },
       joinDate: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

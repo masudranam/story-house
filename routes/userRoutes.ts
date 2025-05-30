@@ -1,16 +1,18 @@
 import express from 'express';
 import { userController } from '../controller/userController.ts';
+import { authController } from '../controller/authController.ts';
 
 const router = express.Router();
-const usercontroller = new userController();
+ 
 
 router
-  .post('/', usercontroller.createUser)
-  .get('/', usercontroller.getAllUsers);
+  .get('/', userController.getAllUsers);
 router
   .route('/:id')
-  .get(usercontroller.getUserById)
-  .put(usercontroller.updateUserById)
-  .delete(usercontroller.deleteUserById);
+  .get(userController.getUserById)
+  .put(userController.updateUserById)
+  .delete(userController.deleteUserById);
+ router.post('/signup',authController.signUpUser);
+ router.post('/login',authController.loginUser);
 
 export default router;
