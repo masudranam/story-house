@@ -1,13 +1,13 @@
 import { userRepository } from '../repository/userRepository.ts';
- 
 import bcrypt from 'bcrypt';
+import { httpStatus } from '../utils/httpStatus.ts';
 
 export const registerUserService = async (body: any) => {
   const { name, email, userName, password } = body;
 
   const existingUser = await userRepository.findUserByUserName(userName);
   if (existingUser) {
-    return { success: false, status: 409, message: 'User already exists' };
+    return { success: false, status: httpStatus.CONFLICT, message: 'User already exists' };
   }
 
   const hashed = await bcrypt.hash(password, 10);
