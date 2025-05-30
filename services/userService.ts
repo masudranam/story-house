@@ -1,9 +1,10 @@
-import { userRepository } from '../repository/userRepository.ts';
-const UserRepository = new userRepository();
+import {userRepository as UserRepository } from '../repository/userRepository.ts';
+const userRepository = new UserRepository();
+
 export class userService {
   async createUser(data: any) {
     try {
-      return await UserRepository.createUser(data);
+      return await userRepository.createUser(data);
     } catch (err) {
       throw new Error(`Failed to create ${err}`);
     }
@@ -11,7 +12,7 @@ export class userService {
 
   async getUserById(id: string) {
     try {
-      return await UserRepository.getUserById(id);
+      return await userRepository.getUserById(id);
     } catch (err) {
       throw new Error(`Not found user id ${id}`);
     }
@@ -19,7 +20,7 @@ export class userService {
 
   async getAllUser() {
     try {
-      return await UserRepository.getAllUsers();
+      return await userRepository.getAllUsers();
     } catch (err) {
       throw new Error('User not found');
     }
@@ -27,7 +28,7 @@ export class userService {
 
   async updateUser(id: string, data: any) {
     try {
-      return await UserRepository.updateUserById(id, data);
+      return await userRepository.updateUserById(id, data);
     } catch (err) {
       throw new Error('User not found');
     }
@@ -35,7 +36,7 @@ export class userService {
 
   async deleteUser(id: string) {
     try {
-      return await UserRepository.deleteUserById(id);
+      return await userRepository.deleteUserById(id);
     } catch (err) {
       throw new Error('User not found');
     }

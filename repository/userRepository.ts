@@ -1,5 +1,5 @@
 // repositories/user.repository.ts
-import { User } from '../database/models/user';
+import { User } from '../database/models/user.ts';
 
 export class userRepository {
   async createUser(data: Partial<User>) {
