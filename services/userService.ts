@@ -1,5 +1,5 @@
-import {userRepository as UserRepository } from '../repository/userRepository.ts';
-const userRepository = new UserRepository();
+import {userRepository  } from '../repository/userRepository.ts';
+ 
 
 export class userService {
   async createUser(data: any) {
@@ -22,7 +22,7 @@ export class userService {
     try {
       return await userRepository.getAllUsers();
     } catch (err) {
-      throw new Error('User not found');
+      throw new Error('User not found for all user');
     }
   }
 
@@ -30,7 +30,7 @@ export class userService {
     try {
       return await userRepository.updateUserById(id, data);
     } catch (err) {
-      throw new Error('User not found');
+      throw new Error('User not found for update');
     }
   }
 
@@ -38,7 +38,7 @@ export class userService {
     try {
       return await userRepository.deleteUserById(id);
     } catch (err) {
-      throw new Error('User not found');
+      throw new Error('User not found for delete');
     }
   }
 }
