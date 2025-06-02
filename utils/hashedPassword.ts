@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
-const SALT = process.env.SALT || 10;
+const SALT =  10;
 
  class SecurePassword{
     hashedPassword = async (password: string): Promise<string> => {
