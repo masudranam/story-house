@@ -48,14 +48,14 @@ async loginUser(req: any, res: any){
   return res.status(httpStatus.OK).json({token});
 };
  
-async getAllAuth(req: any, res: any){
-  try{
-    const auth =  await Auth.findAll();
-    return res.send(auth);
-  }catch(err){
-    return res.json({error:"There is no user exist!"});
+  async getAllAuth(req: any, res: any){
+    try{
+      const auth =  await Auth.findAll();
+      return res.send(auth);
+    }catch(err){
+      return res.json({error:"There is no user exist!"});
+    }
   }
-}
 }
 
 export const authController = new AuthController();
