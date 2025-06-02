@@ -1,10 +1,9 @@
-import {userRepository  } from '../repository/userRepository.ts';
+import { userRepository } from '../repository/userRepository.ts';
 import { Auth } from '../database/models/auth.ts';
 import { User } from '../database/models/user.ts';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 dotenv.config();
-
 
 class UserService {
   async createUser(data: any) {
@@ -32,16 +31,23 @@ class UserService {
   }
 
   async updateUserName(curUsername: string, newUsername: string) {
-    if(!newUsername)throw new Error('New username required');
-    const exist = await Auth.findOne({where : {username: newUsername}});
-    if(exist)throw new Error('User new user already exist');
+    if (!newUsername) throw new Error('New username required');
+    const exist = await Auth.findOne({ where: { username: newUsername } });
+    if (exist) throw new Error('User new user already exist');
 
-    await User.update({username: newUsername},{where:{username: curUsername}});
-    await Auth.update({username: newUsername},{where:{username: curUsername}});
+    await User.update(
+      { username: newUsername },
+      { where: { username: curUsername } },
+    );
+    await Auth.update(
+      { username: newUsername },
+      { where: { username: curUsername } },
+    );
 
-    const newToken = jwt.sign({username: newUsername}, 'secret', {expiresIn : '2d'});
+    const newToken = jwt.sign({ username: newUsername }, 'secret', {
+      expiresIn: '2d',
+    });
     return newToken;
-
   }
 
   async deleteUser(id: string) {

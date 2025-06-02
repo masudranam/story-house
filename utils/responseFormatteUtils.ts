@@ -1,13 +1,13 @@
 import js2xmlparser from 'js2xmlparser';
 
 // ResponseFormatter.ts
- class responseFormatter {
+class responseFormatter {
   format(req: any, res: any, data: any) {
     const accept = req.headers.accept;
 
     if (accept?.includes('application/xml')) {
       res.type('application/xml');
-      return res.send(js2xmlparser.parse('response',data));
+      return res.send(js2xmlparser.parse('response', data));
     }
 
     if (accept?.includes('text/html')) {

@@ -17,11 +17,11 @@ export const sequelize = new Sequelize(
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 
-await sequelize.sync({alter : true});
+await sequelize.sync({ alter: true });
 
 //Database connection check
 try {
- await sequelize.authenticate();
+  await sequelize.authenticate();
   console.log('Yeeeee! connection has been stublished!');
 } catch (err) {
   console.log('Unable to connect', err);

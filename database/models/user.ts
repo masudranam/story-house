@@ -1,7 +1,7 @@
 import { DataTypes, Sequelize, Model, UUIDV4 } from 'sequelize';
 
 export class User extends Model {
-  declare id : string;
+  declare id: string;
   declare name: string;
   declare username: string;
   declare email: string;
@@ -13,10 +13,15 @@ export class User extends Model {
 export const defineUserModel = (sequelize: Sequelize) => {
   User.init(
     {
-      id : { type: DataTypes.UUID, allowNull: false,defaultValue: UUIDV4, primaryKey: true},
+      id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: UUIDV4,
+        primaryKey: true,
+      },
       name: { type: DataTypes.STRING, allowNull: false },
-      email: { type: DataTypes.STRING, allowNull: false, unique: true},
-      username: { type: DataTypes.STRING,unique: true,  allowNull: false },
+      email: { type: DataTypes.STRING, allowNull: false, unique: true },
+      username: { type: DataTypes.STRING, unique: true, allowNull: false },
       joinDate: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
