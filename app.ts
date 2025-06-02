@@ -4,6 +4,8 @@ import { sequelize } from './database/database.ts';
 import userRoutes from './routes/userRoutes.ts';
 import { defineUserModel } from './database/models/user.ts';
 import { defineAuthModel } from './database/models/auth.ts';
+import { httpStatus } from './utils/httpStatus.ts';
+
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -14,6 +16,8 @@ app.use(express.json());
 defineUserModel(sequelize);
 defineAuthModel(sequelize);
 app.use('/users', userRoutes);
+
+
  
 
 app.get('/', (req, res) => {
