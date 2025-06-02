@@ -1,5 +1,11 @@
 import {userRepository  } from '../repository/userRepository.ts';
- 
+import { Auth } from '../database/models/auth.ts';
+import { User } from '../database/models/user.ts';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+dotenv.config();
+
+
 class UserService {
   async createUser(data: any) {
     try {
@@ -25,12 +31,17 @@ class UserService {
     }
   }
 
-  async updateUser(id: string, data: any) {
-    try {
-      return await userRepository.updateUserById(id, data);
-    } catch (err) {
-      throw new Error('User not found for update');
-    }
+  async updateUserName(curUsername: string, newUsername: string) {
+    if(!newUsername)throw new Error('New username required');
+    const exist = await Auth.findOne({where : {username: newUsername}});
+    if(exist)throw new Error('User new user already exist');
+
+    await User.update({username: newUsername},{where:{username: curUsername}});
+    await Auth.update({username: newUsername},{where:{username: curUsername}});
+
+    const newToken = jwt.sign({username: newUsername}, 'secret', {expiresIn : '2d'});
+    return newToken;
+
   }
 
   async deleteUser(id: string) {

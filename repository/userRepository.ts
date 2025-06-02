@@ -19,11 +19,7 @@ import { Auth } from '../database/models/auth.ts';
     return await User.findAll();
   }
 
-  async updateUserById(id: string, data: Partial<User>) {
-    const user = await User.findByPk(id);
-    if (!user) return null;
-    return await user.update(data);
-  }
+  
 
   async deleteUserById(id: string) {
     return await User.destroy({ where: { id } });
