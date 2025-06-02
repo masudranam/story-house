@@ -14,5 +14,5 @@ export const registerUserService = async (body: any) => {
   const user = await userRepository.createUser({ name, email, userName });
   await userRepository.createAuth({ userName, password: hashed });
 
-  return { success: true, status: 201, message: 'User registered', user };
+  return { success: true, status: httpStatus.CREATED, message: 'User registered', user };
 };
