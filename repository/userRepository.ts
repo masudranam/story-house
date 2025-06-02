@@ -28,8 +28,8 @@ import { Auth } from '../database/models/auth.ts';
   async deleteUserById(id: string) {
     return await User.destroy({ where: { id } });
   }
-  async findUserByUserName(userName: string){
-    return await User.findOne({where : {userName}});
+  async findUserByUserName(username: string){
+    return await User.findOne({where : {username}});
   }
 }
 

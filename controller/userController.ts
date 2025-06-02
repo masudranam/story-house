@@ -2,11 +2,11 @@
 import { Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { Auth } from '../database/models/auth.ts'
+import {User} from '../database/models/user.ts'
+import {Auth} from '../database/models/auth.ts'
  
-
  class UserController {
-  async createUser(req: Request, res: Response) {
+  async createUser(req: any, res: any) {
     try {
       const user = await userService.createUser(req.body);
       res.status(httpStatus.CREATED).json(user);
@@ -24,7 +24,7 @@ import { Auth } from '../database/models/auth.ts'
     }
   }
 
-  async getAllUsers(_: Request, res: Response) {
+  async getAllUsers(req: Request, res: Response) {
     try {
       const users = await userService.getAllUser();
       res.json(users);
@@ -42,14 +42,23 @@ import { Auth } from '../database/models/auth.ts'
     }
   }
 
-  async deleteUserById(req: Request, res: Response) {
+  async deleteByUserName(req: any, res: any) {
     try {
-      const deleted = await userService.deleteUser(req.params.id);
-      deleted
-        ? res.json({ message: 'Deleted' })
-        : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
+      const {username} = req.params;
+      const usernameFromToken = (req as any).user.username;
+      if(username != usernameFromToken){
+        return res.status(httpStatus.BAD_REQUEST).json({message: 'You are Unauthorized to delete'});
+      }
+
+      const user = await User.findOne({where : {username}});
+      if(!user){
+        return res.status(httpStatus.NOT_FOUND).json({message: 'User not found'});
+      }
+      await User.destroy({where: {username}});
+      await Auth.destroy({where: {username}});
+      res.status(httpStatus.OK).json({message: 'User deleted successfully'});
     } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete user' });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete user' });
     }
   }
 }

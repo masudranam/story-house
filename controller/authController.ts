@@ -8,16 +8,16 @@ import {generateToken} from '../utils/jwtHandler.ts'
 class AuthController{
   async signUpUser(req : any, res: any){
   try {
-    const { name, email, userName, password } = req.body;
-    const existingUser = await User.findOne({ where: { userName } });
+    const { name, email, username, password } = req.body;
+    const existingUser = await User.findOne({ where: { username } });
 
     if (existingUser) {
       return res.status(httpStatus.CONFLICT).json({ message: 'User already exists' });
     }
 
     const hashed = await securePassword.hashedPassword(password);
-    const user = await User.create({name, email, userName });
-    const data = { userName, password: hashed};
+    const user = await User.create({name, email, username });
+    const data = { username, password: hashed};
     await Auth.create(data);
 
     res
@@ -33,17 +33,17 @@ class AuthController{
 
 
 async loginUser(req: any, res: any){
-  const { userName, password } = req.body;
+  const { username, password } = req.body;
 
-  const auth = await Auth.findOne({where : {userName}});
+  const auth = await Auth.findOne({where : {username}});
   if (!auth) return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Invalid credentials' });
 
   const isMatched = await securePassword.comparePassword(password, auth.password);
   console.log(isMatched);
   if (!isMatched) return res.status(httpStatus.UNAUTHORIZED).json({ error: 'Invalid credentials' });
 
-  const user = await User.findOne({ where: { userName } });
-  const token = generateToken(user!.userName);
+  const user = await User.findOne({ where: { username } });
+  const token = generateToken(user!.username);
 
   return res.status(httpStatus.OK).json({token});
 };
