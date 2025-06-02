@@ -2,7 +2,7 @@ import { DataTypes, Sequelize, Model } from 'sequelize';
 
 //Auth table
 export class Auth extends Model {
-  declare userName: string;
+  declare username: string;
   declare password: string;
 }
 
@@ -10,7 +10,7 @@ export class Auth extends Model {
 export const defineAuthModel = (sequelize: Sequelize) => {
   Auth.init(
     { 
-      userName: {
+      username: {
         type: DataTypes.STRING,
         unique: true
       }, 
