@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { httpStatus } from '../utils/httpStatus.ts';
 
 export const registerUserService = async (body: any) => {
-  const { name, email, userName, password } = body;
+  const { name, userName, email, password } = body;
 
   const existingUser = await userRepository.findUserByUserName(userName);
   if (existingUser) {

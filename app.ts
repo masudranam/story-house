@@ -16,7 +16,6 @@ defineAuthModel(sequelize);
 app.use('/users', userRoutes);
  
 
-
 app.get('/', (req, res) => {
   res.json({ message: 'Hello from the backend' });
 });

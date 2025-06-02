@@ -17,7 +17,7 @@ export const sequelize = new Sequelize(
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 
-await sequelize.sync();
+await sequelize.sync({alter : true});
 
 //Database connection check
 try {

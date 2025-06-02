@@ -12,10 +12,11 @@ export const defineAuthModel = (sequelize: Sequelize) => {
     { 
       userName: {
         type: DataTypes.STRING,
-        primaryKey: true,
+        unique: true
       }, 
       password:{
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
       }
     },
     {
