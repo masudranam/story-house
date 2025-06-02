@@ -2,25 +2,31 @@
 import { Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import {User} from '../database/models/user.ts'
-import {Auth} from '../database/models/auth.ts'
- 
- class UserController {
+import { User } from '../database/models/user.ts';
+import { Auth } from '../database/models/auth.ts';
+
+class UserController {
   async createUser(req: any, res: any) {
     try {
       const user = await userService.createUser(req.body);
       res.status(httpStatus.CREATED).json(user);
     } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to create user' });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Failed to create user' });
     }
   }
 
   async getUserById(req: Request, res: Response) {
     try {
       const user = await userService.getUserById(req.params.id);
-      user ? res.json(user) : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
+      user
+        ? res.json(user)
+        : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to get user' });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Failed to get user' });
     }
   }
 
@@ -29,48 +35,55 @@ import {Auth} from '../database/models/auth.ts'
       const users = await userService.getAllUser();
       res.json(users);
     } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to get users' });
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Failed to get users' });
     }
   }
 
   async updateUserName(req: Request, res: Response) {
     try {
-
       const actualUsername = req.params.username;
       const tokenUsername = (req as any).user.username;
-      if(actualUsername != tokenUsername){
-         res.status(httpStatus.FORBIDDEN).json({message : "This is not you!"});
-         return;
+      if (actualUsername != tokenUsername) {
+        res.status(httpStatus.FORBIDDEN).json({ message: 'This is not you!' });
+        return;
       }
 
       const curUsername = (req as any).user.username;
       const newUsername = req.body.username;
-                                        console.log('This is debugger', curUsername, newUsername);
       const token = await userService.updateUserName(curUsername, newUsername);
-                                                  console.log('this is new token',token);
-      res.json({message: 'Username updated', token});
+      res.json({ message: 'Username updated', token });
     } catch (err: any) {
-      res.status(httpStatus.BAD_REQUEST).json({message: "Cannot update username"});
+      res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: 'Cannot update username' });
     }
   }
 
   async deleteByUserName(req: any, res: any) {
     try {
-      const {username} = req.params;
+      const { username } = req.params;
       const usernameFromToken = (req as any).user.username;
-      if(username != usernameFromToken){
-        return res.status(httpStatus.BAD_REQUEST).json({message: 'You are Unauthorized to delete'});
+      if (username != usernameFromToken) {
+        return res
+          .status(httpStatus.BAD_REQUEST)
+          .json({ message: 'You are Unauthorized to delete' });
       }
 
-      const user = await User.findOne({where : {username}});
-      if(!user){
-        return res.status(httpStatus.NOT_FOUND).json({message: 'User not found'});
+      const user = await User.findOne({ where: { username } });
+      if (!user) {
+        return res
+          .status(httpStatus.NOT_FOUND)
+          .json({ message: 'User not found' });
       }
-      await User.destroy({where: {username}});
-      await Auth.destroy({where: {username}});
-      res.status(httpStatus.OK).json({message: 'User deleted successfully'});
+      await User.destroy({ where: { username } });
+      await Auth.destroy({ where: { username } });
+      res.status(httpStatus.OK).json({ message: 'User deleted successfully' });
     } catch (err) {
-      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete user' });
+      return res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: 'Failed to delete user' });
     }
   }
 }
