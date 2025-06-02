@@ -6,6 +6,6 @@ export enum httpStatus{
     CONFLICT = 409,
     INTERNAL_SERVER_ERROR = 500,
     NOT_FOUND = 404,
-    FORBIDDEN = 401,
+    FORBIDDEN = 403,
     
 }

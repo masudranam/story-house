@@ -15,7 +15,7 @@ export const defineUserModel = (sequelize: Sequelize) => {
     {
       id : { type: DataTypes.UUID, allowNull: false,defaultValue: UUIDV4, primaryKey: true},
       name: { type: DataTypes.STRING, allowNull: false },
-      email: { type: DataTypes.STRING, allowNull: false },
+      email: { type: DataTypes.STRING, allowNull: false, unique: true},
       username: { type: DataTypes.STRING,unique: true,  allowNull: false },
       joinDate: {
         type: DataTypes.DATE,

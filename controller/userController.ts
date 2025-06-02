@@ -33,12 +33,24 @@ import {Auth} from '../database/models/auth.ts'
     }
   }
 
-  async updateUserById(req: Request, res: Response) {
+  async updateUserName(req: Request, res: Response) {
     try {
-      const user = await userService.updateUser(req.params.id, req.body);
-      user ? res.json(user) : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
-    } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Failed to update user' });
+
+      const actualUsername = req.params.username;
+      const tokenUsername = (req as any).user.username;
+      if(actualUsername != tokenUsername){
+         res.status(httpStatus.FORBIDDEN).json({message : "This is not you!"});
+         return;
+      }
+
+      const curUsername = (req as any).user.username;
+      const newUsername = req.body.username;
+                                        console.log('This is debugger', curUsername, newUsername);
+      const token = await userService.updateUserName(curUsername, newUsername);
+                                                  console.log('this is new token',token);
+      res.json({message: 'Username updated', token});
+    } catch (err: any) {
+      res.status(httpStatus.BAD_REQUEST).json({message: "Cannot update username"});
     }
   }
 
