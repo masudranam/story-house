@@ -8,9 +8,12 @@ router.get('/', userController.getAllUsers);
 router.get('/auth', authController.getAllAuth);
 router.post('/signup', authController.signUpUser);
 router.post('/login', authController.loginUser);
-router.delete('/:username', authMiddleware, userController.deleteByUserName);
-router.put('/:username', authMiddleware, userController.updateUserName);
 
-router.route('/:id').get(userController.getUserById);
+router.get('/byusername/:username', userController.getUserByUsername);
+router
+  .route('/:id')
+  .get(userController.getUserById)
+  .delete(authMiddleware, userController.deleteUserById)
+  .put(authMiddleware, userController.updateUsernameById);
 
 export default router;

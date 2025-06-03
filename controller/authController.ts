@@ -54,7 +54,9 @@ class AuthController {
     const user = await User.findOne({ where: { username } });
     const token = generateToken(user!.username);
 
-    return res.status(httpStatus.OK).json({ token });
+    return res
+      .status(httpStatus.OK)
+      .json({ message: 'Login seccessful', token: `Bearer ${token}` });
   }
 
   async getAllAuth(req: any, res: any) {

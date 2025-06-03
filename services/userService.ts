@@ -8,7 +8,7 @@ dotenv.config();
 class UserService {
   async createUser(data: any) {
     try {
-      return await userRepository.createUser(data);
+      return await User.create(data);
     } catch (err) {
       throw new Error(`Failed to create ${err}`);
     }
@@ -16,7 +16,7 @@ class UserService {
 
   async getUserById(id: string) {
     try {
-      return await userRepository.getUserById(id);
+      return await User.findByPk(id);
     } catch (err) {
       throw new Error(`Not found user id ${id}`);
     }
@@ -24,7 +24,7 @@ class UserService {
 
   async getAllUser() {
     try {
-      return await userRepository.getAllUsers();
+      return await User.findAll();
     } catch (err) {
       throw new Error('User not found for all user');
     }
@@ -44,15 +44,20 @@ class UserService {
       { where: { username: curUsername } },
     );
 
-    const newToken = jwt.sign({ username: newUsername }, 'secret', {
+    const SECRET = (process.env.JWT_SECRET as string) || 'secret';
+    const newToken = jwt.sign({ username: newUsername }, SECRET, {
       expiresIn: '2d',
     });
     return newToken;
   }
 
+  async deleteUserByUsername(username: string) {
+    return await User.findOne({ where: { username } });
+  }
+
   async deleteUser(id: string) {
     try {
-      return await userRepository.deleteUserById(id);
+      return await User.destroy({ where: { id } });
     } catch (err) {
       throw new Error('User not found for delete');
     }
