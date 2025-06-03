@@ -3,9 +3,10 @@ import { Auth } from '../database/models/auth.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
+import { NextFunction } from 'express';
 
 class AuthController {
-  async signUpUser(req: any, res: any) {
+  async signUpUser(req: any, res: any, next: NextFunction) {
     try {
       const { name, email, username, password } = req.body;
       const existingUser = await User.findOne({ where: { username } });
@@ -24,8 +25,9 @@ class AuthController {
       res
         .status(httpStatus.CREATED)
         .json({ message: 'User registered successfully', user });
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+     
+      console.error(err);
       res
         .status(httpStatus.INTERNAL_SERVER_ERROR)
         .json({ message: 'Something went wrong' });

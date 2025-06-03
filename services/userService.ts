@@ -3,6 +3,7 @@ import { Auth } from '../database/models/auth.ts';
 import { User } from '../database/models/user.ts';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { NextFunction } from 'express';
 dotenv.config();
 
 class UserService {
@@ -10,11 +11,11 @@ class UserService {
     try {
       return await User.create(data);
     } catch (err) {
-      throw new Error(`Failed to create ${err}`);
+       throw new Error(`Failed to create ${err}`);
     }
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: string ) {
     try {
       return await User.findByPk(id);
     } catch (err) {
@@ -22,7 +23,7 @@ class UserService {
     }
   }
 
-  async getAllUser() {
+  async getAllUser( ) {
     try {
       return await User.findAll();
     } catch (err) {

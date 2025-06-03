@@ -1,36 +1,38 @@
 // controllers/user.controller.ts
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
 
 class UserController {
-  async createUser(req: any, res: any) {
+  async createUser(req: any, res: any, next: NextFunction) {
     try {
       const user = await userService.createUser(req.body);
       res.status(httpStatus.CREATED).json(user);
     } catch (err) {
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: 'Failed to create user' });
+      next(err);
+      // res
+      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
+      //   .json({ error: 'Failed to create user' });
     }
   }
 
-  async getUserById(req: Request, res: Response) {
+  async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
       user
         ? res.json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: 'Failed to get user' });
+      next(err);
+      // res
+      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
+      //   .json({ error: 'Failed to get user' });
     }
   }
 
-  async getUserByUsername(req: Request, res: Response) {
+  async getUserByUsername(req: Request, res: Response, next: NextFunction) {
     try {
       const username = req.params.username;
       const user = await User.findOne({ where: { username } });
@@ -38,24 +40,26 @@ class UserController {
         ? res.json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: 'Failed to get user' });
+      next(err);
+      // res
+      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
+      //   .json({ error: 'Failed to get user' });
     }
   }
 
-  async getAllUsers(req: Request, res: Response) {
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await userService.getAllUser();
       res.json(users);
     } catch (err) {
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: 'Failed to get users' });
+      next(err);
+      // res
+      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
+      //   .json({ error: 'Failed to get users' });
     }
   }
 
-  async updateUsernameById(req: Request, res: Response) {
+  async updateUsernameById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
       if (!user) {
@@ -74,14 +78,15 @@ class UserController {
         newUsername,
       );
       res.json({ message: 'Username updated', token });
-    } catch (err: any) {
-      res
-        .status(httpStatus.BAD_REQUEST)
-        .json({ message: 'Cannot update username' });
+    } catch (err) {
+      next(err);
+      // res
+      //   .status(httpStatus.BAD_REQUEST)
+      //   .json({ message: 'Cannot update username' });
     }
   }
 
-  async deleteUserById(req: any, res: any) {
+  async deleteUserById(req: any, res: any, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
       if (!user) {
@@ -101,9 +106,10 @@ class UserController {
       await Auth.destroy({ where: { username } });
       res.status(httpStatus.OK).json({ message: 'User deleted successfully' });
     } catch (err) {
-      return res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ error: 'Failed to delete user' });
+      next(err);
+      // return res
+      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
+      //   .json({ error: 'Failed to delete user' });
     }
   }
 }
