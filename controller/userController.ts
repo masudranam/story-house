@@ -1,34 +1,30 @@
-// controllers/user.controller.ts
 import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
+import { userRepository } from '../repository/userRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
+import { createUserDTO } from '../dto/DTO.ts';
 
 class UserController {
   async createUser(req: any, res: any, next: NextFunction) {
     try {
-      const user = await userService.createUser(req.body);
-      res.status(httpStatus.CREATED).json(user);
+      const user: createUserDTO = req.body;
+      const result = await userRepository.createUser(user);
+      res.status(httpStatus.CREATED).json(result);
     } catch (err) {
       next(err);
-      // res
-      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
-      //   .json({ error: 'Failed to create user' });
     }
   }
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user = await userRepository.getUserById(req.params.id);
       user
         ? res.json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
       next(err);
-      // res
-      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
-      //   .json({ error: 'Failed to get user' });
     }
   }
 
@@ -41,27 +37,21 @@ class UserController {
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
       next(err);
-      // res
-      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
-      //   .json({ error: 'Failed to get user' });
     }
   }
 
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const users = await userService.getAllUser();
+      const users = await userRepository.getAllUser();
       res.json(users);
     } catch (err) {
       next(err);
-      // res
-      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
-      //   .json({ error: 'Failed to get users' });
     }
   }
 
   async updateUsernameById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user = await userRepository.getUserById(req.params.id);
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not found' });
         return;
@@ -80,15 +70,12 @@ class UserController {
       res.json({ message: 'Username updated', token });
     } catch (err) {
       next(err);
-      // res
-      //   .status(httpStatus.BAD_REQUEST)
-      //   .json({ message: 'Cannot update username' });
     }
   }
 
   async deleteUserById(req: any, res: any, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user = await userRepository.getUserById(req.params.id);
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
         return;
@@ -107,9 +94,6 @@ class UserController {
       res.status(httpStatus.OK).json({ message: 'User deleted successfully' });
     } catch (err) {
       next(err);
-      // return res
-      //   .status(httpStatus.INTERNAL_SERVER_ERROR)
-      //   .json({ error: 'Failed to delete user' });
     }
   }
 }

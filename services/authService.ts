@@ -1,29 +1,21 @@
 import { userRepository } from '../repository/userRepository.ts';
-import bcrypt from 'bcrypt';
-import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/database.ts';
+import { signUpUserDTO } from '../dto/DTO.ts';
+import { authRepository } from '../repository/authRepository.ts';
+import { createUserDTO, createAuthDTO } from '../dto/DTO.ts';
 
-export const registerUserService = async (body: any) => {
-  const { name, username, email, password } = body;
+export const registerUserService = async (user: signUpUserDTO) => {
+  const existingUser = await User.findOne({
+    where: { username: user.username },
+  });
+  if (existingUser) throw new Error('User already exist');
 
-  const existingUser = await User.findOne({ where: { username } });
-  if (existingUser) {
-    return {
-      success: false,
-      status: httpStatus.CONFLICT,
-      message: 'User already exists',
-    };
-  }
+  const authData: createAuthDTO = user;
+  const userData: createUserDTO = user;
 
-  const hashed = await bcrypt.hash(password, 10);
-  const data = { name, email, username };
-  const user = await User.create(data);
-  await userRepository.createAuth({ username, password: hashed });
+  await authRepository.createAuth(authData);
+  await userRepository.createUser(userData);
 
-  return {
-    success: true,
-    status: httpStatus.CREATED,
-    message: 'User registered',
-    user,
-  };
+  const { password, ...userWithoutPassword } = user;
+  return userWithoutPassword;
 };
