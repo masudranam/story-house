@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
-import { defineAuthModel } from './models/auth';
-import { defineUserModel } from './models/user';
+import { defineAuthModel } from './models/auth.ts';
+import { defineUserModel } from './models/user.ts';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -17,11 +17,11 @@ export const sequelize = new Sequelize(
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 
-sequelize.sync();
+await sequelize.sync({ alter: true });
 
 //Database connection check
 try {
-  sequelize.authenticate();
+  await sequelize.authenticate();
   console.log('Yeeeee! connection has been stublished!');
 } catch (err) {
   console.log('Unable to connect', err);
