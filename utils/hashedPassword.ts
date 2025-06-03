@@ -2,11 +2,11 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const SALT = 10;
+const SALT = process.env.SALT || 10;
 
 class SecurePassword {
   hashedPassword = async (password: string): Promise<string> => {
-    return await bcrypt.hash(password, SALT);
+    return await bcrypt.hash(password, Number(SALT));
   };
   comparePassword = async (
     password: string,
