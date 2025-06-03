@@ -1,22 +1,17 @@
 import { DataTypes, Sequelize, Model } from 'sequelize';
-//auth table
 
+//Auth table
 export class Auth extends Model {
-  declare id: string;
-  declare userId: string;
+  declare username: string;
   declare password: string;
 }
 
 export const defineAuthModel = (sequelize: Sequelize) => {
   Auth.init(
     {
-      id: {
+      username: {
         type: DataTypes.STRING,
-        primaryKey: true,
-      },
-      userId: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        unique: true,
       },
       password: {
         type: DataTypes.STRING,
