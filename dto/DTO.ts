@@ -25,3 +25,21 @@ export interface getUserInfoDTO {
   role: number;
   passLastModificationTime: Date;
 }
+
+export interface createStoryDTO{
+  title: string;
+  description: string;
+  authorUsername: string;
+}
+
+export interface getStoryInfoDTO{
+  id: string;
+  title: string;
+  description: string;
+  authorUserName: string;
+  authorName: string;
+  authorId: string;
+  lastModificationTime: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
