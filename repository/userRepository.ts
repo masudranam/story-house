@@ -20,7 +20,7 @@ class UserRepository {
     }
   }
 
-  async deleteUserByUsername(username: string) {
+  async getUserByUsername(username: string) {
     return await User.findOne({ where: { username } });
   }
 
