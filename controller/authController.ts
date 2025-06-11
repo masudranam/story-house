@@ -1,68 +1,40 @@
-import { User } from '../database/models/user.ts';
-import { Auth } from '../database/models/auth.ts';
+import { Auth } from '../database/database.ts';
+import { authRepository } from '../repository/authRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { securePassword } from '../utils/hashedPassword.ts';
-import { generateToken } from '../utils/jwtHandler.ts';
+import { NextFunction } from 'express';
+import {createAuthDTO} from '../dto/DTO.ts';
+import { registerUserService } from '../services/authService.ts';
 
 class AuthController {
-  async signUpUser(req: any, res: any) {
+  async signUpUser(req: any, res: any, next: NextFunction) {
     try {
-      const { name, email, username, password } = req.body;
-      const existingUser = await User.findOne({ where: { username } });
-
-      if (existingUser) {
-        return res
-          .status(httpStatus.CONFLICT)
-          .json({ message: 'User already exists' });
-      }
-
-      const hashed = await securePassword.hashedPassword(password);
-      const user = await User.create({ name, email, username });
-      const data = { username, password: hashed };
-      await Auth.create(data);
-
+      const user = await registerUserService(req.body);
       res
         .status(httpStatus.CREATED)
         .json({ message: 'User registered successfully', user });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(httpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Something went wrong' });
+    } catch (err) {
+      next(err);
     }
   }
 
-  async loginUser(req: any, res: any) {
-    const { username, password } = req.body;
-
-    const auth = await Auth.findOne({ where: { username } });
-    if (!auth)
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'Invalid credentials' });
-
-    const isMatched = await securePassword.comparePassword(
-      password,
-      auth.password,
-    );
-    console.log(isMatched);
-    if (!isMatched)
-      return res
-        .status(httpStatus.UNAUTHORIZED)
-        .json({ error: 'Invalid credentials' });
-
-    const user = await User.findOne({ where: { username } });
-    const token = generateToken(user!.username);
-
-    return res
-      .status(httpStatus.OK)
-      .json({ message: 'Login seccessful', token: `Bearer ${token}` });
+  async loginUser(req: any, res: any, next: NextFunction) {
+    const user: createAuthDTO = req.body;
+    try {
+      const result = await authRepository.login(user);
+      res.status(httpStatus.OK).json(result);
+    } catch (err) {
+      next(err);
+    }
   }
 
   async getAllAuth(req: any, res: any) {
     try {
       const auth = await Auth.findAll();
-      return res.send(auth);
+      if (!auth.length)
+        return res
+          .status(httpStatus.NOT_FOUND)
+          .json({ error: 'No users exist' });
+      return res.status(httpStatus.OK).json(auth);
     } catch (err) {
       return res.json({ error: 'There is no user exist!' });
     }
