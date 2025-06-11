@@ -19,7 +19,6 @@ export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 export const Story = defineStoryModel(sequelize);
 
-
 await sequelize.sync({ alter: true });
 
 //Database connection check

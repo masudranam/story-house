@@ -2,7 +2,7 @@ import { Auth } from '../database/database.ts';
 import { authRepository } from '../repository/authRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { NextFunction } from 'express';
-import {createAuthDTO} from '../dto/DTO.ts';
+import { createAuthDTO } from '../dto/DTO.ts';
 import { registerUserService } from '../services/authService.ts';
 
 class AuthController {

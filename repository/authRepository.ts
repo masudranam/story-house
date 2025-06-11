@@ -16,7 +16,7 @@ class AuthRepository {
 
   async login(user: createAuthDTO) {
     const auth = await Auth.findOne({ where: { username: user.username } });
-    if (!auth) if (!auth) throw new Error("User doesn't exist");
+    if (!auth) throw new Error("User doesn't exist");
 
     const isMatched = await securePassword.comparePassword(
       user.password,

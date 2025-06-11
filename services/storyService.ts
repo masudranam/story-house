@@ -1,27 +1,59 @@
-import { createStoryDTO } from "../dto/DTO";
-import { Story } from "../database/database.ts";
-import { userRepository } from "../repository/userRepository.ts";
- 
+import { createStoryDTO } from '../dto/DTO';
+import { userRepository } from '../repository/userRepository.ts';
+import { storyRepository } from '../repository/storyRepository.ts';
 
-class StoryService{
-    async postStory(data: createStoryDTO){
-        const username = data.authorUsername;
-        const author = await userRepository.getUserByUsername(username);
-        if(!author){
-            return new Error("Author doesn't exist");
-        }
-
-        const story = await Story.create({
-            title: data.title,
-            description: data.description,
-            authorUsername: data.authorUsername,
-            authorName: author?.name,
-            authorId: author?.id,
-            lastModifierId: author?.id,
-            lastModificationTime: new Date()
-        })
-        return story;
+class StoryService {
+  async postStory(data: createStoryDTO) {
+    const authorId = data.authorId;
+    const author = await userRepository.getUserById(authorId);
+    if (!author) {
+      return new Error("Author doesn't exist");
     }
+    const story = await storyRepository.postStory(data, author);
+    return story;
+  }
+
+  async getAllStories() {
+    const stories = await storyRepository.getAllStories();
+    if (!stories) throw new Error('No story exist');
+    return stories;
+  }
+
+  async deleteAllStories(): Promise<{ deleted: number }> {
+    const deleted = await storyRepository.deleteAllStories();
+    return { deleted };
+  }
+
+  async deleteStoryByStoryId(storyId: string, userId: string) {
+    const deleted = await storyRepository.deleteStoryByStoryId(storyId, userId);
+    if (deleted === 0) throw new Error('story not found or unauthorized');
+    return deleted;
+  }
+
+  async getStoryByStoryId(id: string) {
+    const story = await storyRepository.findStoryByStoryId(id);
+    if (!story) throw new Error('story not found');
+    return story;
+  }
+
+  async updateStoryByStoryId(
+    id: string,
+    userId: string,
+    data: { title?: string; description?: string },
+  ) {
+    const story = await storyRepository.findStoryByStoryId(id);
+    if (!story) throw new Error('Story not found');
+    if (story.authorId !== userId) throw new Error('Forbidden');
+
+    const updatedData: any = {
+      lastModificationTime: new Date(),
+    };
+
+    if (data.title?.trim()) updatedData.title = data.title;
+    if (data.description?.trim()) updatedData.description = data.description;
+
+    return await storyRepository.updateStoryByStoryId(id, updatedData);
+  }
 }
 
 export const storyService = new StoryService();
