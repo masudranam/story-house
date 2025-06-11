@@ -32,8 +32,9 @@ export const authMiddleware = (
 
     (req as any).user = decoded;
     next();
-  } catch {
-    res.status(httpStatus.FORBIDDEN).json({ message: 'Invalid token' });
-    return;
+  } catch (err) {
+    next(err);
+    // res.status(httpStatus.FORBIDDEN).json({ message: 'Invalid token' });
+    // return;
   }
 };
