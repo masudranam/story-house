@@ -27,7 +27,7 @@ export const defineUserModel = (sequelize: Sequelize) => {
         defaultValue: DataTypes.NOW,
         allowNull: false,
       },
-      role: { type: DataTypes.STRING, defaultValue: 'user' },
+      role: { type: DataTypes.INTEGER, defaultValue: 0 },
       passLastModificationTime: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

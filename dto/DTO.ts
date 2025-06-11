@@ -26,13 +26,13 @@ export interface getUserInfoDTO {
   passLastModificationTime: Date;
 }
 
-export interface createStoryDTO{
+export interface createStoryDTO {
   title: string;
   description: string;
-  authorUsername: string;
+  authorId: string;
 }
 
-export interface getStoryInfoDTO{
+export interface getStoryInfoDTO {
   id: string;
   title: string;
   description: string;
