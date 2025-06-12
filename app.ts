@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { NextFunction } from 'express';
 import { sequelize } from './database/database.ts';
 import userRoutes from './routes/userRoutes.ts';
 import storyRoutes from './routes/storyRoutes.ts';
@@ -21,7 +21,7 @@ defineStoryModel(sequelize);
 app.use('/users', userRoutes);
 app.use('/stories', storyRoutes);
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next: NextFunction) => {
   res.json({ message: 'Hello from the backend' });
 });
 

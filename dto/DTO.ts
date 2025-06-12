@@ -29,7 +29,7 @@ export interface getUserInfoDTO {
 export interface createStoryDTO {
   title: string;
   description: string;
-  authorId: string;
+  authorId?: string;
 }
 
 export interface getStoryInfoDTO {

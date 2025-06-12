@@ -7,9 +7,8 @@ class StoryController {
   async postStory(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req as any).user.id;
-      
-      if(userId != req.body.authorId)throw new Error("You are not the author");
-      const story = await storyService.postStory(req.body, userId);
+      req.body.authorId = userId;
+      const story = await storyService.postStory(req.body);
       res
         .status(httpStatus.CREATED)
         .json({ message: 'Story Successfully created', data: story });
