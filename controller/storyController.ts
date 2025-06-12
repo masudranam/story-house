@@ -5,7 +5,8 @@ import { httpStatus } from '../utils/httpStatus.ts';
 class StoryController {
   async postStory(req: Request, res: Response, next: NextFunction) {
     try {
-      const story = await storyService.postStory(req.body);
+      const userId = (req as any).user.id;
+      const story = await storyService.postStory(req.body, userId);
       res
         .status(httpStatus.CREATED)
         .json({ message: 'Story Successfully created', data: story });

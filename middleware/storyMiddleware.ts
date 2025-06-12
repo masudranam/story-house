@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { Story } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { User } from '../database/database.ts';
 
-export async function authMiddleware(
+export async function storyMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
@@ -14,25 +14,23 @@ export async function authMiddleware(
     res.status(httpStatus.FORBIDDEN).json({ message: 'No token have sent' });
     return;
   }
+
   const token = authHeader.split(' ')[1];
 
   try {
-    const decode = jwt.decode(token) as { exp: number };
-    const curTime = Math.floor(Date.now() / 1000);
-   
-    if (decode.exp < curTime) {
-      res.status(httpStatus.UNAUTHORIZED).json({ message: 'Token Expired' });
-      return;
-    }
-
-    const decoded = jwt.verify(
+    const decode = jwt.verify(
       token,
       (process.env.JWT_SECRET as string) || 'secret',
     );
+    const storyId = req.params.id;
+    const story = await Story.findByPk(storyId);
 
-    const userName = (decode as any).username;
-    const user = await User.findOne({where : {username: userName}});
-    (req as any).user = user;
+    if (!story) {
+      res.status(httpStatus.FORBIDDEN).json({ message: 'Forbidden'});
+      return;
+    }
+    (req as any).story = story;
+    
     next();
   } catch (err) {
     next(err);

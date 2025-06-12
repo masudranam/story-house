@@ -1,8 +1,9 @@
 // repositories/user.repository.ts
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
+import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
-import { createAuthDTO } from '../dto/DTO.ts';
+import { createAuthDTO } from '../dto/createAuthDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 
@@ -14,20 +15,28 @@ class AuthRepository {
     return await Auth.create({ username, password: hashed });
   }
 
-  async login(user: createAuthDTO) {
-    const auth = await Auth.findOne({ where: { username: user.username } });
-    if (!auth) throw new Error("User doesn't exist");
+  async findUserByIdentifier(identifier: string) {
+     const user = await User.findOne({
+      where: {
+        [Op.or]:[
+          {username: identifier},
+          {email: identifier}
+        ]
+      },
+     });
+     return user;
+  }
 
-    const isMatched = await securePassword.comparePassword(
-      user.password,
-      auth.password,
-    );
-
-    if (!isMatched) throw new Error('Invalid Credentials');
-
-    const token = generateToken(user.username);
-
-    return { message: 'Login seccessful', token: `Bearer ${token}` };
+    async findAuthByIdentifier(identifier: string) {
+     const auth = await Auth.findOne({
+      where: {
+        [Op.or]:[
+          {username: identifier},
+          {email: identifier}
+        ]
+      },
+     });
+     return auth;
   }
 
   async updateUserName(curUsername: string, newUsername: string) {

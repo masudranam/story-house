@@ -3,12 +3,19 @@ import { authRepository } from '../repository/authRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { NextFunction } from 'express';
 import { createAuthDTO } from '../dto/DTO.ts';
-import { registerUserService } from '../services/authService.ts';
+import { authService } from '../services/authService.ts';
+import { signUpUserDTO, signUpUserSchema } from '../dto/signupUserDTO.ts';
+import { loginUserDTO, loginUserSchema } from '../dto/loginUserDTO.ts';
 
 class AuthController {
   async signUpUser(req: any, res: any, next: NextFunction) {
     try {
-      const user = await registerUserService(req.body);
+      const parsed = signUpUserSchema.safeParse(req.body);
+      if(!parsed.success) {
+        res.status(httpStatus.BAD_REQUEST).json({errors: parsed.error.errors});
+      }
+
+      const user = await authService.signUpUser(req.body);
       res
         .status(httpStatus.CREATED)
         .json({ message: 'User registered successfully', user });
@@ -18,9 +25,10 @@ class AuthController {
   }
 
   async loginUser(req: any, res: any, next: NextFunction) {
-    const user: createAuthDTO = req.body;
+    const user: loginUserDTO = req.body;
     try {
-      const result = await authRepository.login(user);
+      const parsed = loginUserSchema.parse(req.body);
+      const result = await authService.loginUser(parsed);
       res.status(httpStatus.OK).json(result);
     } catch (err) {
       next(err);
