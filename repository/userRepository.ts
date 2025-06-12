@@ -1,6 +1,5 @@
 // repositories/user.repository.ts
 import { User } from '../database/models/user.ts';
-import { createUserDTO } from '../dto/createUserDTO.ts';
 
 class UserRepository {
   async createUser(data: Partial<User>, transaction?: any) {
