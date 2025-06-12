@@ -4,14 +4,10 @@ import { storyRepository } from '../repository/storyRepository.ts';
 
 class StoryService {
   async postStory(data: createStoryDTO, userId: string) {
-    const authorId = data.authorId;
-    if(authorId !== userId) throw new Error('Author id is invalid');
+    
+    // if (authorId !== userId) throw new Error('Author id is invalid');
 
-    const author = await userRepository.getUserById(authorId);
-    if (!author) {
-      return new Error("Author doesn't exist");
-    }
-    const story = await storyRepository.postStory(data, author);
+    const story = await storyRepository.postStory(data, userId);
     return story;
   }
 

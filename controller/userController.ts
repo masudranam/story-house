@@ -73,25 +73,31 @@ class UserController {
     }
   }
 
-  async deleteUserById(req: any, res: any, next: NextFunction) {
+  async deleteUserById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userRepository.getUserById(req.params.id);
+
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
         return;
       }
 
-      const usernameFromToken = (req as any).user.username;
-      const username = user.username;
-      if (username != usernameFromToken) {
-        return res
-          .status(httpStatus.BAD_REQUEST)
-          .json({ message: 'You are Unauthorized to delete' });
-      }
+      const userId = (req as any).user.id;
 
-      await User.destroy({ where: { username } });
-      await Auth.destroy({ where: { username } });
+      await User.destroy({ where: { id: userId } });
+      await Auth.destroy({ where: { username: user.username } });
+
       res.status(httpStatus.OK).json({ message: 'User deleted successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      await User.destroy({ where: {}, truncate: true });
+      await Auth.destroy({ where: {}, truncate: true, restartIdentity: true });
+      res.status(httpStatus.OK).json({ message: 'All users deleted' });
     } catch (err) {
       next(err);
     }

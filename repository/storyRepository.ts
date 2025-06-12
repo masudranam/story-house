@@ -2,12 +2,12 @@ import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
 
 class StoryRepository {
-  async postStory(data: createStoryDTO, author: any) {
+  async postStory(data: createStoryDTO, userId: any) {
     const story = await Story.create({
       title: data.title,
       description: data.description,
-      authorId: author?.id,
-      lastModifierId: author?.id,
+      authorId: userId,
+      lastModifierId: userId,
       lastModificationTime: new Date(),
     });
     return story;
