@@ -8,7 +8,7 @@ import { securePassword } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 
 class AuthRepository {
-  async createAuth(data: createAuthDTO) {
+  async createAuth(data: createAuthDTO, transaction?: any) {
     const username = data.username;
     const password = data.password;
     const hashed = await securePassword.hashedPassword(password);
@@ -16,27 +16,19 @@ class AuthRepository {
   }
 
   async findUserByIdentifier(identifier: string) {
-     const user = await User.findOne({
+    const user = await User.findOne({
       where: {
-        [Op.or]:[
-          {username: identifier},
-          {email: identifier}
-        ]
+        [Op.or]: [{ username: identifier }, { email: identifier }],
       },
-     });
-     return user;
+    });
+    return user;
   }
 
-    async findAuthByIdentifier(identifier: string) {
-     const auth = await Auth.findOne({
-      where: {
-        [Op.or]:[
-          {username: identifier},
-          {email: identifier}
-        ]
-      },
-     });
-     return auth;
+  async findAuthByUsername(username: string) {
+    const auth = await Auth.findOne({
+      where: { username: username },
+    });
+    return auth;
   }
 
   async updateUserName(curUsername: string, newUsername: string) {

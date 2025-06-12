@@ -3,38 +3,44 @@ import { Request, Response, NextFunction } from 'express';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/database.ts';
 
+
 export async function authMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(httpStatus.FORBIDDEN).json({ message: 'No token have sent' });
-    return;
-  }
-  const token = authHeader.split(' ')[1];
-
   try {
-    const decode = jwt.decode(token) as { exp: number };
-    const curTime = Math.floor(Date.now() / 1000);
-   
-    if (decode.exp < curTime) {
-      res.status(httpStatus.UNAUTHORIZED).json({ message: 'Token Expired' });
-      return;
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+       res.status(httpStatus.FORBIDDEN).json({ message: 'No token provided' });
+       return;
     }
+
+    const token = authHeader.split(' ')[1];
 
     const decoded = jwt.verify(
       token,
-      (process.env.JWT_SECRET as string) || 'secret',
-    );
+      (process.env.JWT_SECRET as string) || 'secret'
+    ) as { userId: string; role: number; exp: number };
 
-    const userName = (decode as any).username;
-    const user = await User.findOne({where : {username: userName}});
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (decoded.exp < currentTime) {
+       res.status(httpStatus.UNAUTHORIZED).json({ message: 'Token expired' });
+       return;
+    }
+
+    // Optional: Attach full user to request
+    const user = await User.findByPk(decoded.userId);
+    if (!user) {
+       res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
+       return;
+    }
+
     (req as any).user = user;
     next();
-  } catch (err) {
+  } catch (err: any) {
     next(err);
   }
 }

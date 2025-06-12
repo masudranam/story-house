@@ -3,7 +3,7 @@ import { User } from '../database/models/user.ts';
 import { createUserDTO } from '../dto/createUserDTO.ts';
 
 class UserRepository {
-  async createUser(data: createUserDTO) {
+  async createUser(data: Partial<User>, transaction?: any) {
     try {
       const { name, username, email } = data;
       return await User.create({ name, username, email });

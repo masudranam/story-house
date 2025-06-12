@@ -1,15 +1,25 @@
 import express from 'express';
 import { storyController } from '../controller/storyController.ts';
-import { storyMiddleware } from '../middleware/storyMiddleware.ts';
 import { authMiddleware } from '../middleware/authMiddleware.ts';
+import { authorizeOwner } from '../middleware/authorizeOwner.ts';
 const router = express.Router();
 
 router
- .post('/',authMiddleware, storyController.postStory)
- .get('/', storyController.getStories)
- .delete('/', storyMiddleware, storyController.deleteAllStories)
- .get('/:id', storyController.getStoryByStoryId)
- .delete('/:id',storyMiddleware,storyController.deleteStoryByStoryId)
- .put('/:id',storyMiddleware, authMiddleware, storyController.updateStoryByStoryId);
+  .post('/', authMiddleware, storyController.postStory)
+  .get('/', storyController.getStories)
+  .delete('/', authMiddleware, storyController.deleteAllStories)
+  .get('/:id', storyController.getStoryByStoryId)
+  .delete(
+    '/:id',
+    authMiddleware,
+    authorizeOwner,
+    storyController.deleteStoryByStoryId,
+  )
+  .put(
+    '/:id',
+    authMiddleware,
+    authorizeOwner,
+    storyController.updateStoryByStoryId,
+  );
 
 export default router;

@@ -11,8 +11,10 @@ class AuthController {
   async signUpUser(req: any, res: any, next: NextFunction) {
     try {
       const parsed = signUpUserSchema.safeParse(req.body);
-      if(!parsed.success) {
-        res.status(httpStatus.BAD_REQUEST).json({errors: parsed.error.errors});
+      if (!parsed.success) {
+        res
+          .status(httpStatus.BAD_REQUEST)
+          .json({ errors: parsed.error.errors });
       }
 
       const user = await authService.signUpUser(req.body);
@@ -25,8 +27,8 @@ class AuthController {
   }
 
   async loginUser(req: any, res: any, next: NextFunction) {
-    const user: loginUserDTO = req.body;
     try {
+      const user: loginUserDTO = req.body;
       const parsed = loginUserSchema.parse(req.body);
       const result = await authService.loginUser(parsed);
       res.status(httpStatus.OK).json(result);

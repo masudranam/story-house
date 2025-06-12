@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { storyService } from '../services/storyService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
+import { userRole } from '../utils/userRole.ts';
 
 class StoryController {
   async postStory(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req as any).user.id;
+      
+      if(userId != req.body.authorId)throw new Error("You are not the author");
       const story = await storyService.postStory(req.body, userId);
       res
         .status(httpStatus.CREATED)
@@ -30,6 +33,8 @@ class StoryController {
     next: NextFunction,
   ): Promise<void> {
     try {
+      const user = (req as any).user.id;
+      if(user !== userRole.ADMIN)throw new Error('You are not admin');
       const result = await storyService.deleteAllStories();
       res.status(httpStatus.OK).json({
         message: 'All stories deleted successfully',
