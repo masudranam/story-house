@@ -27,12 +27,7 @@ class UserService {
       { username: newUsername },
       { where: { username: curUsername } },
     );
-
-    const SECRET = (process.env.JWT_SECRET as string) || 'secret';
-    const newToken = jwt.sign({ username: newUsername }, SECRET, {
-      expiresIn: '2d',
-    });
-    return newToken;
+    return;
   }
 
   async deleteUserByUsername(username: string) {

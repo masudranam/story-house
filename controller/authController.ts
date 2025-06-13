@@ -1,5 +1,4 @@
 import { Auth } from '../database/database.ts';
-import { authRepository } from '../repository/authRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { NextFunction } from 'express';
 import { authService } from '../services/authService.ts';
