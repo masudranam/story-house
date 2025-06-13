@@ -19,7 +19,7 @@ class StoryController {
 
   async getStories(req: Request, res: Response, next: NextFunction) {
     try {
-      const stories = await storyService.getAllStories();
+      const stories = await storyService.getAllStories(req.query);
       res.status(httpStatus.OK).json(stories);
     } catch (err) {
       next(err);

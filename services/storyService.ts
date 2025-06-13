@@ -7,8 +7,12 @@ class StoryService {
     return story;
   }
 
-  async getAllStories() {
-    const stories = await storyRepository.getAllStories();
+  async getAllStories(query: any) {
+    const filters: any = {};
+    if(query.authorId)filters.authorId = query.authorId;
+    if(query.title)filters.title = query.title;
+    
+    const stories = await storyRepository.getAllStories(filters);
     if (!stories) throw new Error('No story exist');
     return stories;
   }
