@@ -3,6 +3,7 @@ import { User } from '../database/models/user.ts';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { userRepository } from '../repository/userRepository.ts';
+import { fileURLToPath } from 'url';
 dotenv.config();
 
 class UserService {
@@ -11,6 +12,18 @@ class UserService {
       return await userRepository.getUserById(id);
     } catch (err) {
       throw new Error(`Not found user id ${id}`);
+    }
+  }
+
+  async getAllUser(query: any) {
+    try {
+      const filters: any = {};
+      if(query.name)filters.name = query.name;
+      if(query.username)filters.username = query.username;
+
+      return await userRepository.getAllUser(filters);
+    } catch (err) {
+      throw new Error('User not found');
     }
   }
 

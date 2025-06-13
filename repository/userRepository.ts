@@ -1,4 +1,5 @@
 // repositories/user.repository.ts
+import { Op } from 'sequelize';
 import { User } from '../database/models/user.ts';
 
 class UserRepository {
@@ -31,9 +32,16 @@ class UserRepository {
     }
   }
 
-  async getAllUser() {
+  async getAllUser(filters: any) {
     try {
-      return await User.findAll();
+      const where: any = {};
+      if(filters.name){
+        where.name = {[Op.iLike]: `%${filters.name}%`};
+      }
+      if(filters.username){
+        where.username = {[Op.iLike]: `%${filters.username}%`};
+      }     
+      return await User.findAll({where});
     } catch (err) {
       throw new Error('User not found for all user');
     }

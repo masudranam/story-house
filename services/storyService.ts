@@ -9,10 +9,11 @@ class StoryService {
 
   async getAllStories(query: any) {
     const filters: any = {};
+    const sort = query.sort === 'asc'? 'ASC':'DESC';
     if(query.authorId)filters.authorId = query.authorId;
     if(query.title)filters.title = query.title;
     
-    const stories = await storyRepository.getAllStories(filters);
+    const stories = await storyRepository.getAllStories(filters, sort);
     if (!stories) throw new Error('No story exist');
     return stories;
   }
