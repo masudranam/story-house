@@ -2,12 +2,13 @@ import { Auth } from '../database/models/auth.ts';
 import { User } from '../database/models/user.ts';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { userRepository } from '../repository/userRepository.ts';
 dotenv.config();
 
 class UserService {
   async getUserById(id: string) {
     try {
-      return await User.findByPk(id);
+      return await userRepository.getUserById(id);
     } catch (err) {
       throw new Error(`Not found user id ${id}`);
     }

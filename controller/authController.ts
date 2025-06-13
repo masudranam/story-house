@@ -11,13 +11,13 @@ class AuthController {
     try {
       const parsed = signUpUserSchema.safeParse(req.body);
       if (!parsed.success) {
-        res
+        return res
           .status(httpStatus.BAD_REQUEST)
           .json({ errors: parsed.error.errors });
       }
 
       const user = await authService.signUpUser(req.body);
-      res
+      return res
         .status(httpStatus.CREATED)
         .json({ message: 'User registered successfully', user });
     } catch (err) {
@@ -30,13 +30,13 @@ class AuthController {
       const user: loginUserDTO = req.body;
       const parsed = loginUserSchema.parse(req.body);
       const result = await authService.loginUser(parsed);
-      res.status(httpStatus.OK).json(result);
+      return res.status(httpStatus.OK).json(result);
     } catch (err) {
       next(err);
     }
   }
 
-  async getAllAuth(req: any, res: any) {
+  async getAllAuth(req: any, res: any, next: NextFunction) {
     try {
       const auth = await Auth.findAll();
       if (!auth.length)
@@ -45,7 +45,7 @@ class AuthController {
           .json({ error: 'No users exist' });
       return res.status(httpStatus.OK).json(auth);
     } catch (err) {
-      return res.json({ error: 'There is no user exist!' });
+      next(err);
     }
   }
 }

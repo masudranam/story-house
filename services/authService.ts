@@ -15,7 +15,7 @@ class AuthService {
         [Op.or]: [{ username: user.username }, { email: user.email }],
       },
     });
-    console.log(existingUser);
+
     if (existingUser) throw new Error('username or email already exist');
 
     const authData: createAuthDTO = user;
@@ -30,18 +30,19 @@ class AuthService {
 
   async loginUser(data: loginUserDTO) {
     const user = await authRepository.findUserByIdentifier(data.identifier);
-    if (!user) throw new Error('Invalid credentials');
+
+    if (!user) throw new Error("User doesn't exist!");
 
     const auth = await authRepository.findAuthByUsername(user.username);
 
-    if (!auth) throw new Error('Invalid credentials');
+    if (!auth) throw new Error("User doesn't exist");
 
     const isMatch = await securePassword.comparePassword(
       data.password,
       auth.password,
     );
 
-    if (!isMatch) throw new Error('invalid credentials');
+    if (!isMatch) throw new Error('Invalid credentials');
 
     const token = generateToken(user.id, user.role);
 

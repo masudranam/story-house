@@ -23,7 +23,6 @@ export async function authorizeOwner(
         .json({ message: 'Forbidden: You are not owner' });
       return;
     }
-
     next();
   } catch (err) {
     next(err);
