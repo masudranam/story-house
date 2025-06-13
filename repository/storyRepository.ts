@@ -1,5 +1,6 @@
 import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
+import { Op } from 'sequelize';
 
 class StoryRepository {
   async postStory(data: createStoryDTO) {
@@ -13,8 +14,14 @@ class StoryRepository {
     return story;
   }
 
-  getAllStories = async () => {
-    const stories = await Story.findAll();
+  getAllStories = async (filters: any) => {
+    const where:any = {};
+    if(filters.authorId)where.authorId = filters.authorId;
+    if(filters.title){
+      where.title = {[Op.iLike]: `%${filters.title}%`};
+    }
+
+    const stories = await Story.findAll({where});
     return stories;
   };
 
