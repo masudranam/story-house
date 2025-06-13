@@ -32,8 +32,6 @@ class StoryController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const user = (req as any).user.id;
-      if(user !== userRole.ADMIN)throw new Error('You are not admin');
       const result = await storyService.deleteAllStories();
       res.status(httpStatus.OK).json({
         message: 'All stories deleted successfully',
@@ -67,10 +65,9 @@ class StoryController {
 
   async updateStoryByStoryId(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = req.params.id;
-      const userId = (req as any).user.id;
+      const storyId = req.params.id;
       const { title, description } = req.body;
-      const updated = await storyService.updateStoryByStoryId(id, userId, {
+      const updated = await storyService.updateStoryByStoryId(storyId, {
         title,
         description,
       });

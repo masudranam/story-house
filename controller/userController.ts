@@ -40,34 +40,24 @@ class UserController {
     }
   }
 
-  async getAllUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      const users = await userRepository.getAllUser();
-      res.json(users);
-    } catch (err) {
-      next(err);
-    }
-  }
-
   async updateUsernameById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userRepository.getUserById(req.params.id);
+      const user = await userService.getUserById(req.params.id);
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not found' });
         return;
       }
 
-      const tokenUsername = (req as any).user.username;
-      if (user.username != tokenUsername) {
-        res.status(httpStatus.FORBIDDEN).json({ message: 'This is not you!' });
-        return;
-      }
+      const curUsername = user.username;
       const newUsername = req.body.username;
-      const token = await userService.updateUserName(
-        tokenUsername,
-        newUsername,
-      );
-      res.json({ message: 'Username updated', token });
+      if (!curUsername) throw new Error('no new username provided');
+
+      const token = await userService.updateUserName(curUsername, newUsername);
+      res.json({
+        message: `username updated from ${curUsername} to ${newUsername}`,
+        token,
+      });
+      return;
     } catch (err) {
       next(err);
     }
@@ -88,6 +78,15 @@ class UserController {
       await Auth.destroy({ where: { username: user.username } });
 
       res.status(httpStatus.OK).json({ message: 'User deleted successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const users = await userRepository.getAllUser();
+      res.json(users);
     } catch (err) {
       next(err);
     }

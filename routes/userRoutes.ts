@@ -11,7 +11,6 @@ router.post('/signup', authController.signUpUser);
 router.post('/login', authController.loginUser);
 router.delete('/', userController.deleteAllUsers);
 
-//router.get('/byusername/:username', userController.getUserByUsername);
 router
   .route('/:id')
   .get(userController.getUserById)

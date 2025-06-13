@@ -31,13 +31,11 @@ class StoryService {
   }
 
   async updateStoryByStoryId(
-    id: string,
-    userId: string,
+    storyId: string,
     data: { title?: string; description?: string },
   ) {
-    const story = await storyRepository.findStoryByStoryId(id);
+    const story = await storyRepository.findStoryByStoryId(storyId);
     if (!story) throw new Error('Story not found');
-    if (story.authorId !== userId) throw new Error('Forbidden');
 
     const updatedData: any = {
       lastModificationTime: new Date(),
@@ -46,7 +44,7 @@ class StoryService {
     if (data.title?.trim()) updatedData.title = data.title;
     if (data.description?.trim()) updatedData.description = data.description;
 
-    return await storyRepository.updateStoryByStoryId(id, updatedData);
+    return await storyRepository.updateStoryByStoryId(storyId, updatedData);
   }
 }
 

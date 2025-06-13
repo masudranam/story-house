@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
 import { createAuthDTO } from '../dto/createAuthDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
- 
+
 class AuthRepository {
   async createAuth(data: createAuthDTO) {
     const username = data.username;

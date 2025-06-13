@@ -24,15 +24,14 @@ class StoryRepository {
   }
 
   async findStoryByStoryId(id: string) {
-    const story = Story.findByPk(id);
-    return story;
+    return await Story.findByPk(id);
   }
 
   async updateStoryByStoryId(
-    id: string,
+    storyId: string,
     data: Partial<{ title: string; description: string }>,
   ) {
-    const story = await Story.findByPk(id);
+    const story = await Story.findByPk(storyId);
     if (!story) return null;
     await story.update(data);
     return story;
