@@ -14,14 +14,17 @@ class StoryRepository {
     return story;
   }
 
-  getAllStories = async (filters: any) => {
+  getAllStories = async (filters: any, sort: 'ASC'|'DESC') => {
     const where:any = {};
     if(filters.authorId)where.authorId = filters.authorId;
     if(filters.title){
       where.title = {[Op.iLike]: `%${filters.title}%`};
     }
 
-    const stories = await Story.findAll({where});
+    const stories = await Story.findAll({
+      where,
+      order: [['updatedAt', sort]],
+    });
     return stories;
   };
 
