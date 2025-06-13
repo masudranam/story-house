@@ -14,7 +14,7 @@ class StoryRepository {
     return story;
   }
 
-  getAllStories = async (filters: any, sort: 'ASC'|'DESC') => {
+  getAllStories = async (filters: any, sort: 'ASC'|'DESC', limit: number, offset: number) => {
     const where:any = {};
     if(filters.authorId)where.authorId = filters.authorId;
     if(filters.title){
@@ -24,6 +24,8 @@ class StoryRepository {
     const stories = await Story.findAll({
       where,
       order: [['updatedAt', sort]],
+      limit,
+      offset,
     });
     return stories;
   };
