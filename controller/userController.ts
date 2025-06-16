@@ -74,13 +74,10 @@ class UserController {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
         return;
       }
-
-      const userId = (req as any).user.id;
-
-      await User.destroy({ where: { id: userId } });
-      await Auth.destroy({ where: { username: user.username } });
-
-      res.status(httpStatus.OK).json({ message: 'User deleted successfully' });
+      await userService.deleteUserById(user);
+      res
+        .status(httpStatus.OK)
+        .json({ message: `User with id ${user.id} deleted successfully` });
     } catch (err) {
       next(err);
     }

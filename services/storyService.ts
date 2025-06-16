@@ -9,16 +9,21 @@ class StoryService {
 
   async getAllStories(query: any) {
     const filters: any = {};
-    const sort = query.sort === 'asc'? 'ASC':'DESC';
+    const sort = query.sort === 'asc' ? 'ASC' : 'DESC';
 
-    if(query.authorId)filters.authorId = query.authorId;
-    if(query.title)filters.title = query.title;
+    if (query.authorId) filters.authorId = query.authorId;
+    if (query.title) filters.title = query.title;
 
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 100;
     const offset = (page - 1) * limit;
-    
-    const stories = await storyRepository.getAllStories(filters, sort, limit, offset);
+
+    const stories = await storyRepository.getAllStories(
+      filters,
+      sort,
+      limit,
+      offset,
+    );
     if (!stories) throw new Error('No story exist');
     return stories;
   }

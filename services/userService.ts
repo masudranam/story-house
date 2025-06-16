@@ -1,9 +1,9 @@
 import { Auth } from '../database/models/auth.ts';
 import { User } from '../database/models/user.ts';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 import { userRepository } from '../repository/userRepository.ts';
-import { fileURLToPath } from 'url';
+import { authRepository } from '../repository/authRepository.ts';
+import { sequelize } from '../database/database.ts';
 dotenv.config();
 
 class UserService {
@@ -18,8 +18,8 @@ class UserService {
   async getAllUser(query: any) {
     try {
       const filters: any = {};
-      if(query.name)filters.name = query.name;
-      if(query.username)filters.username = query.username;
+      if (query.name) filters.name = query.name;
+      if (query.username) filters.username = query.username;
 
       return await userRepository.getAllUser(filters);
     } catch (err) {
@@ -30,16 +30,9 @@ class UserService {
   async updateUserName(curUsername: string, newUsername: string) {
     if (!newUsername) throw new Error('New username required');
     const exist = await Auth.findOne({ where: { username: newUsername } });
-    if (exist) throw new Error('User new user already exist');
+    if (exist) throw new Error('user already exist');
 
-    await User.update(
-      { username: newUsername },
-      { where: { username: curUsername } },
-    );
-    await Auth.update(
-      { username: newUsername },
-      { where: { username: curUsername } },
-    );
+    await authRepository.updateUserName(curUsername, newUsername);
     return;
   }
 
@@ -47,10 +40,14 @@ class UserService {
     return await User.findOne({ where: { username } });
   }
 
-  async deleteUser(id: string) {
+  async deleteUserById(user: any) {
+    const transaction = await sequelize.transaction();
     try {
-      return await User.destroy({ where: { id } });
+      await userRepository.deleteUserById(user.id, transaction);
+      await authRepository.deleteAuthByUsername(user.username, transaction);
+      await transaction.commit();
     } catch (err) {
+      await transaction.rollback();
       throw new Error('User not found for delete');
     }
   }

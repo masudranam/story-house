@@ -1,5 +1,5 @@
 // repositories/user.repository.ts
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import { User } from '../database/models/user.ts';
 
 class UserRepository {
@@ -24,9 +24,9 @@ class UserRepository {
     return await User.findOne({ where: { username } });
   }
 
-  async deleteUser(id: string) {
+  async deleteUserById(id: string, transaction: Transaction) {
     try {
-      return await User.destroy({ where: { id } });
+      return await User.destroy({ where: { id }, transaction });
     } catch (err) {
       throw new Error('User not found for delete');
     }
@@ -35,13 +35,13 @@ class UserRepository {
   async getAllUser(filters: any) {
     try {
       const where: any = {};
-      if(filters.name){
-        where.name = {[Op.iLike]: `%${filters.name}%`};
+      if (filters.name) {
+        where.name = { [Op.iLike]: `%${filters.name}%` };
       }
-      if(filters.username){
-        where.username = {[Op.iLike]: `%${filters.username}%`};
-      }     
-      return await User.findAll({where});
+      if (filters.username) {
+        where.username = { [Op.iLike]: `%${filters.username}%` };
+      }
+      return await User.findAll({ where });
     } catch (err) {
       throw new Error('User not found for all user');
     }
