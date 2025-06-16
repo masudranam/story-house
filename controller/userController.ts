@@ -1,22 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services/userService.ts';
-import { userRepository } from '../repository/userRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
-import { createUserDTO } from '../dto/DTO.ts';
 
 class UserController {
-  async createUser(req: any, res: any, next: NextFunction) {
-    try {
-      const user: createUserDTO = req.body;
-      const result = await userRepository.createUser(user);
-      res.status(httpStatus.CREATED).json(result);
-    } catch (err) {
-      next(err);
-    }
-  }
-
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
@@ -74,7 +62,7 @@ class UserController {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
         return;
       }
-      await userService.deleteUserById(user);
+      await userService.deleteUserById(user.id);
       res
         .status(httpStatus.OK)
         .json({ message: `User with id ${user.id} deleted successfully` });

@@ -3,6 +3,7 @@ import { defineAuthModel } from './models/auth.ts';
 import { defineUserModel } from './models/user.ts';
 import { defineStoryModel } from './models/story.ts';
 import dotenv from 'dotenv';
+import { defineCommentModel } from './models/comment.ts';
 dotenv.config();
 
 export const sequelize = new Sequelize(
@@ -18,6 +19,32 @@ export const sequelize = new Sequelize(
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 export const Story = defineStoryModel(sequelize);
+export const Comment = defineCommentModel(sequelize);
+
+User.hasOne(Auth, { foreignKey: 'userId', as: 'auth', onDelete: 'CASCADE' });
+Auth.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+User.hasMany(Story, {
+  foreignKey: 'authorId',
+  as: 'story',
+  onDelete: 'CASCADE',
+});
+
+Story.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
+
+Story.hasMany(Comment, {
+  foreignKey: 'storyId',
+  as: 'comment',
+  onDelete: 'CASCADE',
+});
+Comment.belongsTo(Story, { foreignKey: 'storyId', as: 'story' });
+
+User.hasMany(Comment, {
+  foreignKey: 'userId',
+  as: 'comment',
+  onDelete: 'CASCADE',
+});
+Comment.belongsTo(User, { foreignKey: 'userId', as: 'author' });
 
 await sequelize.sync({ alter: true });
 

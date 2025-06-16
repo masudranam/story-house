@@ -63,14 +63,10 @@ class UserService {
     }
   }
 
-  async deleteUserById(user: any) {
-    const transaction = await sequelize.transaction();
+  async deleteUserById(id: string) {
     try {
-      await userRepository.deleteUserById(user.id, transaction);
-      await authRepository.deleteAuthByUsername(user.username, transaction);
-      await transaction.commit();
+      await userRepository.deleteUserById(id);
     } catch (err) {
-      await transaction.rollback();
       throw new Error('User not found for delete');
     }
   }
