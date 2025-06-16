@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { defineAuthModel } from './models/auth.ts';
 import { defineUserModel } from './models/user.ts';
+import { defineStoryModel } from './models/story.ts';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -16,6 +17,7 @@ export const sequelize = new Sequelize(
 
 export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
+export const Story = defineStoryModel(sequelize);
 
 await sequelize.sync({ alter: true });
 
