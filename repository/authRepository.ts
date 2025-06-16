@@ -1,10 +1,10 @@
 // repositories/user.repository.ts
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
-import { Op } from 'sequelize';
-import jwt from 'jsonwebtoken';
+import { Op, Transaction } from 'sequelize';
 import { createAuthDTO } from '../dto/createAuthDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
+import { sequelize } from '../database/database.ts';
 
 class AuthRepository {
   async createAuth(data: createAuthDTO) {
@@ -23,6 +23,14 @@ class AuthRepository {
     return user;
   }
 
+  async deleteAuthByUsername(username: any, transaction: Transaction) {
+    try {
+      return await Auth.destroy({ where: { username }, transaction });
+    } catch (err) {
+      throw new Error('Auth not found for deleted');
+    }
+  }
+
   async findAuthByUsername(username: string) {
     const auth = await Auth.findOne({
       where: { username: username },
@@ -35,20 +43,22 @@ class AuthRepository {
     const exist = await Auth.findOne({ where: { username: newUsername } });
     if (exist) throw new Error('User new user already exist');
 
-    await User.update(
-      { username: newUsername },
-      { where: { username: curUsername } },
-    );
-    await Auth.update(
-      { username: newUsername },
-      { where: { username: curUsername } },
-    );
-
-    const SECRET = (process.env.JWT_SECRET as string) || 'secret';
-    const newToken = jwt.sign({ username: newUsername }, SECRET, {
-      expiresIn: '30s',
-    });
-    return newToken;
+    const transaction = await sequelize.transaction();
+    try {
+      await User.update(
+        { username: newUsername },
+        { where: { username: curUsername }, transaction },
+      );
+      await Auth.update(
+        { username: newUsername },
+        { where: { username: curUsername }, transaction },
+      );
+      await transaction.commit();
+      return;
+    } catch (err) {
+      await transaction.rollback();
+      throw new Error('Failled to update username');
+    }
   }
 }
 

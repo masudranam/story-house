@@ -14,11 +14,16 @@ class StoryRepository {
     return story;
   }
 
-  getAllStories = async (filters: any, sort: 'ASC'|'DESC', limit: number, offset: number) => {
-    const where:any = {};
-    if(filters.authorId)where.authorId = filters.authorId;
-    if(filters.title){
-      where.title = {[Op.iLike]: `%${filters.title}%`};
+  getAllStories = async (
+    filters: any,
+    sort: 'ASC' | 'DESC',
+    limit: number,
+    offset: number,
+  ) => {
+    const where: any = {};
+    if (filters.authorId) where.authorId = filters.authorId;
+    if (filters.title) {
+      where.title = { [Op.iLike]: `%${filters.title}%` };
     }
 
     const stories = await Story.findAll({

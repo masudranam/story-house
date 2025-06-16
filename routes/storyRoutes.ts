@@ -1,7 +1,6 @@
 import express from 'express';
 import { storyController } from '../controller/storyController.ts';
 import { authMiddleware } from '../middleware/authMiddleware.ts';
-import { authorizeOwner } from '../middleware/authorizeOwner.ts';
 import { canEditOrDeleteStory } from '../middleware/canEditOrDelete.ts';
 const router = express.Router();
 
