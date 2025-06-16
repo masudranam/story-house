@@ -1,5 +1,3 @@
-import { Auth } from '../database/models/auth.ts';
-import { User } from '../database/models/user.ts';
 import dotenv from 'dotenv';
 import { userRepository } from '../repository/userRepository.ts';
 import { authRepository } from '../repository/authRepository.ts';
@@ -27,17 +25,42 @@ class UserService {
     }
   }
 
+  async getUserByUsername(username: string) {
+    try {
+      return await userRepository.getUserByUsername(username);
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async updateUserName(curUsername: string, newUsername: string) {
     if (!newUsername) throw new Error('New username required');
-    const exist = await Auth.findOne({ where: { username: newUsername } });
-    if (exist) throw new Error('user already exist');
+    const transaction = await sequelize.transaction();
 
-    await authRepository.updateUserName(curUsername, newUsername);
-    return;
+    try {
+      await authRepository.updateUsername(
+        curUsername,
+        newUsername,
+        transaction,
+      );
+      await userRepository.updateUsername(
+        curUsername,
+        newUsername,
+        transaction,
+      );
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
   }
 
   async deleteUserByUsername(username: string) {
-    return await User.findOne({ where: { username } });
+    try {
+      return await userRepository.deleteUserByUsername(username);
+    } catch (err) {
+      throw err;
+    }
   }
 
   async deleteUserById(user: any) {

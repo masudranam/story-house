@@ -19,7 +19,7 @@ class UserController {
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userRepository.getUserById(req.params.id);
+      const user = await userService.getUserById(req.params.id);
       user
         ? res.json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
@@ -31,7 +31,7 @@ class UserController {
   async getUserByUsername(req: Request, res: Response, next: NextFunction) {
     try {
       const username = req.params.username;
-      const user = await User.findOne({ where: { username } });
+      const user = await userService.getUserByUsername(username);
       user
         ? res.json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
@@ -68,7 +68,7 @@ class UserController {
 
   async deleteUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userRepository.getUserById(req.params.id);
+      const user = await userService.getUserById(req.params.id);
 
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });

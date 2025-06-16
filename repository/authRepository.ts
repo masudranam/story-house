@@ -1,26 +1,15 @@
 // repositories/user.repository.ts
-import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
-import { Op, Transaction } from 'sequelize';
+import { Transaction } from 'sequelize';
 import { createAuthDTO } from '../dto/createAuthDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
-import { sequelize } from '../database/database.ts';
 
 class AuthRepository {
-  async createAuth(data: createAuthDTO) {
+  async createAuth(data: createAuthDTO, transaction: Transaction) {
     const username = data.username;
     const password = data.password;
     const hashed = await securePassword.hashedPassword(password);
     return await Auth.create({ username, password: hashed });
-  }
-
-  async findUserByIdentifier(identifier: string) {
-    const user = await User.findOne({
-      where: {
-        [Op.or]: [{ username: identifier }, { email: identifier }],
-      },
-    });
-    return user;
   }
 
   async deleteAuthByUsername(username: any, transaction: Transaction) {
@@ -38,27 +27,14 @@ class AuthRepository {
     return auth;
   }
 
-  async updateUserName(curUsername: string, newUsername: string) {
-    if (!newUsername) throw new Error('New username required');
+  async updateUsername(curUsername: string, newUsername: string, options = {}) {
     const exist = await Auth.findOne({ where: { username: newUsername } });
     if (exist) throw new Error('User new user already exist');
 
-    const transaction = await sequelize.transaction();
-    try {
-      await User.update(
-        { username: newUsername },
-        { where: { username: curUsername }, transaction },
-      );
-      await Auth.update(
-        { username: newUsername },
-        { where: { username: curUsername }, transaction },
-      );
-      await transaction.commit();
-      return;
-    } catch (err) {
-      await transaction.rollback();
-      throw new Error('Failled to update username');
-    }
+    return await Auth.update(
+      { username: newUsername },
+      { where: { username: curUsername }, ...options },
+    );
   }
 }
 

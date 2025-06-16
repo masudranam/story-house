@@ -1,35 +1,37 @@
 import { userRepository } from '../repository/userRepository.ts';
-import { User } from '../database/database.ts';
+import { sequelize } from '../database/database.ts';
 import { authRepository } from '../repository/authRepository.ts';
 import { createUserDTO, createAuthDTO } from '../dto/DTO.ts';
 import { signUpUserDTO } from '../dto/signupUserDTO.ts';
-import { Op } from 'sequelize';
 import { loginUserDTO } from '../dto/loginUserDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 
 class AuthService {
   async signUpUser(user: signUpUserDTO) {
-    const existingUser = await User.findOne({
-      where: {
-        [Op.or]: [{ username: user.username }, { email: user.email }],
-      },
-    });
+    const existingUser = await userRepository.findUserByIdentifier(user);
 
     if (existingUser) throw new Error('username or email already exist');
 
     const authData: createAuthDTO = user;
     const userData: createUserDTO = user;
 
-    await authRepository.createAuth(authData);
-    await userRepository.createUser(userData);
+    const transaction = await sequelize.transaction();
+    try {
+      await authRepository.createAuth(authData, transaction);
+      await userRepository.createUser(userData, transaction);
 
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+      await transaction.commit();
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
+    }
   }
 
   async loginUser(data: loginUserDTO) {
-    const user = await authRepository.findUserByIdentifier(data.identifier);
+    const user = await userRepository.findUserByIdentifier(data.identifier);
 
     if (!user) throw new Error("User doesn't exist!");
 

@@ -12,6 +12,24 @@ class UserRepository {
     }
   }
 
+  async findUserByIdentifier(user: any) {
+    return await User.findOne({
+      where: {
+        [Op.or]: [{ username: user.username }, { email: user.email }],
+      },
+    });
+  }
+
+  async updateUsername(curUsername: string, newUsername: string, options = {}) {
+    const exist = await User.findOne({ where: { username: newUsername } });
+    if (exist) throw new Error('User new user already exist');
+
+    return await User.update(
+      { username: newUsername },
+      { where: { username: curUsername }, ...options },
+    );
+  }
+
   async getUserById(id: string) {
     try {
       return await User.findByPk(id);
@@ -23,6 +41,8 @@ class UserRepository {
   async getUserByUsername(username: string) {
     return await User.findOne({ where: { username } });
   }
+
+  async deleteUserByUsername(username: string) {}
 
   async deleteUserById(id: string, transaction: Transaction) {
     try {
