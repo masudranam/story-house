@@ -15,9 +15,9 @@ const app = express();
 
 app.use(express.json());
 
-defineUserModel(sequelize);
-defineAuthModel(sequelize);
-defineStoryModel(sequelize);
+// defineUserModel(sequelize);
+// defineAuthModel(sequelize);
+// defineStoryModel(sequelize);
 
 app.use('/users', userRoutes);
 app.use('/stories', storyRoutes);

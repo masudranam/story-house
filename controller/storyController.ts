@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { storyService } from '../services/storyService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
+import { authenticatedRequest } from '../dto/authenticatedRequest.ts';
 
 class StoryController {
   async postStory(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
-      req.body.authorId = userId;
+      req.body.authorId = (req as any).user.id;
       const story = await storyService.postStory(req.body);
       res
         .status(httpStatus.CREATED)

@@ -9,39 +9,34 @@ import { generateToken } from '../utils/jwtHandler.ts';
 
 class AuthService {
   async signUpUser(user: signUpUserDTO) {
-    const existingUser = await userRepository.findUserByIdentifier(user);
-
-    if (existingUser) throw new Error('username or email already exist');
-
-    const authData: createAuthDTO = user;
-    const userData: createUserDTO = user;
-
-    const transaction = await sequelize.transaction();
     try {
-      await authRepository.createAuth(authData, transaction);
-      await userRepository.createUser(userData, transaction);
+      const existingUser = await userRepository.findUserByIdentifier(user);
+      if (existingUser) throw new Error('username or email already exist');
 
-      await transaction.commit();
+      await authRepository.createUserWithAuth(user);
+
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } catch (err) {
-      await transaction.rollback();
       throw err;
     }
   }
 
   async loginUser(data: loginUserDTO) {
-    const user = await userRepository.findUserByIdentifier(data.identifier);
+    const curData: Partial<signUpUserDTO> = {
+      email: data.identifier,
+      username: data.identifier,
+    };
+
+    const user = await userRepository.findUserByIdentifier(curData);
 
     if (!user) throw new Error("User doesn't exist!");
 
-    const auth = await authRepository.findAuthByUsername(user.username);
-
-    if (!auth) throw new Error("User doesn't exist");
+    const auth = await authRepository.findAuthByUserId(user.id);
 
     const isMatch = await securePassword.comparePassword(
       data.password,
-      auth.password,
+      auth!.password,
     );
 
     if (!isMatch) throw new Error('Invalid credentials');

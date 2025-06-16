@@ -1,15 +1,26 @@
 // repositories/user.repository.ts
 import { Auth } from '../database/models/auth.ts';
 import { Transaction } from 'sequelize';
-import { createAuthDTO } from '../dto/createAuthDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
+import { User } from '../database/models/user.ts';
+import { signUpUserDTO } from '../dto/signupUserDTO.ts';
+import { sequelize } from '../database/database.ts';
+import { createUserDTO } from '../dto/createUserDTO.ts';
 
 class AuthRepository {
-  async createAuth(data: createAuthDTO, transaction: Transaction) {
-    const username = data.username;
-    const password = data.password;
+  async createUserWithAuth(user: signUpUserDTO) {
+    const userData: createUserDTO = user;
+
+    const password = user.password;
     const hashed = await securePassword.hashedPassword(password);
-    return await Auth.create({ username, password: hashed });
+
+    const res = await sequelize.transaction(async (t) => {
+      const createdUser = await User.create(userData, { transaction: t });
+      const userId = createdUser.id;
+      await Auth.create({ userId, password: hashed }, { transaction: t });
+      return createdUser;
+    });
+    return res;
   }
 
   async deleteAuthByUsername(username: any, transaction: Transaction) {
@@ -20,9 +31,9 @@ class AuthRepository {
     }
   }
 
-  async findAuthByUsername(username: string) {
+  async findAuthByUserId(userId: string) {
     const auth = await Auth.findOne({
-      where: { username: username },
+      where: { userId },
     });
     return auth;
   }

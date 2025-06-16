@@ -1,9 +1,10 @@
 // repositories/user.repository.ts
 import { Op, Transaction } from 'sequelize';
 import { User } from '../database/models/user.ts';
+import { signUpUserDTO } from '../dto/signupUserDTO.ts';
 
 class UserRepository {
-  async createUser(data: Partial<User>, transaction?: any) {
+  async createUser(data: Partial<User>, transaction?: Transaction) {
     try {
       const { name, username, email } = data;
       return await User.create({ name, username, email });
@@ -12,7 +13,7 @@ class UserRepository {
     }
   }
 
-  async findUserByIdentifier(user: any) {
+  async findUserByIdentifier(user: Partial<signUpUserDTO>) {
     return await User.findOne({
       where: {
         [Op.or]: [{ username: user.username }, { email: user.email }],
@@ -44,9 +45,9 @@ class UserRepository {
 
   async deleteUserByUsername(username: string) {}
 
-  async deleteUserById(id: string, transaction: Transaction) {
+  async deleteUserById(id: string) {
     try {
-      return await User.destroy({ where: { id }, transaction });
+      return await User.destroy({ where: { id } });
     } catch (err) {
       throw new Error('User not found for delete');
     }
