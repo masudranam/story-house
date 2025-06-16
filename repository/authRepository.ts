@@ -1,54 +1,40 @@
 // repositories/user.repository.ts
-import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
-import jwt from 'jsonwebtoken';
-import { createAuthDTO } from '../dto/DTO.ts';
+import { Transaction } from 'sequelize';
+import { createAuthDTO } from '../dto/createAuthDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';
-import { generateToken } from '../utils/jwtHandler.ts';
 
 class AuthRepository {
-  async createAuth(data: createAuthDTO) {
+  async createAuth(data: createAuthDTO, transaction: Transaction) {
     const username = data.username;
     const password = data.password;
     const hashed = await securePassword.hashedPassword(password);
     return await Auth.create({ username, password: hashed });
   }
 
-  async login(user: createAuthDTO) {
-    const auth = await Auth.findOne({ where: { username: user.username } });
-    if (!auth) if (!auth) throw new Error("User doesn't exist");
-
-    const isMatched = await securePassword.comparePassword(
-      user.password,
-      auth.password,
-    );
-
-    if (!isMatched) throw new Error('Invalid Credentials');
-
-    const token = generateToken(user.username);
-
-    return { message: 'Login seccessful', token: `Bearer ${token}` };
+  async deleteAuthByUsername(username: any, transaction: Transaction) {
+    try {
+      return await Auth.destroy({ where: { username }, transaction });
+    } catch (err) {
+      throw new Error('Auth not found for deleted');
+    }
   }
 
-  async updateUserName(curUsername: string, newUsername: string) {
-    if (!newUsername) throw new Error('New username required');
+  async findAuthByUsername(username: string) {
+    const auth = await Auth.findOne({
+      where: { username: username },
+    });
+    return auth;
+  }
+
+  async updateUsername(curUsername: string, newUsername: string, options = {}) {
     const exist = await Auth.findOne({ where: { username: newUsername } });
     if (exist) throw new Error('User new user already exist');
 
-    await User.update(
+    return await Auth.update(
       { username: newUsername },
-      { where: { username: curUsername } },
+      { where: { username: curUsername }, ...options },
     );
-    await Auth.update(
-      { username: newUsername },
-      { where: { username: curUsername } },
-    );
-
-    const SECRET = (process.env.JWT_SECRET as string) || 'secret';
-    const newToken = jwt.sign({ username: newUsername }, SECRET, {
-      expiresIn: '30s',
-    });
-    return newToken;
   }
 }
 

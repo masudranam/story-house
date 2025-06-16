@@ -1,0 +1,68 @@
+import { createStoryDTO } from '../dto/DTO.ts';
+import { Story } from '../database/database.ts';
+import { Op } from 'sequelize';
+
+class StoryRepository {
+  async postStory(data: createStoryDTO) {
+    const story = await Story.create({
+      title: data.title,
+      description: data.description,
+      authorId: data.authorId,
+      lastModifierId: data.authorId,
+      lastModificationTime: new Date(),
+    });
+    return story;
+  }
+
+  getAllStories = async (
+    filters: any,
+    sort: 'ASC' | 'DESC',
+    limit: number,
+    offset: number,
+  ) => {
+    const where: any = {};
+    if (filters.authorId) where.authorId = filters.authorId;
+    if (filters.title) {
+      where.title = { [Op.iLike]: `%${filters.title}%` };
+    }
+
+    const stories = await Story.findAll({
+      where,
+      order: [['updatedAt', sort]],
+      limit,
+      offset,
+    });
+    return stories;
+  };
+
+  async deleteAllStories(): Promise<number> {
+    const deleteCount = await Story.destroy({ where: {}, truncate: true });
+    return deleteCount;
+  }
+
+  async findStoryByStoryId(id: string) {
+    return await Story.findByPk(id);
+  }
+
+  async updateStoryByStoryId(
+    storyId: string,
+    data: Partial<{ title: string; description: string }>,
+  ) {
+    const story = await Story.findByPk(storyId);
+    if (!story) return null;
+    await story.update(data);
+    return story;
+  }
+
+  async deleteStoryByStoryId(storyId: string, userId: string) {
+    const deleteCount = await Story.destroy({
+      where: {
+        id: storyId,
+        authorId: userId,
+      },
+    });
+    return deleteCount;
+  }
+}
+
+export const storyRepository = new StoryRepository();

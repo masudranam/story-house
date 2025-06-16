@@ -1,40 +1,42 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { httpStatus } from '../utils/httpStatus.ts';
+import { User } from '../database/database.ts';
 
-export const authMiddleware = (
+export async function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(httpStatus.FORBIDDEN).json({ message: 'No token have sent' });
-    return;
-  }
-  const token = authHeader.split(' ')[1];
-
+) {
   try {
-    const decode = jwt.decode(token) as { exp: number };
-    const curTime = Math.floor(Date.now() / 1000);
-    console.log(`curTime = ${curTime}, expTime = ${decode.exp}`);
+    const authHeader = req.headers.authorization;
 
-    if (decode.exp < curTime) {
-      res.status(httpStatus.UNAUTHORIZED).json({ message: 'Token Expired' });
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(httpStatus.FORBIDDEN).json({ message: 'No token provided' });
       return;
     }
+
+    const token = authHeader.split(' ')[1];
 
     const decoded = jwt.verify(
       token,
       (process.env.JWT_SECRET as string) || 'secret',
-    );
+    ) as { userId: string; role: number; exp: number };
 
-    (req as any).user = decoded;
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (decoded.exp < currentTime) {
+      res.status(httpStatus.UNAUTHORIZED).json({ message: 'Token expired' });
+      return;
+    }
+
+    const user = await User.findByPk(decoded.userId);
+    if (!user) {
+      res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
+      return;
+    }
+    (req as any).user = user;
     next();
-  } catch (err) {
+  } catch (err: any) {
     next(err);
-    // res.status(httpStatus.FORBIDDEN).json({ message: 'Invalid token' });
-    // return;
   }
-};
+}
