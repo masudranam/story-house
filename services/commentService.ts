@@ -1,15 +1,15 @@
 import { commentRepository } from '../repository/commentRepository.ts';
 
 class CommentService {
-  async postCommentById(content: string, storyId: string, userId: string) {
-    return await commentRepository.postComment(content, storyId, userId);
+  async postCommentByStoryId(content: string, storyId: string, userId: string) {
+    return await commentRepository.postCommentByStoryId(content, storyId, userId);
   }
 
   async findCommentById(id: string) {
     return await commentRepository.findCommentById(id);
   }
 
-  async updateCommentContentById(
+  async editCommentByCommentId(
     commentId: string,
     content: string,
     userId: string,
@@ -17,14 +17,13 @@ class CommentService {
     const comment = await commentRepository.findCommentById(commentId);
     if (!comment || comment.userId !== userId)
       throw new Error('Not authorized or not found');
-    return commentRepository.updateCommentContentById(commentId, content);
+    return commentRepository.editCommentByCommentId(commentId, content);
   }
 
-  async deleteCommentById(commentId: string, userId: string) {
+  async deleteCommentByCommentId(commentId: string, userId: string) {
     const comment = await commentRepository.findCommentById(commentId);
-    if (!comment || comment.userId !== userId)
-      throw new Error('Not authorized or not found');
-    return commentRepository.deleteCommentById(commentId);
+    if (!comment) throw new Error('Not authorized or not found');
+    return commentRepository.deleteCommentByCommentId(commentId);
   }
 }
 

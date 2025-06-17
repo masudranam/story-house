@@ -4,15 +4,6 @@ import { User } from '../database/models/user.ts';
 import { signUpUserDTO } from '../dto/signupUserDTO.ts';
 
 class UserRepository {
-  async createUser(data: Partial<User>, transaction?: Transaction) {
-    try {
-      const { name, username, email } = data;
-      return await User.create({ name, username, email });
-    } catch (err) {
-      throw new Error(`Failed to create ${err}`);
-    }
-  }
-
   async findUserByIdentifier(user: Partial<signUpUserDTO>) {
     return await User.findOne({
       where: {

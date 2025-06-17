@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { commentService } from '../services/commentService.ts';
 import { Comment } from '../database/database.ts';
+import { httpStatus } from '../utils/httpStatus.ts';
 
 class CommentController {
   async postComment(
@@ -9,42 +10,45 @@ class CommentController {
     next: NextFunction,
   ) {
     try {
-      const comment = await commentService.postCommentById(
+      const comment = await commentService.postCommentByStoryId(
         req.body.content,
         req.body.storyId,
         (req as any).user.id,
       );
-      res.status(201).json(comment);
+      res.status(httpStatus.CREATED).json(comment);
     } catch (err) {
       next(err);
     }
   }
 
-  async updateComment(
+  async editCommentByCommentId(
     req: Request,
     res: Response,
     next: NextFunction,
   ) {
     try {
-      const updated = await commentService.updateCommentContentById(
+      const updated = await commentService.editCommentByCommentId(
         req.params.id,
         req.body.content,
         (req as any).user.id,
       );
-      res.status(200).json(updated);
+      res.status(httpStatus.OK).json(updated);
     } catch (err) {
       next(err);
     }
   }
 
-  async deleteCommentById(
+  async deleteCommentByCommentId(
     req: Request,
     res: Response,
     next: NextFunction,
   ) {
     try {
-      await commentService.deleteCommentById(req.params.id, (req as any).user.id);
-      res.status(204).send();
+      const commentId = req.params.id;
+      const userId = (req as any).user.id;
+
+    const cnt =  await commentService.deleteCommentByCommentId(commentId, userId);
+      res.status(204).send(cnt);
     } catch (err) {
       next(err);
     }
