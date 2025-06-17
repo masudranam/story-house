@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { commentService } from '../services/commentService';
-import { authenticatedRequest } from '../dto/authenticatedRequest';
+import { commentService } from '../services/commentService.ts';
+import { Comment } from '../database/database.ts';
 
 class CommentController {
   async postComment(
@@ -21,7 +21,7 @@ class CommentController {
   }
 
   async updateComment(
-    req: authenticatedRequest,
+    req: Request,
     res: Response,
     next: NextFunction,
   ) {
@@ -29,7 +29,7 @@ class CommentController {
       const updated = await commentService.updateCommentContentById(
         req.params.id,
         req.body.content,
-        req.user.id,
+        (req as any).user.id,
       );
       res.status(200).json(updated);
     } catch (err) {
@@ -50,12 +50,16 @@ class CommentController {
     }
   }
 
-  async getComments(){
-
+  async getComments(req: Request, res: Response, next: NextFunction){
+    const comments =  await Comment.findAll();
+     res.json(comments);
+    return;
   }
 
-  async deleteComments(){
-
+  async deleteComments(req: Request, res: Response){
+    const comments =  await Comment.destroy({where: {}});
+    res.json(comments);
+    return;
   }
 }
 

@@ -1,7 +1,5 @@
 import dotenv from 'dotenv';
 import { userRepository } from '../repository/userRepository.ts';
-import { authRepository } from '../repository/authRepository.ts';
-import { sequelize } from '../database/database.ts';
 dotenv.config();
 
 class UserService {
@@ -35,22 +33,12 @@ class UserService {
 
   async updateUserName(curUsername: string, newUsername: string) {
     if (!newUsername) throw new Error('New username required');
-    const transaction = await sequelize.transaction();
-
     try {
-      await authRepository.updateUsername(
-        curUsername,
-        newUsername,
-        transaction,
-      );
       await userRepository.updateUsername(
         curUsername,
         newUsername,
-        transaction,
       );
-      await transaction.commit();
     } catch (err) {
-      await transaction.rollback();
       throw err;
     }
   }

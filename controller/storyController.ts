@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { storyService } from '../services/storyService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { authenticatedRequest } from '../dto/authenticatedRequest.ts';
-
+ 
 class StoryController {
   async postStory(req: Request, res: Response, next: NextFunction) {
     try {
@@ -47,7 +46,7 @@ class StoryController {
       const userId = (req as any).user.id;
       // return id
       const deleted = await storyService.deleteStoryByStoryId(storyId, userId);
-      res.status(httpStatus.OK).json({ message: 'story deleted successfully' });
+      res.status(httpStatus.OK).json({ message: `story with id ${storyId} deleted successfully` });
     } catch (err) {
       next(err);
     }

@@ -2,7 +2,7 @@ import { Auth } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { NextFunction, Response, Request } from 'express';
 import { authService } from '../services/authService.ts';
-import { signUpUserDTO, signUpUserSchema } from '../dto/signupUserDTO.ts';
+import { signUpUserSchema } from '../dto/signupUserDTO.ts';
 import { loginUserDTO, loginUserSchema } from '../dto/loginUserDTO.ts';
 
 class AuthController {
@@ -27,7 +27,6 @@ class AuthController {
 
   async loginUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const user: loginUserDTO = req.body;
       const parsed = loginUserSchema.parse(req.body);
       const result = await authService.loginUser(parsed);
       res.status(httpStatus.OK).json(result);
