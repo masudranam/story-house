@@ -21,13 +21,13 @@ class UserRepository {
     });
   }
 
-  async updateUsername(curUsername: string, newUsername: string, options = {}) {
+  async updateUsername(curUsername: string, newUsername: string) {
     const exist = await User.findOne({ where: { username: newUsername } });
     if (exist) throw new Error('User new user already exist');
 
     return await User.update(
       { username: newUsername },
-      { where: { username: curUsername }, ...options },
+      { where: { username: curUsername }},
     );
   }
 

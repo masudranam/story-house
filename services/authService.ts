@@ -1,7 +1,5 @@
 import { userRepository } from '../repository/userRepository.ts';
-import { sequelize } from '../database/database.ts';
 import { authRepository } from '../repository/authRepository.ts';
-import { createUserDTO, createAuthDTO } from '../dto/DTO.ts';
 import { signUpUserDTO } from '../dto/signupUserDTO.ts';
 import { loginUserDTO } from '../dto/loginUserDTO.ts';
 import { securePassword } from '../utils/hashedPassword.ts';

@@ -31,8 +31,7 @@ class UserController {
   async updateUsernameById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
-      const authHeader = req.headers.authorization;
-
+  
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not found' });
         return;
@@ -42,11 +41,9 @@ class UserController {
       const newUsername = req.body.username;
       if (!curUsername) throw new Error('no new username provided');
 
-      const token = authHeader?.split(' ')[1];
       await userService.updateUserName(curUsername, newUsername);
       res.json({
-        message: `username updated from ${curUsername} to ${newUsername}`,
-        token,
+        message: `username updated from ${curUsername} to ${newUsername}`
       });
       return;
     } catch (err) {

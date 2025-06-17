@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/database.ts';
-
+ 
 export async function authMiddleware(
   req: Request,
   res: Response,
@@ -34,9 +34,10 @@ export async function authMiddleware(
       res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
       return;
     }
+   
     (req as any).user = user;
     next();
-  } catch (err: any) {
+  } catch (err) {
     next(err);
   }
 }

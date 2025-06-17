@@ -1,13 +1,12 @@
 import express from 'express';
-import { commentController } from '../controller/commentController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { commentController } from '../controller/commentController.ts';
+import { authMiddleware } from '../middleware/authMiddleware.ts';
 const router = express.Router();
 
  router
-   .post('/', authMiddleware, commentController.postComment)
+   .post('/',authMiddleware, commentController.postComment)
    .get('/', commentController.getComments)
-   .delete('/', commentController.deleteComments)
-   .get('/:id', commentController.deleteCommentById);
+   .delete('/',commentController.deleteComments)
+   .get('/:id',authMiddleware, commentController.deleteCommentById);
     
-
 export default router;

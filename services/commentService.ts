@@ -1,4 +1,4 @@
-import { commentRepository } from '../repository/commentRepository';
+import { commentRepository } from '../repository/commentRepository.ts';
 
 class CommentService {
   async postCommentById(content: string, storyId: string, userId: string) {
