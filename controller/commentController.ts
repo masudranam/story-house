@@ -4,7 +4,7 @@ import { authenticatedRequest } from '../dto/authenticatedRequest';
 
 class CommentController {
   async postComment(
-    req: authenticatedRequest,
+    req: Request,
     res: Response,
     next: NextFunction,
   ) {
@@ -12,7 +12,7 @@ class CommentController {
       const comment = await commentService.postCommentById(
         req.body.content,
         req.body.storyId,
-        req.user.id,
+        (req as any).user.id,
       );
       res.status(201).json(comment);
     } catch (err) {
@@ -37,17 +37,25 @@ class CommentController {
     }
   }
 
-  async deleteComment(
-    req: authenticatedRequest,
+  async deleteCommentById(
+    req: Request,
     res: Response,
     next: NextFunction,
   ) {
     try {
-      await commentService.deleteCommentById(req.params.id, req.user.id);
+      await commentService.deleteCommentById(req.params.id, (req as any).user.id);
       res.status(204).send();
     } catch (err) {
       next(err);
     }
+  }
+
+  async getComments(){
+
+  }
+
+  async deleteComments(){
+
   }
 }
 
