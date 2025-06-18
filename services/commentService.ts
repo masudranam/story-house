@@ -2,7 +2,6 @@ import { commentRepository } from '../repository/commentRepository.ts';
 
 class CommentService {
   async postCommentByStoryId(content: string, storyId: string, userId: string) {
-    
     return await commentRepository.postCommentByStoryId(
       content,
       storyId,
@@ -20,7 +19,7 @@ class CommentService {
     userId: string,
   ) {
     const comment = await commentRepository.findCommentById(commentId);
-    if (!comment)  throw new Error('Not authorized or not found');
+    if (!comment) throw new Error('Not authorized or not found');
     return commentRepository.editCommentByCommentId(commentId, content);
   }
 

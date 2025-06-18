@@ -5,7 +5,7 @@ class CommentRepository {
     console.log(storyId);
     const story = await Story.findByPk(storyId);
 
-    if(!story)throw new Error('Story not found');
+    if (!story) throw new Error('Story not found');
     return await Comment.create({ content, storyId, userId });
   }
 

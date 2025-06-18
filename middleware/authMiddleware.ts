@@ -1,17 +1,13 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import {   Response, NextFunction } from 'express';
+
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/database.ts';
+import { userRequest } from '../dto/userRequest.ts';
  
- export interface authReq extends Request {
-  user?: {
-    id: string;
-    role: number;
-  };
-}
 
 export async function authMiddleware(
-  req: authReq,
+  req: userRequest,
   res: Response,
   next: NextFunction,
 ) {
@@ -36,14 +32,13 @@ export async function authMiddleware(
       return;
     }
 
-    const user = await User.findByPk(decoded.userId);
     // req.headers["x-user-id"] = decoded.userId;
     // req.headers["x-user-role"] = `${decoded.role}`;
-     
+
     req.user = {
       id: decoded.userId,
       role: decoded.role,
-    }
+    };
     next();
   } catch (err) {
     next(err);

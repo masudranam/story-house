@@ -1,7 +1,6 @@
-import { likeRepository } from "../repository/likeRepository.ts";
+import { likeRepository } from '../repository/likeRepository.ts';
 
 class LikeService {
-   
   async likeStory(userId: string, storyId: string) {
     const alreadyLiked = await likeRepository.hasLiked(userId, storyId);
     if (alreadyLiked) throw new Error('Already liked');
@@ -9,7 +8,7 @@ class LikeService {
     return await likeRepository.addLike(userId, storyId);
   }
 
-  async  unlikeStory(userId: string, storyId: string) {
+  async unlikeStory(userId: string, storyId: string) {
     const alreadyLiked = await likeRepository.hasLiked(userId, storyId);
     if (!alreadyLiked) throw new Error('Not liked yet');
 

@@ -1,6 +1,8 @@
+import { Op } from 'sequelize';
+
 import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
-import { Op } from 'sequelize';
+
 
 class StoryRepository {
   async postStory(data: createStoryDTO) {
@@ -36,7 +38,7 @@ class StoryRepository {
   };
 
   async deleteAllStories(): Promise<number> {
-    const deleteCount = await Story.destroy({ where: {}});
+    const deleteCount = await Story.destroy({ where: {} });
     return deleteCount;
   }
 

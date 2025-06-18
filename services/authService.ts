@@ -7,7 +7,6 @@ import { generateToken } from '../utils/jwtHandler.ts';
 
 class AuthService {
   async signUpUser(user: signUpUserDTO) {
-    try {
       const existingUser = await userRepository.findUserByIdentifier(user);
       if (existingUser) throw new Error('username or email already exist');
 
@@ -15,9 +14,6 @@ class AuthService {
 
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
-    } catch (err) {
-      throw err;
-    }
   }
 
   async loginUser(data: loginUserDTO) {

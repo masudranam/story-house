@@ -1,4 +1,4 @@
-import { createStoryDTO } from '../dto/DTO';
+import { createStoryDTO } from '../dto/DTO.ts';
 import { storyRepository } from '../repository/storyRepository.ts';
 
 class StoryService {
@@ -16,7 +16,7 @@ class StoryService {
 
     const page = parseInt(query.page) || 1;
     let limit = Math.max(parseInt(query.limit) || 100, 1);
-    limit = Math.min(limit,100);
+    limit = Math.min(limit, 100);
     const offset = (page - 1) * limit;
 
     const stories = await storyRepository.getAllStories(

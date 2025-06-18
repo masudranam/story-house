@@ -1,8 +1,9 @@
+import { Request, Response } from 'express';
 import js2xmlparser from 'js2xmlparser';
+import { userRequest } from '../dto/userRequest';
 
-// ResponseFormatter.ts
-class responseFormatter {
-  format(req: any, res: any, data: any) {
+export class ResponseFormatter {
+  format(req: userRequest, res: Response, data: unknown): Response {
     const accept = req.headers.accept;
 
     if (accept?.includes('application/xml')) {
@@ -19,8 +20,7 @@ class responseFormatter {
       res.type('text/plain');
       return res.send(JSON.stringify(data, null, 2));
     }
+
     return res.json(data);
   }
 }
-
-export const contentType = new responseFormatter();

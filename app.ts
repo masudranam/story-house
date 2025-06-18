@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express, { NextFunction } from 'express';
+
 import userRoutes from './routes/userRoutes.ts';
 import storyRoutes from './routes/storyRoutes.ts';
 import authRoutes from './routes/authRoutes.ts';
@@ -17,7 +18,7 @@ app.use(express.json());
 app.use('/users', userRoutes, authRoutes);
 app.use('/stories', storyRoutes);
 app.use('/comments', commentRoutes);
-app.use('/likes',likeRoutes);
+app.use('/likes', likeRoutes);
 
 app.get('/', (req, res, next: NextFunction) => {
   res.json({ message: 'Hello from the backend' });

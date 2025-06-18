@@ -1,8 +1,9 @@
 import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
+
 import { defineAuthModel } from './models/auth.ts';
 import { defineUserModel } from './models/user.ts';
 import { defineStoryModel } from './models/story.ts';
-import dotenv from 'dotenv';
 import { defineCommentModel } from './models/comment.ts';
 import { defineLikeModel } from './models/like.ts';
 dotenv.config();
@@ -49,11 +50,14 @@ User.hasMany(Comment, {
 });
 Comment.belongsTo(User, { foreignKey: 'userId', as: 'author' });
 
-
-User.hasMany(Like, { foreignKey: 'userId', as: 'likes' , onDelete: 'CASCADE'});
+User.hasMany(Like, { foreignKey: 'userId', as: 'likes', onDelete: 'CASCADE' });
 Like.belongsTo(User, { foreignKey: 'userId' });
 
-Story.hasMany(Like, { foreignKey: 'storyId', as: 'likes' , onDelete: 'CASCADE'});
+Story.hasMany(Like, {
+  foreignKey: 'storyId',
+  as: 'likes',
+  onDelete: 'CASCADE',
+});
 Like.belongsTo(Story, { foreignKey: 'storyId' });
 
 await sequelize.sync({ alter: true });
@@ -64,5 +68,4 @@ try {
   console.log('Yeeeee! connection has been stublished!');
 } catch (err) {
   console.log('Unable to connect', err);
-
 }

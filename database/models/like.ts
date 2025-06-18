@@ -12,28 +12,28 @@ export const defineLikeModel = (sequelize: Sequelize) => {
       userId: {
         type: DataTypes.UUID,
         allowNull: false,
-        references:{model:'user',key:'id'},
-        onDelete:'CASCADE',
+        references: { model: 'user', key: 'id' },
+        onDelete: 'CASCADE',
       },
       storyId: {
         type: DataTypes.UUID,
         allowNull: false,
-        references:{model:'story',key:'id'},
-        onDelete:'CASCADE',
+        references: { model: 'story', key: 'id' },
+        onDelete: 'CASCADE',
       },
     },
     {
       sequelize,
       modelName: 'like',
       timestamps: true,
-      updatedAt: false,  
+      updatedAt: false,
       indexes: [
         {
           unique: true,
           fields: ['userId', 'storyId'],
         },
       ],
-    }
+    },
   );
   return Like;
 };

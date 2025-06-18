@@ -23,11 +23,7 @@ class UserRepository {
   }
 
   async getUserById(id: string) {
-    try {
       return await User.findByPk(id);
-    } catch (err) {
-      throw new Error(`Not found user id ${id}`);
-    }
   }
 
   async getUserByUsername(username: string) {
@@ -37,15 +33,11 @@ class UserRepository {
   async deleteUserByUsername(username: string) {}
 
   async deleteUserById(id: string) {
-    try {
       return await User.destroy({ where: { id } });
-    } catch (err) {
-      throw new Error('User not found for delete');
-    }
   }
 
   async getAllUser(filters: any) {
-    try {
+  
       const where: any = {};
       if (filters.name) {
         where.name = { [Op.iLike]: `%${filters.name}%` };
@@ -54,9 +46,6 @@ class UserRepository {
         where.username = { [Op.iLike]: `%${filters.username}%` };
       }
       return await User.findAll({ where });
-    } catch (err) {
-      throw new Error('User not found for all user');
-    }
   }
 }
 
