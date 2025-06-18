@@ -3,9 +3,10 @@ import express, { NextFunction } from 'express';
 import userRoutes from './routes/userRoutes.ts';
 import storyRoutes from './routes/storyRoutes.ts';
 import authRoutes from './routes/authRoutes.ts';
-import commentRoutes from './routes/commentRoutes.ts'
+import commentRoutes from './routes/commentRoutes.ts';
 import { errorHandler } from './utils/errorHandler.ts';
- 
+import likeRoutes from './routes/likeRoutes.ts';
+
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -15,7 +16,8 @@ app.use(express.json());
 
 app.use('/users', userRoutes, authRoutes);
 app.use('/stories', storyRoutes);
-app.use('/comments',commentRoutes);
+app.use('/comments', commentRoutes);
+app.use('/likes',likeRoutes);
 
 app.get('/', (req, res, next: NextFunction) => {
   res.json({ message: 'Hello from the backend' });

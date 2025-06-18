@@ -3,7 +3,7 @@ import { httpStatus } from '../utils/httpStatus.ts';
 import { NextFunction, Response, Request } from 'express';
 import { authService } from '../services/authService.ts';
 import { signUpUserSchema } from '../dto/signupUserDTO.ts';
-import { loginUserDTO, loginUserSchema } from '../dto/loginUserDTO.ts';
+import {  loginUserSchema } from '../dto/loginUserDTO.ts';
 
 class AuthController {
   async signUpUser(req: Request, res: Response, next: NextFunction) {

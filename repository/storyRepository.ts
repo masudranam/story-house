@@ -36,7 +36,7 @@ class StoryRepository {
   };
 
   async deleteAllStories(): Promise<number> {
-    const deleteCount = await Story.destroy({ where: {}, truncate: true });
+    const deleteCount = await Story.destroy({ where: {}});
     return deleteCount;
   }
 

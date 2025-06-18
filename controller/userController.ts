@@ -31,7 +31,7 @@ class UserController {
   async updateUsernameById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
-  
+
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not found' });
         return;
@@ -43,7 +43,7 @@ class UserController {
 
       await userService.updateUserName(curUsername, newUsername);
       res.json({
-        message: `username updated from ${curUsername} to ${newUsername}`
+        message: `username updated from ${curUsername} to ${newUsername}`,
       });
       return;
     } catch (err) {

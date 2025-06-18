@@ -1,6 +1,5 @@
 import { DataTypes, Sequelize, Model } from 'sequelize';
 
-
 export class Auth extends Model {
   declare userId: string;
   declare password: string;

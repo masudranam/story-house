@@ -34,10 +34,7 @@ class UserService {
   async updateUserName(curUsername: string, newUsername: string) {
     if (!newUsername) throw new Error('New username required');
     try {
-      await userRepository.updateUsername(
-        curUsername,
-        newUsername,
-      );
+      await userRepository.updateUsername(curUsername, newUsername);
     } catch (err) {
       throw err;
     }

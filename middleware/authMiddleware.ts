@@ -3,8 +3,15 @@ import { Request, Response, NextFunction } from 'express';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/database.ts';
  
+ export interface authReq extends Request {
+  user?: {
+    id: string;
+    role: number;
+  };
+}
+
 export async function authMiddleware(
-  req: Request,
+  req: authReq,
   res: Response,
   next: NextFunction,
 ) {
@@ -30,12 +37,13 @@ export async function authMiddleware(
     }
 
     const user = await User.findByPk(decoded.userId);
-    if (!user) {
-      res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
-      return;
+    // req.headers["x-user-id"] = decoded.userId;
+    // req.headers["x-user-role"] = `${decoded.role}`;
+     
+    req.user = {
+      id: decoded.userId,
+      role: decoded.role,
     }
-   
-    (req as any).user = user;
     next();
   } catch (err) {
     next(err);

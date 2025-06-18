@@ -15,8 +15,8 @@ class StoryService {
     if (query.title) filters.title = query.title;
 
     const page = parseInt(query.page) || 1;
-    let limit = Math.max(parseInt(query.limit) || 1,  1);
-    limit = Math.min(limit || 100, 100);
+    let limit = Math.max(parseInt(query.limit) || 100, 1);
+    limit = Math.min(limit,100);
     const offset = (page - 1) * limit;
 
     const stories = await storyRepository.getAllStories(
