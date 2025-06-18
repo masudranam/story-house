@@ -18,10 +18,6 @@ class LikeService {
   async getLikesCount(storyId: string) {
     return await likeRepository.countLikes(storyId);
   }
-
-  async checkIfUserLiked(userId: string, storyId: string) {
-    return await likeRepository.hasLiked(userId, storyId);
-  }
 }
 
 export const likeService = new LikeService();
