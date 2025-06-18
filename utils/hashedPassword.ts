@@ -4,7 +4,7 @@ dotenv.config();
 
 const SALT = process.env.SALT || 10;
 
-class SecurePassword {
+class PasswordHandler {
   hashedPassword = async (password: string): Promise<string> => {
     return await bcrypt.hash(password, Number(SALT));
   };
@@ -16,4 +16,4 @@ class SecurePassword {
   };
 }
 
-export const securePassword = new SecurePassword();
+export const passwordHandler = new PasswordHandler();

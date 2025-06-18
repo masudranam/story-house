@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { userRepository } from '../repository/userRepository.ts';
+import { userFilters } from '../dto/userFilters.ts';
 dotenv.config();
 
 class UserService {
@@ -7,8 +8,8 @@ class UserService {
       return await userRepository.getUserById(id);
   }
 
-  async getAllUser(query: any) {
-      const filters: any = {};
+  async getAllUser(query: userFilters) {
+      const filters: userFilters = {};
       if (query.name) filters.name = query.name;
       if (query.username) filters.username = query.username;
 

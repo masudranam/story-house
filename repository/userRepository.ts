@@ -1,10 +1,11 @@
 // repositories/user.repository.ts
-import { Op, Transaction } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 import { User } from '../database/models/user.ts';
-import { signUpUserDTO } from '../dto/signupUserDTO.ts';
+import { signUpUser } from '../dto/signupUserDTO.ts';
+import { userFilters } from '../dto/userFilters.ts';
 
 class UserRepository {
-  async findUserByIdentifier(user: Partial<signUpUserDTO>) {
+  async findUserByIdentifier(user: Partial<signUpUser>) {
     return await User.findOne({
       where: {
         [Op.or]: [{ username: user.username }, { email: user.email }],
@@ -36,16 +37,17 @@ class UserRepository {
       return await User.destroy({ where: { id } });
   }
 
-  async getAllUser(filters: any) {
-  
-      const where: any = {};
+  async getAllUser(filters: userFilters) {
+      
+
+      const where: WhereOptions = {};
       if (filters.name) {
         where.name = { [Op.iLike]: `%${filters.name}%` };
       }
       if (filters.username) {
         where.username = { [Op.iLike]: `%${filters.username}%` };
-      }
-      return await User.findAll({ where });
+      } 
+      return await User.findAll({where});
   }
 }
 

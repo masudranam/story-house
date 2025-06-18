@@ -1,4 +1,5 @@
 import { commentRepository } from '../repository/commentRepository.ts';
+import { searchCommentParams } from '../dto/searchCommentParams.ts';
 
 class CommentService {
   async postCommentByStoryId(content: string, storyId: string, userId: string) {
@@ -27,6 +28,19 @@ class CommentService {
     const comment = await commentRepository.findCommentById(commentId);
     if (!comment) throw new Error('Not authorized or not found');
     return commentRepository.deleteCommentByCommentId(commentId);
+  }
+
+    async searchComments(params: searchCommentParams) {
+    const { page = 1, limit = 10 } = params;
+    const { rows, count } = await commentRepository.searchComments(params);
+
+    return {
+      data: rows,
+      total: count,
+      page,
+      limit,
+      pages: Math.ceil(count / limit),
+    };
   }
 }
 

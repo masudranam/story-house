@@ -1,18 +1,18 @@
 // repositories/user.repository.ts
 import { Auth } from '../database/models/auth.ts';
 import { Transaction } from 'sequelize';
-import { securePassword } from '../utils/hashedPassword.ts';
+import { passwordHandler } from '../utils/hashedPassword.ts';
 import { User } from '../database/models/user.ts';
-import { signUpUserDTO } from '../dto/signupUserDTO.ts';
+import { signUpUser } from '../dto/signupUserDTO.ts';
 import { sequelize } from '../database/database.ts';
-import { createUserDTO } from '../dto/createUserDTO.ts';
+import { createUser } from '../dto/createUserDTO.ts';
 
 class AuthRepository {
-  async createUserWithAuth(user: signUpUserDTO) {
-    const userData: createUserDTO = user;
+  async createUserWithAuth(user: signUpUser) {
+    const userData: createUser = user;
 
     const password = user.password;
-    const hashed = await securePassword.hashedPassword(password);
+    const hashed = await  passwordHandler.hashedPassword(password);
 
     const res = await sequelize.transaction(async (t) => {
       const createdUser = await User.create(userData, { transaction: t });
@@ -23,7 +23,7 @@ class AuthRepository {
     return res;
   }
 
-  async deleteAuthByUsername(username: any, transaction: Transaction) {
+  async deleteAuthByUsername(username:any, transaction: Transaction) {
       return await Auth.destroy({ where: { username }, transaction });
   }
 
