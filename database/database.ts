@@ -4,6 +4,7 @@ import { defineUserModel } from './models/user.ts';
 import { defineStoryModel } from './models/story.ts';
 import dotenv from 'dotenv';
 import { defineCommentModel } from './models/comment.ts';
+import { defineLikeModel } from './models/like.ts';
 dotenv.config();
 
 export const sequelize = new Sequelize(
@@ -20,6 +21,7 @@ export const User = defineUserModel(sequelize);
 export const Auth = defineAuthModel(sequelize);
 export const Story = defineStoryModel(sequelize);
 export const Comment = defineCommentModel(sequelize);
+export const Like = defineLikeModel(sequelize);
 
 User.hasOne(Auth, { foreignKey: 'userId', as: 'auth', onDelete: 'CASCADE' });
 Auth.belongsTo(User, { foreignKey: 'userId', as: 'user' });
@@ -37,6 +39,7 @@ Story.hasMany(Comment, {
   as: 'comment',
   onDelete: 'CASCADE',
 });
+
 Comment.belongsTo(Story, { foreignKey: 'storyId', as: 'story' });
 
 User.hasMany(Comment, {
@@ -46,6 +49,13 @@ User.hasMany(Comment, {
 });
 Comment.belongsTo(User, { foreignKey: 'userId', as: 'author' });
 
+
+User.hasMany(Like, { foreignKey: 'userId', as: 'likes' , onDelete: 'CASCADE'});
+Like.belongsTo(User, { foreignKey: 'userId' });
+
+Story.hasMany(Like, { foreignKey: 'storyId', as: 'likes' , onDelete: 'CASCADE'});
+Like.belongsTo(Story, { foreignKey: 'storyId' });
+
 await sequelize.sync({ alter: true });
 
 //Database connection check
@@ -54,4 +64,5 @@ try {
   console.log('Yeeeee! connection has been stublished!');
 } catch (err) {
   console.log('Unable to connect', err);
+
 }

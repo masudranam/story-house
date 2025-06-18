@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { storyService } from '../services/storyService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
- 
+
 class StoryController {
   async postStory(req: Request, res: Response, next: NextFunction) {
     try {
       req.body.authorId = (req as any).user.id;
+      console.log(req.body.authorid);
       const story = await storyService.postStory(req.body);
       res
         .status(httpStatus.CREATED)
@@ -46,7 +47,9 @@ class StoryController {
       const userId = (req as any).user.id;
       // return id
       const deleted = await storyService.deleteStoryByStoryId(storyId, userId);
-      res.status(httpStatus.OK).json({ message: `story with id ${storyId} deleted successfully` });
+      res
+        .status(httpStatus.OK)
+        .json({ message: `story with id ${storyId} deleted successfully` });
     } catch (err) {
       next(err);
     }

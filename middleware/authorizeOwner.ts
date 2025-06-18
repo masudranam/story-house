@@ -1,16 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRole } from '../utils/userRole.ts';
+import { authReq } from './authMiddleware.ts';
 
 export async function authorizeOwner(
-  req: Request,
+  req: authReq,
   res: Response,
   next: NextFunction,
 ) {
   try {
     const paramId = req.params.id;
-    const userId = (req as any).user.id;
-    const userrole = (req as any).user.role;
+    const userId = req.user?.id;
+    const userrole = req.user?.role;
 
     if (!userId) {
       res.status(httpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });

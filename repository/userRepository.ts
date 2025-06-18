@@ -18,7 +18,7 @@ class UserRepository {
 
     return await User.update(
       { username: newUsername },
-      { where: { username: curUsername }},
+      { where: { username: curUsername } },
     );
   }
 
