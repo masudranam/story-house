@@ -1,23 +1,22 @@
 import { userRepository } from '../repository/userRepository.ts';
 import { authRepository } from '../repository/authRepository.ts';
-import { signUpUserDTO } from '../dto/signupUserDTO.ts';
-import { loginUserDTO } from '../dto/loginUserDTO.ts';
-import { securePassword } from '../utils/hashedPassword.ts';
+import { signUpUser } from '../dto/signupUserDTO.ts';
+import { loginUser } from '../dto/loginUserDTO.ts';
+import { passwordHandler } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 
 class AuthService {
-  async signUpUser(user: signUpUserDTO) {
+  async signUpUser(user: signUpUser) {
       const existingUser = await userRepository.findUserByIdentifier(user);
       if (existingUser) throw new Error('username or email already exist');
 
-      await authRepository.createUserWithAuth(user);
+      const createdUser = await authRepository.createUserWithAuth(user);
 
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
+      return createdUser;
   }
 
-  async loginUser(data: loginUserDTO) {
-    const curData: Partial<signUpUserDTO> = {
+  async loginUser(data: loginUser) {
+    const curData: Partial<signUpUser> = {
       email: data.identifier,
       username: data.identifier,
     };
@@ -28,7 +27,7 @@ class AuthService {
 
     const auth = await authRepository.findAuthByUserId(user.id);
 
-    const isMatch = await securePassword.comparePassword(
+    const isMatch = await passwordHandler.comparePassword(
       data.password,
       auth!.password,
     );

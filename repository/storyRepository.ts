@@ -1,7 +1,8 @@
-import { Op } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 
 import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
+import { storyFilters } from '../dto/storyFilters.ts';
 
 
 class StoryRepository {
@@ -17,12 +18,12 @@ class StoryRepository {
   }
 
   getAllStories = async (
-    filters: any,
+    filters: storyFilters,
     sort: 'ASC' | 'DESC',
     limit: number,
     offset: number,
   ) => {
-    const where: any = {};
+    const where: WhereOptions = {};
     if (filters.authorId) where.authorId = filters.authorId;
     if (filters.title) {
       where.title = { [Op.iLike]: `%${filters.title}%` };

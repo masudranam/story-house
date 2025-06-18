@@ -3,19 +3,10 @@ import { NextFunction, Response, Request } from 'express';
 import { Auth } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { authService } from '../services/authService.ts';
-import { signUpUserSchema } from '../dto/signupUserDTO.ts';
-import { loginUserSchema } from '../dto/loginUserDTO.ts';
-
+ 
 class AuthController {
   async signUpUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsed = signUpUserSchema.safeParse(req.body);
-      if (!parsed.success) {
-        res
-          .status(httpStatus.BAD_REQUEST)
-          .json({ errors: parsed.error.errors });
-        return;
-      }
       const user = await authService.signUpUser(req.body);
       res
         .status(httpStatus.CREATED)
@@ -28,8 +19,7 @@ class AuthController {
 
   async loginUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsed = loginUserSchema.parse(req.body);
-      const result = await authService.loginUser(parsed);
+      const result = await authService.loginUser(req.body);
       res.status(httpStatus.OK).json(result);
     } catch (err) {
       next(err);

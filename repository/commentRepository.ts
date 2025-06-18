@@ -1,4 +1,8 @@
-import { Comment, Story } from '../database/database.ts';
+import { FindAndCountOptions, Op } from 'sequelize';
+
+import { Comment, Story, User } from '../database/database.ts';
+import { searchCommentParams } from '../dto/searchCommentParams.ts';
+
 
 class CommentRepository {
   async postCommentByStoryId(content: string, storyId: string, userId: string) {
@@ -23,6 +27,35 @@ class CommentRepository {
 
   async deleteCommentByCommentId(id: string) {
     return await Comment.destroy({ where: { id } });
+  }
+
+  async searchComments(params: searchCommentParams) {
+    const { content, author, storyId, page = 1, limit = 10 } = params;
+
+    const where: NonNullable<FindAndCountOptions['where']> = {};
+    if (content) where.body = { [Op.iLike]: `%${content}%` };
+    if (storyId) where.storyId = storyId;
+
+    const include: NonNullable<FindAndCountOptions['include']> = [];
+
+    if (author) {
+      include.push({
+        model: User,
+        where: { username: { [Op.iLike]: `%${author}%` } },
+        attributes: ['id', 'username'],
+      });
+    } else {
+      include.push({ model: User, attributes: ['id', 'username'] });
+    }
+    const options: FindAndCountOptions = {
+      where,
+      include,
+      offset: (page - 1) * limit,
+      limit,
+      order:[['createdAt', 'DESC']],
+    }
+     const {rows , count} = await Comment.findAndCountAll(options);
+    return { rows, count };
   }
 }
 

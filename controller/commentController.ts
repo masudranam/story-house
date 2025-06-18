@@ -4,11 +4,12 @@ import { commentService } from '../services/commentService.ts';
 import { Comment } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRequest } from '../dto/userRequest.ts';
+import { searchCommentParams } from '../dto/searchCommentParams.ts';
+
 class CommentController {
   async postComment(req: userRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.id;
-
       const comment = await commentService.postCommentByStoryId(
         req.body.content,
         req.body.storyId,
@@ -38,7 +39,7 @@ class CommentController {
   }
 
   async deleteCommentByCommentId(
-    req: Request,
+    req: userRequest ,
     res: Response,
     next: NextFunction,
   ) {
@@ -46,7 +47,7 @@ class CommentController {
       const commentId = req.params.id;
       const userId = req.user!.id;
       console.log(commentId, userId);
-      const cnt = await commentService.deleteCommentByCommentId(
+      await commentService.deleteCommentByCommentId(
         commentId,
         userId,
       );
@@ -56,6 +57,15 @@ class CommentController {
     } catch (err) {
       next(err);
     }
+  }
+
+  async searchComment(req: Request, res: Response, next: NextFunction){
+      try {
+    const result = await commentService.searchComments(req.query);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
   }
 
   async getComments(req: Request, res: Response, next: NextFunction) {

@@ -15,7 +15,8 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/users', userRoutes, authRoutes);
+app.use('/users',authRoutes);
+app.use('/users',userRoutes);
 app.use('/stories', storyRoutes);
 app.use('/comments', commentRoutes);
 app.use('/likes', likeRoutes);
