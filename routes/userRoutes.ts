@@ -7,9 +7,6 @@ import { authorizeOwner } from '../middleware/authorizeOwner.ts';
 const router = express.Router();
 
 router.get('/', userController.getAllUsers);
-router.get('/auth', authController.getAllAuth);
-router.post('/signup', authController.signUpUser);
-router.post('/login', authController.loginUser);
 router.delete('/', userController.deleteAllUsers);
 
 router

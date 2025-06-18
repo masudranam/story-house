@@ -38,18 +38,7 @@ class LikeController {
       next(err);
     }
   }
-
-  async checkIfUserLiked(req: userRequest, res: Response, next: NextFunction) {
-    try {
-      const userId = req.user!.id;
-      const { storyId } = req.params;
-      const liked = await likeService.checkIfUserLiked(userId, storyId);
-      res.json({ storyId, liked });
-    } catch (err) {
-      next(err);
-    }
-  }
-
+  
   async getAllLikes(req: Request, res: Response) {
     const likes = await Like.findAll({ where: {} });
     res.send(likes);

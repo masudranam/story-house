@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
   .post('/', authMiddleware, commentController.postComment)
-  .get('/', commentController.getComments)
+  .get('/', commentController.searchComment)
   .delete('/', commentController.deleteComments)
   .delete(
     '/:id',
