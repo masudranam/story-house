@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
+
 import { commentService } from '../services/commentService.ts';
 import { Comment } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { getUserReqInformation } from '../utils/getUserInformation.ts';
-
+import { userRequest } from '../dto/userRequest.ts';
 class CommentController {
-  async postComment(req: Request, res: Response, next: NextFunction) {
+  async postComment(req: userRequest, res: Response, next: NextFunction) {
     try {
-      const userId = getUserReqInformation(req);
+      const userId = req.user!.id;
 
       const comment = await commentService.postCommentByStoryId(
         req.body.content,
         req.body.storyId,
-        String(userId),
+        userId,
       );
       res.status(httpStatus.CREATED).json(comment);
     } catch (err) {
@@ -21,7 +21,7 @@ class CommentController {
   }
 
   async editCommentByCommentId(
-    req: Request,
+    req: userRequest,
     res: Response,
     next: NextFunction,
   ) {
@@ -29,7 +29,7 @@ class CommentController {
       const updated = await commentService.editCommentByCommentId(
         req.params.id,
         req.body.content,
-        (req as any).user.id,
+        req.user!.id,
       );
       res.status(httpStatus.OK).json(updated);
     } catch (err) {
@@ -50,7 +50,9 @@ class CommentController {
         commentId,
         userId,
       );
-      res.status(204).json({message: `comment with id ${commentId} has been deleted`});
+      res
+        .status(204)
+        .json({ message: `comment with id ${commentId} has been deleted` });
     } catch (err) {
       next(err);
     }

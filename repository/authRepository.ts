@@ -24,11 +24,7 @@ class AuthRepository {
   }
 
   async deleteAuthByUsername(username: any, transaction: Transaction) {
-    try {
       return await Auth.destroy({ where: { username }, transaction });
-    } catch (err) {
-      throw new Error('Auth not found for deleted');
-    }
   }
 
   async findAuthByUserId(userId: string) {

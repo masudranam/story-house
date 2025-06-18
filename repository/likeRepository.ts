@@ -1,4 +1,4 @@
-import { Like } from "../database/database.ts";
+import { Like } from '../database/database.ts';
 
 class LikeRepository {
   async addLike(userId: string, storyId: string) {
