@@ -5,14 +5,14 @@ import { loginUser } from '../dto/auth/loginUserDTO.ts';
 import { passwordHandler } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 
-class AuthService {
+export class AuthService {
   async signUpUser(user: signUpUser) {
-      const existingUser = await userRepository.findUserByIdentifier(user);
-      if (existingUser) throw new Error('username or email already exist');
+    const existingUser = await userRepository.findUserByIdentifier(user);
+    if (existingUser) throw new Error('username or email already exist');
 
-      const createdUser = await authRepository.createUserWithAuth(user);
+    const createdUser = await authRepository.createUserWithAuth(user);
 
-      return createdUser;
+    return createdUser;
   }
 
   async loginUser(data: loginUser) {

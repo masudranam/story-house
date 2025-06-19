@@ -3,6 +3,7 @@ import { Op, WhereOptions } from 'sequelize';
 import { User } from '../database/models/user.ts';
 import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { userFilters } from '../dto/user/userFilters.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 class UserRepository {
   async findUserByIdentifier(user: Partial<signUpUser>) {
@@ -24,30 +25,31 @@ class UserRepository {
   }
 
   async getUserById(id: string) {
-      return await User.findByPk(id);
+    const user : userAttributes = await User.findByPk(id);
+    return user;
   }
 
   async getUserByUsername(username: string) {
-    return await User.findOne({ where: { username } });
+    const user : userAttributes = await User.findOne({ where: { username } });
+    return user;
   }
 
   async deleteUserByUsername(username: string) {}
 
   async deleteUserById(id: string) {
-      return await User.destroy({ where: { id } });
+    return await User.destroy({ where: { id } });
   }
 
   async getAllUser(filters: userFilters) {
-      
-
-      const where: WhereOptions = {};
-      if (filters.name) {
-        where.name = { [Op.iLike]: `%${filters.name}%` };
-      }
-      if (filters.username) {
-        where.username = { [Op.iLike]: `%${filters.username}%` };
-      } 
-      return await User.findAll({where});
+    const where: WhereOptions = {};
+    if (filters.name) {
+      where.name = { [Op.iLike]: `%${filters.name}%` };
+    }
+    if (filters.username) {
+      where.username = { [Op.iLike]: `%${filters.username}%` };
+    }
+    const users : userAttributes[] = await User.findAll({ where });
+    return users;
   }
 }
 

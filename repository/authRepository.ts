@@ -12,7 +12,7 @@ class AuthRepository {
     const userData: createUser = user;
 
     const password = user.password;
-    const hashed = await  passwordHandler.hashedPassword(password);
+    const hashed = await passwordHandler.hashedPassword(password);
 
     const res = await sequelize.transaction(async (t) => {
       const createdUser = await User.create(userData, { transaction: t });
@@ -23,8 +23,8 @@ class AuthRepository {
     return res;
   }
 
-  async deleteAuthByUsername(username:any, transaction: Transaction) {
-      return await Auth.destroy({ where: { username }, transaction });
+  async deleteAuthByUsername(username: string, transaction: Transaction) {
+    return await Auth.destroy({ where: { username }, transaction });
   }
 
   async findAuthByUserId(userId: string) {

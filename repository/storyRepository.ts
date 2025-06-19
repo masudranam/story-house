@@ -4,7 +4,6 @@ import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
 import { storyFilters } from '../dto/story/storyFilters.ts';
 
-
 class StoryRepository {
   async postStory(data: createStoryDTO) {
     const story = await Story.create({

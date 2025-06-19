@@ -4,11 +4,13 @@ import { userService } from '../services/userService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
+import { responseFormatter } from '../utils/responseFormatteUtils.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
 
-class UserController {
+export class UserController {
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user : userAttributes = await userService.getUserById(req.params.id);
       user
         ? res.json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
@@ -54,12 +56,13 @@ class UserController {
 
   async deleteUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user: userAttributes = await userService.getUserById(req.params.id);
 
-      if (!user) {
+      if (!user?.id) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
         return;
       }
+    
       await userService.deleteUserById(user.id);
       res
         .status(httpStatus.OK)
@@ -72,7 +75,7 @@ class UserController {
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await userService.getAllUser(req.query);
-      res.json(users);
+      responseFormatter.format(req, res, users);
     } catch (err) {
       next(err);
     }

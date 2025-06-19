@@ -39,7 +39,7 @@ class LikeController {
       next(err);
     }
   }
-  
+
   async getAllLikes(req: Request, res: Response) {
     const likes = await Like.findAll({ where: {} });
     res.send(likes);

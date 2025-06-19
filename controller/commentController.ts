@@ -5,7 +5,7 @@ import { Comment } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRequest } from '../dto/user/userRequest.ts';
 
-class CommentController {
+export class CommentController {
   async postComment(req: userRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.id;
@@ -35,32 +35,29 @@ class CommentController {
   }
 
   async deleteCommentByCommentId(
-    req: userRequest ,
+    req: userRequest,
     res: Response,
     next: NextFunction,
   ) {
     try {
       const commentId = req.params.id;
       const userId = req.user!.id;
-      await commentService.deleteCommentByCommentId(
-        commentId,
-        userId,
-      );
+      await commentService.deleteCommentByCommentId(commentId, userId);
       res
-        .status(204)
+        .status(httpStatus.NO_CONTENT)
         .json({ message: `comment with id ${commentId} has been deleted` });
     } catch (err) {
       next(err);
     }
   }
 
-  async searchComment(req: Request, res: Response, next: NextFunction){
-      try {
-    const result = await commentService.searchComments(req.query);
-    res.json(result);
-  } catch (err) {
-    next(err);
-  }
+  async searchComment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await commentService.searchComments(req.query);
+      res.status(httpStatus.OK).json(result);
+    } catch (err) {
+      next(err);
+    }
   }
 
   async deleteComments(req: Request, res: Response) {
