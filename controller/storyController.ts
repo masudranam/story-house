@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { storyService } from '../services/storyService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { userRequest } from '../dto/userRequest.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
 class StoryController {
   async postStory(req: userRequest, res: Response, next: NextFunction) {

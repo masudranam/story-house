@@ -1,7 +1,7 @@
 import { userRepository } from '../repository/userRepository.ts';
 import { authRepository } from '../repository/authRepository.ts';
-import { signUpUser } from '../dto/signupUserDTO.ts';
-import { loginUser } from '../dto/loginUserDTO.ts';
+import { signUpUser } from '../dto/auth/signupUserDTO.ts';
+import { loginUser } from '../dto/auth/loginUserDTO.ts';
 import { passwordHandler } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 

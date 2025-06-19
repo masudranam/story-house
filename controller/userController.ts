@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { userService } from '../services/userService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/models/user.ts';

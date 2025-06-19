@@ -1,13 +1,11 @@
 import { commentRepository } from '../repository/commentRepository.ts';
-import { searchCommentParams } from '../dto/searchCommentParams.ts';
+import { searchCommentParams } from '../dto/comment/searchCommentParams.ts';
+import { commentAttributes } from '../dto/comment/commentAttributes.ts';
 
 class CommentService {
-  async postCommentByStoryId(content: string, storyId: string, userId: string) {
-    return await commentRepository.postCommentByStoryId(
-      content,
-      storyId,
-      userId,
-    );
+  async postCommentByStoryId(commentData: commentAttributes) {
+    const comment: commentAttributes  = commentData;
+    return await commentRepository.postCommentByStoryId(comment);
   }
 
   async findCommentById(id: string) {
@@ -26,20 +24,19 @@ class CommentService {
 
   async deleteCommentByCommentId(commentId: string, userId: string) {
     const comment = await commentRepository.findCommentById(commentId);
-    if (!comment) throw new Error('Not authorized or not found');
+    if (!comment) throw new Error('comment not found');
     return commentRepository.deleteCommentByCommentId(commentId);
   }
 
     async searchComments(params: searchCommentParams) {
     const { page = 1, limit = 10 } = params;
     const { rows, count } = await commentRepository.searchComments(params);
-
     return {
       data: rows,
       total: count,
       page,
       limit,
-      total_page: Math.ceil(count / limit),
+      numberOfPage: Math.ceil(count / limit),
     };
   }
 }

@@ -1,16 +1,16 @@
 import { FindAndCountOptions, Op } from 'sequelize';
 
 import { Comment, Story, User } from '../database/database.ts';
-import { searchCommentParams } from '../dto/searchCommentParams.ts';
-
+import { searchCommentParams } from '../dto/comment/searchCommentParams.ts';
+import { commentAttributes } from '../dto/comment/commentAttributes.ts';
 
 class CommentRepository {
-  async postCommentByStoryId(content: string, storyId: string, userId: string) {
-    console.log(storyId);
-    const story = await Story.findByPk(storyId);
-
+  async postCommentByStoryId(comment: commentAttributes) {
+     
+    const story = await Story.findByPk(comment.storyId);
     if (!story) throw new Error('Story not found');
-    return await Comment.create({ content, storyId, userId });
+    const {content , storyId, userId} = comment;
+    return await Comment.create({content, storyId, userId});
   }
 
   async findCommentById(id: string) {

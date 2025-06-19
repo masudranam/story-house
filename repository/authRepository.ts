@@ -1,11 +1,11 @@
-// repositories/user.repository.ts
-import { Auth } from '../database/models/auth.ts';
 import { Transaction } from 'sequelize';
+
+import { Auth } from '../database/models/auth.ts';
 import { passwordHandler } from '../utils/hashedPassword.ts';
 import { User } from '../database/models/user.ts';
-import { signUpUser } from '../dto/signupUserDTO.ts';
+import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { sequelize } from '../database/database.ts';
-import { createUser } from '../dto/createUserDTO.ts';
+import { createUser } from '../dto/auth/createUserDTO.ts';
 
 class AuthRepository {
   async createUserWithAuth(user: signUpUser) {

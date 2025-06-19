@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import {Response, NextFunction } from 'express';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRole } from '../utils/userRole.ts';
 import { Story } from '../database/database.ts';
-import { userRequest } from '../dto/userRequest.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
  
 export async function canEditOrDeleteStory(
   req: userRequest,

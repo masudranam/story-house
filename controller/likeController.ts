@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { likeService } from '../services/likeService.ts';
 import { Like } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { userRequest } from '../dto/userRequest.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
 class LikeController {
   async likeStory(req: userRequest, res: Response, next: NextFunction) {
