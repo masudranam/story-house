@@ -1,8 +1,8 @@
-// repositories/user.repository.ts
 import { Op, WhereOptions } from 'sequelize';
+
 import { User } from '../database/models/user.ts';
-import { signUpUser } from '../dto/signupUserDTO.ts';
-import { userFilters } from '../dto/userFilters.ts';
+import { signUpUser } from '../dto/auth/signupUserDTO.ts';
+import { userFilters } from '../dto/user/userFilters.ts';
 
 class UserRepository {
   async findUserByIdentifier(user: Partial<signUpUser>) {

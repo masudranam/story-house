@@ -2,7 +2,7 @@ import { Op, WhereOptions } from 'sequelize';
 
 import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
-import { storyFilters } from '../dto/storyFilters.ts';
+import { storyFilters } from '../dto/story/storyFilters.ts';
 
 
 class StoryRepository {

@@ -1,7 +1,6 @@
-import { User } from '../database/models/user.ts';
 import { createStoryDTO } from '../dto/DTO.ts';
-import { storyAttributes } from '../dto/storyAttributes.ts';
-import { storyFilters } from '../dto/storyFilters.ts';
+import { storyAttributes } from '../dto/story/storyAttributes.ts';
+import { storyFilters } from '../dto/story/storyFilters.ts';
 import { storyRepository } from '../repository/storyRepository.ts';
 
 class StoryService {

@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
+
 import { userRepository } from '../repository/userRepository.ts';
-import { userFilters } from '../dto/userFilters.ts';
+import { userFilters } from '../dto/user/userFilters.ts';
 dotenv.config();
 
 class UserService {

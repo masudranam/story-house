@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
+import {Response } from 'express';
 import js2xmlparser from 'js2xmlparser';
-import { userRequest } from '../dto/userRequest';
+import { userRequest } from '../dto/user/userRequest';
 
 export class ResponseFormatter {
   format(req: userRequest, res: Response, data: unknown): Response {

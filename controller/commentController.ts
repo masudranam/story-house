@@ -3,18 +3,14 @@ import { Request, Response, NextFunction } from 'express';
 import { commentService } from '../services/commentService.ts';
 import { Comment } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
-import { userRequest } from '../dto/userRequest.ts';
-import { searchCommentParams } from '../dto/searchCommentParams.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
 class CommentController {
   async postComment(req: userRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.id;
-      const comment = await commentService.postCommentByStoryId(
-        req.body.content,
-        req.body.storyId,
-        userId,
-      );
+      req.body.userId = userId;
+      const comment = await commentService.postCommentByStoryId(req.body);
       res.status(httpStatus.CREATED).json(comment);
     } catch (err) {
       next(err);
@@ -46,7 +42,6 @@ class CommentController {
     try {
       const commentId = req.params.id;
       const userId = req.user!.id;
-      console.log(commentId, userId);
       await commentService.deleteCommentByCommentId(
         commentId,
         userId,
