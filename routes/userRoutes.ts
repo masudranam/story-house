@@ -10,7 +10,7 @@ router.delete('/', userController.deleteAllUsers);
 
 router
   .route('/:id')
-  .get(userController.getUserById)
+  .get(authMiddleware,userController.getUserById)
   .delete(authMiddleware, authorizeOwner, userController.deleteUserById)
   .put(authMiddleware, authorizeOwner, userController.updateUsernameById);
 

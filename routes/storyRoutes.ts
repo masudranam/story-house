@@ -7,9 +7,9 @@ const router = express.Router();
 
 router
   .post('/', authMiddleware, storyController.postStory)
-  .get('/', storyController.getStories)
+  .get('/',storyController.getStories)
   .delete('/', storyController.deleteAllStories)
-  .get('/:id', storyController.getStoryByStoryId)
+  .get('/:id',authMiddleware, storyController.getStoryByStoryId)
   .delete(
     '/:id',
     authMiddleware,

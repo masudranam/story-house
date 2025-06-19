@@ -63,12 +63,6 @@ class CommentController {
   }
   }
 
-  async getComments(req: Request, res: Response, next: NextFunction) {
-    const comments = await Comment.findAll();
-    res.json(comments);
-    return;
-  }
-
   async deleteComments(req: Request, res: Response) {
     const comments = await Comment.destroy({ where: {} });
     res.json(comments);
