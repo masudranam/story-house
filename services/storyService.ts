@@ -17,7 +17,7 @@ class StoryService {
     if (query.title) filters.title = query.title;
 
     const page = parseInt(query.page ?? '1', 10);
-    let limit = Math.max(parseInt(query.limit??'100', 10), 1);
+    let limit = Math.max(parseInt(query.limit ?? '100', 10), 1);
     limit = Math.min(limit, 100);
     const offset = (page - 1) * limit;
 
@@ -55,7 +55,7 @@ class StoryService {
     const story = await storyRepository.findStoryByStoryId(storyId);
     if (!story) throw new Error('Story not found');
 
-    const updatedData:  storyAttributes = {
+    const updatedData: storyAttributes = {
       lastModificationTime: new Date(),
     };
 

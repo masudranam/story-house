@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
-import {   Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRequest } from '../dto/user/userRequest.ts';
- 
 
 export async function authMiddleware(
   req: userRequest,

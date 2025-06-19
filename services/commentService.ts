@@ -4,7 +4,7 @@ import { commentAttributes } from '../dto/comment/commentAttributes.ts';
 
 class CommentService {
   async postCommentByStoryId(commentData: commentAttributes) {
-    const comment: commentAttributes  = commentData;
+    const comment: commentAttributes = commentData;
     return await commentRepository.postCommentByStoryId(comment);
   }
 
@@ -28,7 +28,7 @@ class CommentService {
     return commentRepository.deleteCommentByCommentId(commentId);
   }
 
-    async searchComments(params: searchCommentParams) {
+  async searchComments(params: searchCommentParams) {
     const { page = 1, limit = 10 } = params;
     const { rows, count } = await commentRepository.searchComments(params);
     return {

@@ -24,48 +24,57 @@ export const Story = defineStoryModel(sequelize);
 export const Comment = defineCommentModel(sequelize);
 export const Like = defineLikeModel(sequelize);
 
-User.hasOne(Auth, { foreignKey: 'userId', as: 'auth', onDelete: 'CASCADE' });
-Auth.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+export const applyAssociation = () => {
+  User.hasOne(Auth, { foreignKey: 'userId', as: 'auth', onDelete: 'CASCADE' });
+  Auth.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-User.hasMany(Story, {
-  foreignKey: 'authorId',
-  as: 'story',
-  onDelete: 'CASCADE',
-});
+  User.hasMany(Story, {
+    foreignKey: 'authorId',
+    as: 'story',
+    onDelete: 'CASCADE',
+  });
 
-Story.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
+  Story.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
 
-Story.hasMany(Comment, {
-  foreignKey: 'storyId',
-  as: 'comment',
-  onDelete: 'CASCADE',
-});
+  Story.hasMany(Comment, {
+    foreignKey: 'storyId',
+    as: 'comment',
+    onDelete: 'CASCADE',
+  });
 
-Comment.belongsTo(Story, { foreignKey: 'storyId', as: 'story' });
+  Comment.belongsTo(Story, { foreignKey: 'storyId', as: 'story' });
 
-User.hasMany(Comment, {
-  foreignKey: 'userId',
-  as: 'comment',
-  onDelete: 'CASCADE',
-});
-Comment.belongsTo(User, { foreignKey: 'userId', as: 'author' });
+  User.hasMany(Comment, {
+    foreignKey: 'userId',
+    as: 'comment',
+    onDelete: 'CASCADE',
+  });
+  Comment.belongsTo(User, { foreignKey: 'userId', as: 'author' });
 
-User.hasMany(Like, { foreignKey: 'userId', as: 'likes', onDelete: 'CASCADE' });
-Like.belongsTo(User, { foreignKey: 'userId' });
+  User.hasMany(Like, {
+    foreignKey: 'userId',
+    as: 'likes',
+    onDelete: 'CASCADE',
+  });
+  Like.belongsTo(User, { foreignKey: 'userId' });
 
-Story.hasMany(Like, {
-  foreignKey: 'storyId',
-  as: 'likes',
-  onDelete: 'CASCADE',
-});
-Like.belongsTo(Story, { foreignKey: 'storyId' });
+  Story.hasMany(Like, {
+    foreignKey: 'storyId',
+    as: 'likes',
+    onDelete: 'CASCADE',
+  });
 
-await sequelize.sync({ alter: true });
+  Like.belongsTo(Story, { foreignKey: 'storyId' });
+};
 
-//Database connection check
-try {
-  await sequelize.authenticate();
-  console.log('Yeeeee! connection has been stublished!');
-} catch (err) {
-  console.log('Unable to connect', err);
-}
+export const initDatabase = async () => {
+  try {
+    applyAssociation();
+    await sequelize.sync({ alter: true });
+    await sequelize.authenticate();
+    console.log('  DB connection established!');
+  } catch (err) {
+    console.error('  Unable to connect to the DB:', err);
+    process.exit(1);
+  }
+};

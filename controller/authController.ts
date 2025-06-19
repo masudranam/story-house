@@ -3,8 +3,8 @@ import { NextFunction, Response, Request } from 'express';
 import { Auth } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { authService } from '../services/authService.ts';
- 
-class AuthController {
+
+export class AuthController {
   async signUpUser(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await authService.signUpUser(req.body);

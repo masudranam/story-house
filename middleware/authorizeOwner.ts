@@ -1,4 +1,4 @@
-import {Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRole } from '../utils/userRole.ts';

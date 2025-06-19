@@ -1,10 +1,10 @@
 export interface storyFilters {
-  id?: string,
+  id?: string;
   title?: string;
   category?: string;
   authorId?: string;
-  sort?:'asc'|'desc',
-  limit?:string,
-  offset?:string,
-  page?:string,
+  sort?: 'asc' | 'desc';
+  limit?: string;
+  offset?: string;
+  page?: string;
 }

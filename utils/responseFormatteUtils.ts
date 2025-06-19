@@ -1,10 +1,11 @@
-import {Response } from 'express';
+import { Response } from 'express';
 import js2xmlparser from 'js2xmlparser';
 import { userRequest } from '../dto/user/userRequest';
 
-export class ResponseFormatter {
+class ResponseFormatter {
   format(req: userRequest, res: Response, data: unknown): Response {
     const accept = req.headers.accept;
+    console.log(accept);
 
     if (accept?.includes('application/xml')) {
       res.type('application/xml');
@@ -24,3 +25,5 @@ export class ResponseFormatter {
     return res.json(data);
   }
 }
+
+export const responseFormatter = new ResponseFormatter();

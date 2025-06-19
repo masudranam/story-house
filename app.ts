@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.ts';
 import commentRoutes from './routes/commentRoutes.ts';
 import { errorHandler } from './utils/errorHandler.ts';
 import likeRoutes from './routes/likeRoutes.ts';
+import { initDatabase } from './database/database.ts';
 
 dotenv.config();
 
@@ -15,8 +16,10 @@ const app = express();
 
 app.use(express.json());
 
-app.use('/users',authRoutes);
-app.use('/users',userRoutes);
+await initDatabase();
+
+app.use('/users', authRoutes);
+app.use('/users', userRoutes);
 app.use('/stories', storyRoutes);
 app.use('/comments', commentRoutes);
 app.use('/likes', likeRoutes);
