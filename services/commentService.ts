@@ -36,7 +36,7 @@ class CommentService {
       total: count,
       page,
       limit,
-      numberOfPage: Math.ceil(count / limit),
+      number_of_page: Math.ceil(count / limit),
     };
   }
 }

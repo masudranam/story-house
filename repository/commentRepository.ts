@@ -33,7 +33,7 @@ class CommentRepository {
     const { content, author, storyId, page = 1, limit = 10 } = params;
 
     const where: NonNullable<FindAndCountOptions['where']> = {};
-    if (content) where.body = { [Op.iLike]: `%${content}%` };
+    if (content) where.content = { [Op.iLike]: `%${content}%` };
     if (storyId) where.storyId = storyId;
 
     const include: NonNullable<FindAndCountOptions['include']> = [];
