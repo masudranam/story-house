@@ -1,5 +1,5 @@
 type Nullable<T> = {
-    [K in keyof T]?: T[K] | null;
+  [K in keyof T]?: T[K] | null;
 };
 
 export type userAttributes = Nullable<{
@@ -11,5 +11,3 @@ export type userAttributes = Nullable<{
   role: number;
   passLastModificationTime: Date;
 }> | null;
-
- 

@@ -11,7 +11,7 @@ export class AuthController {
       res
         .status(httpStatus.CREATED)
         .json({ message: 'User registered successfully', user });
-      return;
+        
     } catch (err) {
       next(err);
     }

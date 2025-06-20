@@ -15,7 +15,7 @@ class UserService {
     if (query.name) filters.name = query.name;
     if (query.username) filters.username = query.username;
 
-    const users : userAttributes[] = await userRepository.getAllUser(filters);
+    const users: userAttributes[] = await userRepository.getAllUser(filters);
     return users;
   }
 

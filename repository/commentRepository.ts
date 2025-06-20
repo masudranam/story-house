@@ -21,7 +21,8 @@ class CommentRepository {
       { content },
       { where: { id }, returning: true },
     );
-    return rows[0];
+    const comment: commentAttributes = rows[0];
+    return comment;
   }
 
   async deleteCommentByCommentId(id: string) {
