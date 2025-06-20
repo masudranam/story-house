@@ -1,6 +1,7 @@
 export interface commentAttributes {
-  content: string;
-  storyId: string;
-  userId: string;
+  id?: string;
+  content?: string;
+  storyId?: string;
+  userId?: string;
   commentId?: string;
 }

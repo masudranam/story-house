@@ -6,6 +6,7 @@ import { User } from '../database/models/user.ts';
 import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { sequelize } from '../database/database.ts';
 import { createUser } from '../dto/auth/createUserDTO.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 class AuthRepository {
   async createUserWithAuth(user: signUpUser) {
@@ -15,7 +16,9 @@ class AuthRepository {
     const hashed = await passwordHandler.hashedPassword(password);
 
     const res = await sequelize.transaction(async (t) => {
-      const createdUser = await User.create(userData, { transaction: t });
+      const createdUser: userAttributes = await User.create(userData, {
+        transaction: t,
+      });
       const userId = createdUser.id;
       await Auth.create({ userId, password: hashed }, { transaction: t });
       return createdUser;

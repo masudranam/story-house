@@ -3,6 +3,7 @@ import { Op, WhereOptions } from 'sequelize';
 import { createStoryDTO } from '../dto/DTO.ts';
 import { Story } from '../database/database.ts';
 import { storyFilters } from '../dto/story/storyFilters.ts';
+import { storyAttributes } from '../dto/story/storyAttributes.ts';
 
 class StoryRepository {
   async postStory(data: createStoryDTO) {
@@ -28,7 +29,7 @@ class StoryRepository {
       where.title = { [Op.iLike]: `%${filters.title}%` };
     }
 
-    const stories = await Story.findAll({
+    const stories : storyAttributes[] = await Story.findAll({
       where,
       order: [['updatedAt', sort]],
       limit,
@@ -38,12 +39,14 @@ class StoryRepository {
   };
 
   async deleteAllStories(): Promise<number> {
-    const deleteCount = await Story.destroy({ where: {} });
+    const deleteCount: number = await Story.destroy({ where: {} });
     return deleteCount;
   }
 
   async findStoryByStoryId(id: string) {
-    return await Story.findByPk(id);
+    const story : storyAttributes | null =  await Story.findByPk(id);
+
+    return story;
   }
 
   async updateStoryByStoryId(
@@ -52,8 +55,8 @@ class StoryRepository {
   ) {
     const story = await Story.findByPk(storyId);
     if (!story) return null;
-    await story.update(data);
-    return story;
+    const updatedStory : storyAttributes =  await story.update(data);
+    return updatedStory;
   }
 
   async deleteStoryByStoryId(storyId: string, userId: string) {

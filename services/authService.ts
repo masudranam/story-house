@@ -11,7 +11,6 @@ export class AuthService {
     if (existingUser) throw new Error('username or email already exist');
 
     const createdUser = await authRepository.createUserWithAuth(user);
-
     return createdUser;
   }
 

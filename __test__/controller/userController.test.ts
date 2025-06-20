@@ -29,7 +29,7 @@ describe('UserController', () => {
     const req = mockRequest({ params: { id: '123' } });
 
     it('should return user if found', async () => {
-      const mockUser : userAttributes = { id: '123', name: 'Masud' };
+      const mockUser: userAttributes = { id: '123', name: 'Masud' };
       jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
 
       await controller.getUserById(req, res, next);
@@ -88,7 +88,9 @@ describe('UserController', () => {
     });
 
     it('should update username if user found', async () => {
-      jest.spyOn(userService, 'getUserById').mockResolvedValue({ username: 'oldUser' });
+      jest
+        .spyOn(userService, 'getUserById')
+        .mockResolvedValue({ username: 'oldUser' });
       jest.spyOn(userService, 'updateUserName').mockResolvedValue();
 
       await controller.updateUsernameById(req, res, next);
@@ -154,8 +156,11 @@ describe('UserController', () => {
       jest.spyOn(userService, 'getAllUser').mockResolvedValue(mockUsers);
 
       await controller.getAllUsers(req, res, next);
-      expect(responseFormatter.format).toHaveBeenCalledWith(req, res, mockUsers);
+      expect(responseFormatter.format).toHaveBeenCalledWith(
+        req,
+        res,
+        mockUsers,
+      );
     });
   });
-
 });

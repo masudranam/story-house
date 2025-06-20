@@ -25,12 +25,12 @@ class UserRepository {
   }
 
   async getUserById(id: string) {
-    const user : userAttributes = await User.findByPk(id);
+    const user: userAttributes = await User.findByPk(id);
     return user;
   }
 
   async getUserByUsername(username: string) {
-    const user : userAttributes = await User.findOne({ where: { username } });
+    const user: userAttributes = await User.findOne({ where: { username } });
     return user;
   }
 
@@ -48,7 +48,7 @@ class UserRepository {
     if (filters.username) {
       where.username = { [Op.iLike]: `%${filters.username}%` };
     }
-    const users : userAttributes[] = await User.findAll({ where });
+    const users: userAttributes[] = await User.findAll({ where });
     return users;
   }
 }

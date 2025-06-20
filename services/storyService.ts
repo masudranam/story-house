@@ -31,7 +31,7 @@ class StoryService {
     return stories;
   }
 
-  async deleteAllStories(): Promise<{ deleted: number }> {
+  async deleteAllStories(): Promise<{ deleted : number }> {
     const deleted = await storyRepository.deleteAllStories();
     return { deleted };
   }

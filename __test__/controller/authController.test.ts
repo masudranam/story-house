@@ -2,25 +2,23 @@ import { AuthController } from '../../controller/authController.ts';
 import { authService } from '../../services/authService.ts';
 import { httpStatus } from '../../utils/httpStatus.ts';
 import { User } from '../../database/models/user.ts';
+import { mockRequest } from '../utils/mockRequest.ts';
+import { mockResponse } from '../utils/mockResponse.ts';
 
 describe('AuthController.loginUser', () => {
   const controller = new AuthController();
 
-  const req = {
+  const req = mockRequest({
     body: { username: 'masud', password: 'pass123' },
-  } as any; 
+  });
 
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as any;
+  const res = mockResponse();
 
   const next = jest.fn();
 
   afterEach(() => {
     jest.clearAllMocks();
   });
-
 
   it('should respond with 200 and result on success', async () => {
     const mockResult = { message: 'Login Successfull', token: 'ssdd123' };
@@ -47,18 +45,15 @@ describe('AuthController.loginUser', () => {
 describe('AuthController.signUpUser', () => {
   const controller = new AuthController();
 
-  const req = {
+  const req = mockRequest({
     body: {
       username: 'masud',
       password: 'pass123',
       email: 'masud@example.com',
     },
-  } as any;
+  });
 
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as any;
+  const res = mockResponse();
 
   const next = jest.fn();
 
