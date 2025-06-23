@@ -4,9 +4,10 @@ import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { loginUser } from '../dto/auth/loginUserDTO.ts';
 import { passwordHandler } from '../utils/hashedPassword.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 export class AuthService {
-  async signUpUser(user: signUpUser) {
+  async signUpUser(user: signUpUser): Promise<userAttributes>{
     const existingUser = await userRepository.findUserByIdentifier(user);
     if (existingUser) throw new Error('username or email already exist');
 
@@ -14,7 +15,7 @@ export class AuthService {
     return createdUser;
   }
 
-  async loginUser(data: loginUser) {
+  async loginUser(data: loginUser){
     const curData: Partial<signUpUser> = {
       email: data.identifier,
       username: data.identifier,
@@ -23,7 +24,7 @@ export class AuthService {
     const user = await userRepository.findUserByIdentifier(curData);
 
     if (!user) throw new Error("User doesn't exist!");
-
+     
     const auth = await authRepository.findAuthByUserId(user.id);
 
     const isMatch = await passwordHandler.comparePassword(

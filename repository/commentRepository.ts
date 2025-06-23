@@ -5,7 +5,7 @@ import { searchCommentParams } from '../dto/comment/searchCommentParams.ts';
 import { commentAttributes } from '../dto/comment/commentAttributes.ts';
 
 class CommentRepository {
-  async postCommentByStoryId(comment: commentAttributes) {
+  async postCommentByStoryId(comment: commentAttributes): Promise<commentAttributes> {
     const story = await Story.findByPk(comment.storyId);
     if (!story) throw new Error('Story not found');
     const { content, storyId, userId } = comment;

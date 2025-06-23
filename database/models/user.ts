@@ -38,6 +38,7 @@ export const defineUserModel = (sequelize: Sequelize) => {
       sequelize,
       modelName: 'User',
       tableName: 'user',
+      timestamps: true,
       freezeTableName: true,
     },
   );

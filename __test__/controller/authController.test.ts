@@ -4,12 +4,13 @@ import { httpStatus } from '../../utils/httpStatus.ts';
 import { User } from '../../database/models/user.ts';
 import { mockRequest } from '../utils/mockRequest.ts';
 import { mockResponse } from '../utils/mockResponse.ts';
+import { createLoginInput, createSignupInput, mockLoginInput, mockUserOutput } from '../fixtures/authFixtures.ts';
 
 describe('AuthController.loginUser', () => {
   const controller = new AuthController();
 
   const req = mockRequest({
-    body: { username: 'masud', password: 'pass123' },
+    body: createLoginInput(),
   });
 
   const res = mockResponse();
@@ -46,11 +47,7 @@ describe('AuthController.signUpUser', () => {
   const controller = new AuthController();
 
   const req = mockRequest({
-    body: {
-      username: 'masud',
-      password: 'pass123',
-      email: 'masud@example.com',
-    },
+    body: createSignupInput(),
   });
 
   const res = mockResponse();
@@ -62,12 +59,8 @@ describe('AuthController.signUpUser', () => {
   });
 
   it('should respond with 201 and the user data on success', async () => {
-    const mockUser = {
-      password: 'password',
-      name: 'masud',
-      username: 'masud',
-      email: 'masud@example.com',
-    } as unknown as User;
+    const mockUser = mockUserOutput;
+    
     jest.spyOn(authService, 'signUpUser').mockResolvedValue(mockUser);
 
     await controller.signUpUser(req, res, next);

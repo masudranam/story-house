@@ -1,10 +1,9 @@
 export interface storyAttributes {
-  id?:string;
+  id?: string;
   title?: string;
   description?: string;
-  authorId?:string;
+  authorId?: string;
   lastModificationTime?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-} 
- 
+}

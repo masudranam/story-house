@@ -75,7 +75,7 @@ export class UserController {
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await userService.getAllUser(req.query);
-      responseFormatter.format(req, res, users);
+      responseFormatter.format(req, res, users, httpStatus.OK);
     } catch (err) {
       next(err);
     }
