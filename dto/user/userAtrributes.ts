@@ -2,7 +2,7 @@ type Nullable<T> = {
   [K in keyof T]?: T[K] | null;
 };
 
-export type userAttributes = Nullable<{
+export type userAttributes =  {
   id: string;
   name: string;
   username: string;
@@ -10,4 +10,4 @@ export type userAttributes = Nullable<{
   joinDate: Date;
   role: number;
   passLastModificationTime: Date;
-}> | null;
+} | null;

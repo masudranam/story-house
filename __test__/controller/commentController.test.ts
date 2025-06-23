@@ -5,6 +5,7 @@ import { Comment } from '../../database/database.ts';
 import { mockResponse } from '../utils/mockResponse.ts';
 import { mockRequest } from '../utils/mockRequest.ts';
 import { commentAttributes } from '../../dto/comment/commentAttributes.ts';
+import { mockCommentInput, mockCommentOutput, mockSearchCommentParams } from '../fixtures/commentFixture.ts';
 
 jest.mock('../../services/commentService');
 
@@ -20,11 +21,11 @@ describe('CommentController', () => {
   describe('postComment', () => {
     const req = mockRequest({
       user: { id: 'user-1', role: 0 },
-      body: { storyId: 'story-1', content: 'Nice story!' },
+      body: mockCommentInput,
     });
 
     it('should post comment successfully', async () => {
-      const mockComment  = {  content: 'Nice story!' } as any ;
+      const mockComment = mockCommentInput;
       jest
         .spyOn(commentService, 'postCommentByStoryId')
         .mockResolvedValue(mockComment);
@@ -110,7 +111,7 @@ describe('CommentController', () => {
     const req = mockRequest({ query: { author: 'masud' } });
 
     it('should return search result', async () => {
-      const mockResult = [{ id: '234123', content: 'Hello' }] as any;
+      const mockResult = [mockCommentOutput];
       jest
         .spyOn(commentService, 'searchComments')
         .mockResolvedValue(mockResult);

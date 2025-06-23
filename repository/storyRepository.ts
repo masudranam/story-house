@@ -6,7 +6,7 @@ import { storyFilters } from '../dto/story/storyFilters.ts';
 import { storyAttributes } from '../dto/story/storyAttributes.ts';
 
 class StoryRepository {
-  async postStory(data: createStoryDTO) {
+  async postStory(data: createStoryDTO): Promise<storyAttributes> {
     const story = await Story.create({
       title: data.title,
       description: data.description,
@@ -22,14 +22,14 @@ class StoryRepository {
     sort: 'ASC' | 'DESC',
     limit: number,
     offset: number,
-  ) => {
+  ): Promise<storyAttributes[]> => {
     const where: WhereOptions = {};
     if (filters.authorId) where.authorId = filters.authorId;
     if (filters.title) {
       where.title = { [Op.iLike]: `%${filters.title}%` };
     }
 
-    const stories : storyAttributes[] = await Story.findAll({
+    const stories: storyAttributes[] = await Story.findAll({
       where,
       order: [['updatedAt', sort]],
       limit,
@@ -43,23 +43,23 @@ class StoryRepository {
     return deleteCount;
   }
 
-  async findStoryByStoryId(id: string) {
-    const story : storyAttributes | null =  await Story.findByPk(id);
-
+  async findStoryByStoryId(id: string): Promise<storyAttributes| null> {
+    const story : storyAttributes | null = await Story.findByPk(id);
+     
     return story;
   }
 
   async updateStoryByStoryId(
     storyId: string,
     data: Partial<{ title: string; description: string }>,
-  ) {
+  ): Promise<storyAttributes | null> {
     const story = await Story.findByPk(storyId);
     if (!story) return null;
-    const updatedStory : storyAttributes =  await story.update(data);
+    const updatedStory: storyAttributes = await story.update(data);
     return updatedStory;
   }
 
-  async deleteStoryByStoryId(storyId: string, userId: string) {
+  async deleteStoryByStoryId(storyId: string, userId: string): Promise<number> {
     const deleteCount = await Story.destroy({
       where: {
         id: storyId,

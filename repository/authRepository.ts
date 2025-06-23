@@ -9,7 +9,7 @@ import { createUser } from '../dto/auth/createUserDTO.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 class AuthRepository {
-  async createUserWithAuth(user: signUpUser) {
+  async createUserWithAuth(user: signUpUser): Promise<userAttributes> {
     const userData: createUser = user;
 
     const password = user.password;

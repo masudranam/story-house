@@ -6,13 +6,12 @@ import jwt from 'jsonwebtoken';
 
 describe('authMiddleware', () => {
   let req: any;
-  let res:any;
+  let res: any;
   let next: jest.Mock;
 
   beforeEach(() => {
     req = {
-      headers: {
-      },
+      headers: {},
     };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -43,7 +42,7 @@ describe('authMiddleware', () => {
     (jest.spyOn(jwt, 'verify') as jest.Mock).mockReturnValue({
       id: '123',
       role: 1,
-      exp: Math.floor(Date.now() / 1000) - 100,  
+      exp: Math.floor(Date.now() / 1000) - 100,
     });
 
     req.headers.authorization = `Bearer ${expiredToken}`;

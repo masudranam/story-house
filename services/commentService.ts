@@ -28,16 +28,10 @@ class CommentService {
     return commentRepository.deleteCommentByCommentId(commentId);
   }
 
-  async searchComments(params: searchCommentParams) {
+  async searchComments(params: searchCommentParams): Promise<commentAttributes[]>   {
     const { page = 1, limit = 10 } = params;
-    const { rows, count } = await commentRepository.searchComments(params);
-    return {
-      data: rows,
-      total: count,
-      page,
-      limit,
-      number_of_page: Math.ceil(count / limit),
-    };
+    const { rows, count }  = await commentRepository.searchComments(params);
+    return rows;
   }
 }
 

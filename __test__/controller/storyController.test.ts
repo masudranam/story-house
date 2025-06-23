@@ -2,6 +2,7 @@ import { StoryController } from '../../controller/storyController.ts';
 import { storyAttributes } from '../../dto/story/storyAttributes.ts';
 import { storyService } from '../../services/storyService.ts';
 import { httpStatus } from '../../utils/httpStatus.ts';
+import { mockStoryInput, mockStoryOutput } from '../fixtures/storyFixture.ts';
 import { mockRequest } from '../utils/mockRequest.ts';
 import { mockResponse } from '../utils/mockResponse.ts';
 
@@ -18,21 +19,17 @@ describe('StoryController', () => {
 
   describe('postStory', () => {
     const req = mockRequest({
-      body: { title: 'Trip', description: 'To Mountains' },
+      body: mockStoryInput,
       user: { id: 'user1', role: 1 },
     });
 
     it('should return 201 and created story', async () => {
-      const mockStory = { id: '1', title: 'Trip', authorId: 'user1' } as any;
+      const mockStory = mockStoryInput;
       jest.spyOn(storyService, 'postStory').mockResolvedValue(mockStory);
 
       await controller.postStory(req, res, next);
 
-      expect(storyService.postStory).toHaveBeenCalledWith({
-        title: 'Trip',
-        description: 'To Mountains',
-        authorId: 'user1',
-      });
+      expect(storyService.postStory).toHaveBeenCalledWith(mockStory);
       expect(res.status).toHaveBeenCalledWith(httpStatus.CREATED);
       expect(res.json).toHaveBeenCalledWith({
         message: 'Story Successfully created',
@@ -53,7 +50,7 @@ describe('StoryController', () => {
     const req = mockRequest({ query: { search: 'trip' } });
 
     it('should return 200 with stories', async () => {
-      const mockStories = [{ id: '1' }, { id: '23' }];
+      const mockStories = [mockStoryOutput];
       jest.spyOn(storyService, 'getAllStories').mockResolvedValue(mockStories);
 
       await controller.getStories(req, res, next);
@@ -76,8 +73,10 @@ describe('StoryController', () => {
     const req = mockRequest();
 
     it('should return 200 and result', async () => {
-      const result = { deleted : 5 };
-      jest.spyOn(storyService, 'deleteAllStories').mockResolvedValue({deleted : 5});
+      const result = { deleted: 5 };
+      jest
+        .spyOn(storyService, 'deleteAllStories')
+        .mockResolvedValue({ deleted: 5 });
 
       await controller.deleteAllStories(req, res, next);
 
@@ -131,7 +130,7 @@ describe('StoryController', () => {
     const req = mockRequest({ params: { id: 'story1' } });
 
     it('should return 200 and story', async () => {
-      const mockStory: storyAttributes = { description : 'story1', title: 'Trip' };
+      const mockStory = mockStoryOutput;
       jest
         .spyOn(storyService, 'getStoryByStoryId')
         .mockResolvedValue(mockStory);
@@ -159,7 +158,7 @@ describe('StoryController', () => {
     });
 
     it('should return 200 and updated story', async () => {
-      const updated : storyAttributes = {
+      const updated: storyAttributes = {
         title: 'New',
         description: 'Updated',
       };

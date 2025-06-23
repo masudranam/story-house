@@ -6,12 +6,13 @@ import { userFilters } from '../dto/user/userFilters.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 class UserRepository {
-  async findUserByIdentifier(user: Partial<signUpUser>) {
-    return await User.findOne({
+  async findUserByIdentifier(user: Partial<signUpUser>) : Promise<userAttributes> {
+    const result: userAttributes =  await User.findOne({
       where: {
         [Op.or]: [{ username: user.username }, { email: user.email }],
       },
     });
+    return result;
   }
 
   async updateUsername(curUsername: string, newUsername: string) {
@@ -24,7 +25,7 @@ class UserRepository {
     );
   }
 
-  async getUserById(id: string) {
+  async getUserById(id: string): Promise<userAttributes> {
     const user: userAttributes = await User.findByPk(id);
     return user;
   }
