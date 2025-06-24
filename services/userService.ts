@@ -15,7 +15,15 @@ class UserService {
     if (query.name) filters.name = query.name;
     if (query.username) filters.username = query.username;
 
-    const users: userAttributes[] = await userRepository.searchUser(filters);
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 5;
+    const offset = (page - 1) * limit;
+
+    const users: userAttributes[] = await userRepository.searchUser(
+      filters,
+      limit,
+      offset,
+    );
     return users;
   }
 

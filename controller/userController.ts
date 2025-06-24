@@ -12,7 +12,7 @@ export class UserController {
     try {
       const user: userAttributes = await userService.getUserById(req.params.id);
       user
-        ? res.json(user)
+        ? res.status(httpStatus.OK).json(user)
         : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
     } catch (err) {
       next(err);
@@ -83,8 +83,8 @@ export class UserController {
 
   async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      await User.destroy({ where: {}, truncate: true });
-      await Auth.destroy({ where: {}, truncate: true, restartIdentity: true });
+      await User.destroy({ where: {} });
+      await Auth.destroy({ where: {}, restartIdentity: true });
       res.status(httpStatus.OK).json({ message: 'All users deleted' });
     } catch (err) {
       next(err);

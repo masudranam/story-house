@@ -3,7 +3,11 @@ import { authService } from '../../services/authService.ts';
 import { httpStatus } from '../../utils/httpStatus.ts';
 import { mockRequest } from '../utils/mockRequest.ts';
 import { mockResponse } from '../utils/mockResponse.ts';
-import { createLoginInput, createSignupInput, mockLoginInput, mockUserOutput } from '../fixtures/authFixtures.ts';
+import {
+  createLoginInput,
+  createSignupInput,
+  mockUserOutput,
+} from '../fixtures/authFixtures.ts';
 
 describe('AuthController.loginUser', () => {
   const controller = new AuthController();
@@ -18,10 +22,13 @@ describe('AuthController.loginUser', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  }); 
+  });
 
-  it('loginUser success message for valid user and response with status code 200, check the behaviour of the controller function', async () => {
-    const mockResult = { message: 'Login Successfull', token: 'lkasdfj1234' };
+  it('loginUser success message for valid user and response with status code 200', async () => {
+    const mockResult = {
+      message: 'Login Successfull',
+      token: 'lkasdfj1234sadf',
+    };
     jest.spyOn(authService, 'loginUser').mockResolvedValue(mockResult);
 
     await controller.loginUser(req, res, next);
@@ -59,7 +66,7 @@ describe('AuthController.signUpUser', () => {
 
   it('signUpUser return 201 status code when signup success and accept created user information', async () => {
     const mockUser = mockUserOutput;
-    
+
     jest.spyOn(authService, 'signUpUser').mockResolvedValue(mockUser);
 
     await controller.signUpUser(req, res, next);

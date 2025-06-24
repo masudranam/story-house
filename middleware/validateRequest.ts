@@ -50,7 +50,7 @@ export const validateRequest =
           });
           return;
         }
-        req.query = result.data;
+        Object.assign(req.query, result.data);
       }
 
       next();

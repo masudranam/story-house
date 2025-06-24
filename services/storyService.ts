@@ -16,9 +16,9 @@ class StoryService {
     if (query.authorId) filters.authorId = query.authorId;
     if (query.title) filters.title = query.title;
 
-    const page =  Number(query.page) || 1;
+    const page = Number(query.page) || 1;
     let limit = Number(query.limit) || 10;
-     
+
     const offset = (page - 1) * limit;
 
     const stories = await storyRepository.getAllStories(

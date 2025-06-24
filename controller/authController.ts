@@ -9,9 +9,15 @@ export class AuthController {
   async signUpUser(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await authService.signUpUser(req.body);
-      responseFormatter.format(req, res,{
-      message: 'User registered successfully', user: user
-      }, httpStatus.CREATED)
+      responseFormatter.format(
+        req,
+        res,
+        {
+          message: 'User registered successfully',
+          user: user,
+        },
+        httpStatus.CREATED,
+      );
     } catch (err) {
       next(err);
     }
@@ -29,9 +35,14 @@ export class AuthController {
   async getAllAuth(req: Request, res: Response, next: NextFunction) {
     try {
       const auth = await Auth.findAll();
-      if (!auth.length){
-        responseFormatter.format(req, res,{error: 'No users exist'}, httpStatus.NOT_FOUND);
-      }else{
+      if (!auth.length) {
+        responseFormatter.format(
+          req,
+          res,
+          { error: 'No users exist' },
+          httpStatus.NOT_FOUND,
+        );
+      } else {
         responseFormatter.format(req, res, auth, httpStatus.OK);
       }
     } catch (err) {

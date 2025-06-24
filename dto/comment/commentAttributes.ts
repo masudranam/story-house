@@ -8,4 +8,13 @@ export const commentSchema = z.object({
   commentId: z.string().uuid().optional(),
 });
 
+export const commentBodySchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
+  description: z.string().min(1, 'Description is required').optional(),
+});
+
+export const commentParamsSchema = z.object({
+  storyId: z.string().uuid({ message: 'Invalid post ID format' }),
+});
+
 export type commentAttributes = z.infer<typeof commentSchema>;

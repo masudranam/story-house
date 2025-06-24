@@ -6,8 +6,10 @@ import { userFilters } from '../dto/user/userFilters.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 class UserRepository {
-  async findUserByIdentifier(user: Partial<signUpUser>) : Promise<userAttributes> {
-    const result: userAttributes =  await User.findOne({
+  async findUserByIdentifier(
+    user: Partial<signUpUser>,
+  ): Promise<userAttributes> {
+    const result: userAttributes = await User.findOne({
       where: {
         [Op.or]: [{ username: user.username }, { email: user.email }],
       },
@@ -41,15 +43,12 @@ class UserRepository {
     return await User.destroy({ where: { id } });
   }
 
-  async searchUser(filters: userFilters) {
-    const where: WhereOptions = {};
-    if (filters.name) {
-      where.name = { [Op.iLike]: `%${filters.name}%` };
-    }
-    if (filters.username) {
-      where.username = { [Op.iLike]: `%${filters.username}%` };
-    }
-    const users: userAttributes[] = await User.findAll({ where });
+  async searchUser(filters: userFilters, limit: number, offset: number) {
+    const users: userAttributes[] = await User.findAll({
+      where: filters,
+      limit,
+      offset,
+    });
     return users;
   }
 }

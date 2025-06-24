@@ -4,25 +4,41 @@ import { commentController } from '../controller/commentController.ts';
 import { authMiddleware } from '../middleware/authMiddleware.ts';
 import { canEditOrDeleteComment } from '../middleware/canEditOrDeleteComment.ts';
 import { validateRequest } from '../middleware/validateRequest.ts';
-import { commentSchema } from '../dto/comment/commentAttributes.ts';
+import {
+  commentBodySchema,
+  commentParamsSchema,
+  commentSchema,
+} from '../dto/comment/commentAttributes.ts';
 import { searchCommentParamsSchema } from '../dto/comment/searchCommentParams.ts';
+import { checkUUID } from '../dto/DTO.ts';
 const router = express.Router();
 
 router
-  .post('/', authMiddleware, validateRequest({body: commentSchema}), commentController.postComment)
-  .get('/',validateRequest({params: searchCommentParamsSchema}), commentController.searchComment)
+  .post(
+    '/',
+    authMiddleware,
+    validateRequest({ body: commentBodySchema, params: checkUUID }),
+    commentController.postComment,
+  )
+  .get(
+    '/',
+    validateRequest({ params: searchCommentParamsSchema }),
+    commentController.searchComment,
+  )
   .delete('/', commentController.deleteAllComments)
   .delete(
     '/:id',
     authMiddleware,
+    validateRequest({ params: checkUUID }),
     canEditOrDeleteComment,
-    validateRequest({body: commentSchema}), commentController.deleteCommentByCommentId,
+    commentController.deleteCommentByCommentId,
   )
   .put(
     '/:id',
     authMiddleware,
+    validateRequest({ params: checkUUID }),
     canEditOrDeleteComment,
-    validateRequest({body: commentSchema}), commentController.editCommentByCommentId,
+    commentController.editCommentByCommentId,
   );
 
 export default router;

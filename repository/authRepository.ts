@@ -1,4 +1,3 @@
-
 import { Auth } from '../database/models/auth.ts';
 import { passwordHandler } from '../utils/hashedPassword.ts';
 import { User } from '../database/models/user.ts';
@@ -24,7 +23,6 @@ class AuthRepository {
     });
     return res;
   }
-
 
   async findAuthByUserId(userId: string) {
     const auth = await Auth.findOne({
