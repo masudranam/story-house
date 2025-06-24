@@ -1,5 +1,5 @@
-import { createStoryDTO } from "../../dto/DTO.ts";
-import { storyAttributes } from "../../dto/story/storyAttributes.ts";
+import { createStoryDTO } from '../../dto/DTO.ts';
+import { storyAttributes } from '../../dto/story/storyAttributes.ts';
 
 export const mockStoryOutput: storyAttributes = {
   id: '789e1234-abcd-56ef-9012-345678901234',
@@ -10,7 +10,6 @@ export const mockStoryOutput: storyAttributes = {
   createdAt: new Date('2025-06-19T08:00:00Z'),
   updatedAt: new Date('2025-06-20T10:00:00Z'),
 };
-
 
 export const mockStoryInput: createStoryDTO = {
   title: 'Wonders of Kyoto',

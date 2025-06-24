@@ -9,19 +9,24 @@ export const storyFiltersSchema = z.object({
   limit: z
     .string()
     .transform((val) => parseInt(val))
-    .refine((val) => !isNaN(val) && val > 0, { message: 'Limit must be a positive number' })
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: 'Limit must be a positive number',
+    })
     .optional(),
   offset: z
     .string()
     .transform((val) => parseInt(val))
-    .refine((val) => !isNaN(val) && val >= 0, { message: 'Offset must be zero or a positive number' })
+    .refine((val) => !isNaN(val) && val >= 0, {
+      message: 'Offset must be zero or a positive number',
+    })
     .optional(),
   page: z
     .string()
     .transform((val) => parseInt(val))
-    .refine((val) => !isNaN(val) && val > 0, { message: 'Page must be a positive number' })
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: 'Page must be a positive number',
+    })
     .optional(),
 });
 
 export type storyFilters = z.infer<typeof storyFiltersSchema>;
-

@@ -8,12 +8,12 @@ const router = express.Router();
 
 router.post(
   '/signup',
-  validateRequest({body: signUpUserSchema}),
+  validateRequest({ body: signUpUserSchema }),
   authController.signUpUser,
 );
 router.post(
   '/login',
-  validateRequest({body: loginUserSchema}),
+  validateRequest({ body: loginUserSchema }),
   authController.loginUser,
 );
 router.get('/auth', authController.getAllAuth);

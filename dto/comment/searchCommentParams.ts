@@ -20,5 +20,4 @@ export const searchCommentParamsSchema = z.object({
     .optional(),
 });
 
-
 export type searchCommentParams = z.infer<typeof searchCommentParamsSchema>;

@@ -1,11 +1,13 @@
 import { CommentController } from '../../controller/commentController.ts';
 import { commentService } from '../../services/commentService.ts';
 import { httpStatus } from '../../utils/httpStatus.ts';
-import { Comment } from '../../database/database.ts';
 import { mockResponse } from '../utils/mockResponse.ts';
 import { mockRequest } from '../utils/mockRequest.ts';
 import { commentAttributes } from '../../dto/comment/commentAttributes.ts';
-import { mockCommentInput, mockCommentOutput, mockSearchCommentParams } from '../fixtures/commentFixture.ts';
+import {
+  mockCommentInput,
+  mockCommentOutput,
+} from '../fixtures/commentFixture.ts';
 
 jest.mock('../../services/commentService');
 
@@ -20,7 +22,7 @@ describe('CommentController', () => {
 
   describe('postComment', () => {
     const req = mockRequest({
-      user: { id: 'user-1', role: 0 },
+      user: { id: 'user', role: 0 },
       body: mockCommentInput,
     });
 
@@ -48,14 +50,14 @@ describe('CommentController', () => {
 
   describe('editCommentByCommentId', () => {
     const req = mockRequest({
-      user: { id: 'user-1', role: 0 },
-      params: { id: 'comment-1' },
+      user: { id: 'user', role: 0 },
+      params: { id: 'comment' },
       body: { content: 'Updated content' },
     });
 
     it('should update comment', async () => {
       const updated = {
-        id: 'comment-1',
+        id: 'comment',
         content: 'Updated content',
       } as unknown as commentAttributes;
       jest
@@ -80,8 +82,8 @@ describe('CommentController', () => {
 
   describe('deleteCommentByCommentId', () => {
     const req = mockRequest({
-      user: { id: 'user-1', role: 0 },
-      params: { id: 'comment-1' },
+      user: { id: 'asldkfjoerqwe', role: 0 },
+      params: { id: 'comment' },
     });
 
     it('should delete comment', async () => {
@@ -92,7 +94,7 @@ describe('CommentController', () => {
       await controller.deleteCommentByCommentId(req, res, next);
       expect(res.status).toHaveBeenCalledWith(httpStatus.NO_CONTENT);
       expect(res.json).toHaveBeenCalledWith({
-        message: 'comment with id comment-1 has been deleted',
+        message: 'comment with id comment has been deleted',
       });
     });
 

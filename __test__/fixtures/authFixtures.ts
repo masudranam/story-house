@@ -1,4 +1,4 @@
-import { userAttributes } from "../../dto/user/userAtrributes.ts";
+import { userAttributes } from '../../dto/user/userAtrributes.ts';
 
 export const createSignupInput = (overrides = {}) => ({
   username: 'user_' + Math.random().toString(36).substring(2, 8),
@@ -28,13 +28,12 @@ export const createLoginInput = (
   };
 };
 
-
 export const mockUserOutput: NonNullable<userAttributes> = {
   id: '123e4567-e89b-12d3-a456-426614174000',
   name: 'Masud Rana',
   username: 'masud123',
   email: 'masud@example.com',
   joinDate: new Date('2024-01-01T00:00:00Z'),
-  role: 1, 
+  role: 1,
   passLastModificationTime: new Date('2025-01-01T00:00:00Z'),
 };

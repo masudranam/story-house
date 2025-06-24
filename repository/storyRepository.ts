@@ -43,9 +43,9 @@ class StoryRepository {
     return deleteCount;
   }
 
-  async findStoryByStoryId(id: string): Promise<storyAttributes| null> {
-    const story : storyAttributes | null = await Story.findByPk(id);
-     
+  async findStoryByStoryId(id: string): Promise<storyAttributes | null> {
+    const story: storyAttributes | null = await Story.findByPk(id);
+
     return story;
   }
 

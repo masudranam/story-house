@@ -20,10 +20,10 @@ describe('StoryController', () => {
   describe('postStory', () => {
     const req = mockRequest({
       body: mockStoryInput,
-      user: { id: 'user1', role: 1 },
+      user: { id: 'tydawuytrf', role: 1 },
     });
 
-    it('should return 201 and created story', async () => {
+    it(' postStory success return 201 and create story', async () => {
       const mockStory = mockStoryInput;
       jest.spyOn(storyService, 'postStory').mockResolvedValue(mockStory);
 
@@ -49,7 +49,7 @@ describe('StoryController', () => {
   describe('getStories', () => {
     const req = mockRequest({ query: { search: 'trip' } });
 
-    it('should return 200 with stories', async () => {
+    it(' return 200 with stories no error occurs', async () => {
       const mockStories = [mockStoryOutput];
       jest.spyOn(storyService, 'getAllStories').mockResolvedValue(mockStories);
 
@@ -71,11 +71,11 @@ describe('StoryController', () => {
 
   describe('deleteStoryByStoryId', () => {
     const req = mockRequest({
-      params: { id: 'story1' },
-      user: { id: 'user1', role: 0 },
+      params: { id: 'story' },
+      user: { id: 'user', role: 0 },
     });
 
-    it('should return 200 and delete message', async () => {
+    it(' return 200 and delete message', async () => {
       jest.spyOn(storyService, 'deleteStoryByStoryId').mockResolvedValue(1);
 
       await controller.deleteStoryByStoryId(req, res, next);
@@ -100,9 +100,9 @@ describe('StoryController', () => {
   });
 
   describe('getStoryByStoryId', () => {
-    const req = mockRequest({ params: { id: 'story1' } });
+    const req = mockRequest({ params: { id: '1' } });
 
-    it('should return 200 and story', async () => {
+    it(' return 200 and story', async () => {
       const mockStory = mockStoryOutput;
       jest
         .spyOn(storyService, 'getStoryByStoryId')
@@ -110,7 +110,7 @@ describe('StoryController', () => {
 
       await controller.getStoryByStoryId(req, res, next);
 
-      expect(storyService.getStoryByStoryId).toHaveBeenCalledWith('story1');
+      expect(storyService.getStoryByStoryId).toHaveBeenCalledWith('1');
       expect(res.status).toHaveBeenCalledWith(httpStatus.OK);
       expect(res.json).toHaveBeenCalledWith({ story: mockStory });
     });
@@ -130,7 +130,7 @@ describe('StoryController', () => {
       body: { title: 'New', description: 'Updated' },
     });
 
-    it('should return 200 and updated story', async () => {
+    it(' return 200 and updated story successfully', async () => {
       const updated: storyAttributes = {
         title: 'New',
         description: 'Updated',
@@ -153,7 +153,7 @@ describe('StoryController', () => {
       });
     });
 
-    it('should call next on error', async () => {
+    it(' call next on error for any error found', async () => {
       const error = new Error();
       jest.spyOn(storyService, 'updateStoryByStoryId').mockRejectedValue(error);
 

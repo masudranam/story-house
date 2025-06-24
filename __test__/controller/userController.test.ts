@@ -40,7 +40,7 @@ describe('UserController', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
     });
 
-    it('should call next on error', async () => {
+    it('called next middleware when error occurs', async () => {
       const err = new Error('DB Error');
       jest.spyOn(userService, 'getUserById').mockRejectedValue(err);
 
@@ -52,7 +52,7 @@ describe('UserController', () => {
   describe('getUserByUsername', () => {
     const req = mockRequest({ params: { username: 'masud' } });
 
-    it('should return user if found', async () => {
+    it('get user when getUserByUsername success', async () => {
       const mockUser = mockUserOutput;
       jest.spyOn(userService, 'getUserByUsername').mockResolvedValue(mockUser);
 
@@ -60,7 +60,7 @@ describe('UserController', () => {
       expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it('should return 404 if not found', async () => {
+    it('if user not found return error with 404', async () => {
       jest.spyOn(userService, 'getUserByUsername').mockResolvedValue(null);
 
       await controller.getUserByUsername(req, res, next);
@@ -68,7 +68,7 @@ describe('UserController', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
     });
 
-    it('should call next on error', async () => {
+    it('called next middleware when any error occurs', async () => {
       const err = new Error();
       jest.spyOn(userService, 'getUserByUsername').mockRejectedValue(err);
 
@@ -84,10 +84,8 @@ describe('UserController', () => {
     });
     const mockUser = mockUserOutput;
 
-    it('should update username if user found', async () => {
-      jest
-        .spyOn(userService, 'getUserById')
-        .mockResolvedValue(mockUser);
+    it('update username if user found', async () => {
+      jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
       jest.spyOn(userService, 'updateUserName').mockResolvedValue();
 
       await controller.updateUsernameById(req, res, next);
@@ -96,7 +94,7 @@ describe('UserController', () => {
       });
     });
 
-    it('should return 404 if user not found', async () => {
+    it('return status code 404 if user not found', async () => {
       jest.spyOn(userService, 'getUserById').mockResolvedValue(null);
 
       await controller.updateUsernameById(req, res, next);
@@ -104,7 +102,7 @@ describe('UserController', () => {
       expect(res.json).toHaveBeenCalledWith({ message: 'User not found' });
     });
 
-    it('should call next on error', async () => {
+    it('called next middleware for error', async () => {
       const err = new Error();
       jest.spyOn(userService, 'getUserById').mockRejectedValue(err);
 
@@ -116,7 +114,7 @@ describe('UserController', () => {
   describe('deleteUserById', () => {
     const req = mockRequest({ params: { id: '123' } });
 
-    it('should delete user if found', async () => {
+    it(' delete user for deleteUserById user if found', async () => {
       const user = mockUserOutput;
       jest.spyOn(userService, 'getUserById').mockResolvedValue(user);
       jest.spyOn(userService, 'deleteUserById').mockResolvedValue();
@@ -136,7 +134,7 @@ describe('UserController', () => {
       expect(res.json).toHaveBeenCalledWith({ message: 'User not exist' });
     });
 
-    it('should call next on error', async () => {
+    it('getUserById called next middleware if error returns', async () => {
       const err = new Error();
       jest.spyOn(userService, 'getUserById').mockRejectedValue(err);
 
@@ -145,14 +143,14 @@ describe('UserController', () => {
     });
   });
 
-  describe('getAllUsers', () => {
+  describe('searchUsers', () => {
     const req = mockRequest({ query: {} });
 
     it('should format and return users', async () => {
       const mockUsers = [mockUserOutput];
       jest.spyOn(userService, 'searchUser').mockResolvedValue(mockUsers);
 
-      const res1 = await controller.searchUsers(req, res, next);
+      await controller.searchUsers(req, res, next);
       expect(responseFormatter.format).toHaveBeenCalledWith(
         req,
         res,
