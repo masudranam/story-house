@@ -5,7 +5,6 @@ import { authMiddleware } from '../middleware/authMiddleware.ts';
 import { authorizeOwner } from '../middleware/authorizeOwner.ts';
 import { validateRequest } from '../middleware/validateRequest.ts';
 import { userFiltersSchema } from '../dto/user/userFilters.ts';
-import { userSchema } from '../dto/user/userAtrributes.ts';
 import { checkUUID } from '../dto/DTO.ts';
 const router = express.Router();
 
