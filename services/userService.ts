@@ -10,12 +10,12 @@ class UserService {
     return await userRepository.getUserById(id);
   }
 
-  async getAllUser(query: userFilters) {
+  async searchUser(query: userFilters) {
     const filters: userFilters = {};
     if (query.name) filters.name = query.name;
     if (query.username) filters.username = query.username;
 
-    const users: userAttributes[] = await userRepository.getAllUser(filters);
+    const users: userAttributes[] = await userRepository.searchUser(filters);
     return users;
   }
 

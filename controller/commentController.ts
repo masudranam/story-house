@@ -60,7 +60,7 @@ export class CommentController {
     }
   }
 
-  async deleteComments(req: Request, res: Response) {
+  async deleteAllComments(req: Request, res: Response) {
     const comments = await Comment.destroy({ where: {} });
     res.json(comments);
     return;

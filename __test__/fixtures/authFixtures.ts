@@ -35,6 +35,6 @@ export const mockUserOutput: NonNullable<userAttributes> = {
   username: 'masud123',
   email: 'masud@example.com',
   joinDate: new Date('2024-01-01T00:00:00Z'),
-  role: 1, // e.g., 1 = Admin, 0 = User
+  role: 1, 
   passLastModificationTime: new Date('2025-01-01T00:00:00Z'),
 };

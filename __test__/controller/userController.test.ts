@@ -22,9 +22,9 @@ describe('UserController', () => {
   afterEach(() => jest.clearAllMocks());
 
   describe('getUserById', () => {
-    const req = mockRequest({ params: { id: '123' } });
+    const req = mockRequest({ params: { id: '123asldk' } });
 
-    it('should return user if found', async () => {
+    it('getUserById return user information when successfully get user by Id', async () => {
       const mockUser = mockUserOutput;
       jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
 
@@ -32,7 +32,7 @@ describe('UserController', () => {
       expect(res.json).toHaveBeenCalledWith(mockUser);
     });
 
-    it('should return 404 if not found', async () => {
+    it('getUserById should return 404 if not found', async () => {
       jest.spyOn(userService, 'getUserById').mockResolvedValue(null);
 
       await controller.getUserById(req, res, next);
@@ -150,9 +150,9 @@ describe('UserController', () => {
 
     it('should format and return users', async () => {
       const mockUsers = [mockUserOutput];
-      jest.spyOn(userService, 'getAllUser').mockResolvedValue(mockUsers);
+      jest.spyOn(userService, 'searchUser').mockResolvedValue(mockUsers);
 
-      const res1 = await controller.getAllUsers(req, res, next);
+      const res1 = await controller.searchUsers(req, res, next);
       expect(responseFormatter.format).toHaveBeenCalledWith(
         req,
         res,

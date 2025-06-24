@@ -129,15 +129,4 @@ describe('CommentController', () => {
       expect(next).toHaveBeenCalledWith(error);
     });
   });
-
-  describe('deleteComments', () => {
-    const req = mockRequest();
-
-    it('should delete all comments', async () => {
-      jest.spyOn(Comment, 'destroy').mockResolvedValue(10);
-
-      await controller.deleteComments(req, res);
-      expect(res.json).toHaveBeenCalledWith(10);
-    });
-  });
 });

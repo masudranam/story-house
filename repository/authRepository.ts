@@ -1,4 +1,3 @@
-import { Transaction } from 'sequelize';
 
 import { Auth } from '../database/models/auth.ts';
 import { passwordHandler } from '../utils/hashedPassword.ts';
@@ -26,9 +25,6 @@ class AuthRepository {
     return res;
   }
 
-  async deleteAuthByUsername(username: string, transaction: Transaction) {
-    return await Auth.destroy({ where: { username }, transaction });
-  }
 
   async findAuthByUserId(userId: string) {
     const auth = await Auth.findOne({

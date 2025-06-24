@@ -35,7 +35,7 @@ export class AuthService {
     if (!isMatch) throw new Error('Invalid credentials');
 
     const token = generateToken(user.id, user.role);
-
+   
     return { message: 'Login seccessful', token: `Bearer ${token}` };
   }
 }

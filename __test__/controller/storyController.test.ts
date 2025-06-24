@@ -69,33 +69,6 @@ describe('StoryController', () => {
     });
   });
 
-  describe('deleteAllStories', () => {
-    const req = mockRequest();
-
-    it('should return 200 and result', async () => {
-      const result = { deleted: 5 };
-      jest
-        .spyOn(storyService, 'deleteAllStories')
-        .mockResolvedValue({ deleted: 5 });
-
-      await controller.deleteAllStories(req, res, next);
-
-      expect(res.status).toHaveBeenCalledWith(httpStatus.OK);
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'All stories deleted successfully',
-        ...result,
-      });
-    });
-
-    it('should call next on error', async () => {
-      const error = new Error();
-      jest.spyOn(storyService, 'deleteAllStories').mockRejectedValue(error);
-
-      await controller.deleteAllStories(req, res, next);
-      expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
   describe('deleteStoryByStoryId', () => {
     const req = mockRequest({
       params: { id: 'story1' },

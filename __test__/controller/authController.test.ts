@@ -1,7 +1,6 @@
 import { AuthController } from '../../controller/authController.ts';
 import { authService } from '../../services/authService.ts';
 import { httpStatus } from '../../utils/httpStatus.ts';
-import { User } from '../../database/models/user.ts';
 import { mockRequest } from '../utils/mockRequest.ts';
 import { mockResponse } from '../utils/mockResponse.ts';
 import { createLoginInput, createSignupInput, mockLoginInput, mockUserOutput } from '../fixtures/authFixtures.ts';
@@ -19,10 +18,10 @@ describe('AuthController.loginUser', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
+  }); 
 
-  it('should respond with 200 and result on success', async () => {
-    const mockResult = { message: 'Login Successfull', token: 'ssdd123' };
+  it('loginUser success message for valid user and response with status code 200, check the behaviour of the controller function', async () => {
+    const mockResult = { message: 'Login Successfull', token: 'lkasdfj1234' };
     jest.spyOn(authService, 'loginUser').mockResolvedValue(mockResult);
 
     await controller.loginUser(req, res, next);
@@ -33,7 +32,7 @@ describe('AuthController.loginUser', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should call next with error on failure', async () => {
+  it('called next middleware with error when login failed', async () => {
     const error = new Error('Login failed');
     jest.spyOn(authService, 'loginUser').mockRejectedValue(error);
 
@@ -58,7 +57,7 @@ describe('AuthController.signUpUser', () => {
     jest.clearAllMocks();
   });
 
-  it('should respond with 201 and the user data on success', async () => {
+  it('signUpUser return 201 status code when signup success and accept created user information', async () => {
     const mockUser = mockUserOutput;
     
     jest.spyOn(authService, 'signUpUser').mockResolvedValue(mockUser);
@@ -74,7 +73,7 @@ describe('AuthController.signUpUser', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should call next with error when service throws', async () => {
+  it('call next when signUpUser throw any error', async () => {
     const error = new Error('Sign up failed');
     jest.spyOn(authService, 'signUpUser').mockRejectedValue(error);
 
