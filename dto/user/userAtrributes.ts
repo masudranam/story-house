@@ -1,13 +1,12 @@
-type Nullable<T> = {
-  [K in keyof T]?: T[K] | null;
-};
+import { z } from 'zod';
 
-export type userAttributes =  {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  joinDate: Date;
-  role: number;
-  passLastModificationTime: Date;
-} | null;
+export const userSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  username: z.string(),
+  email: z.string().email(),
+  joinDate: z.coerce.date(),
+  role: z.number(),
+  passLastModificationTime: z.coerce.date(),
+});
+export type userAttributes = z.infer<typeof userSchema> | null;

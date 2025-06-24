@@ -41,7 +41,7 @@ class UserRepository {
     return await User.destroy({ where: { id } });
   }
 
-  async getAllUser(filters: userFilters) {
+  async searchUser(filters: userFilters) {
     const where: WhereOptions = {};
     if (filters.name) {
       where.name = { [Op.iLike]: `%${filters.name}%` };
