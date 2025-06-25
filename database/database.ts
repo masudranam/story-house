@@ -70,7 +70,7 @@ export const applyAssociation = () => {
 export const initDatabase = async () => {
   try {
     applyAssociation();
-    await sequelize.sync({ alter: true });
+  //  await sequelize.sync({ alter: true });
     await sequelize.authenticate();
     console.log('  DB connection established!');
   } catch (err) {

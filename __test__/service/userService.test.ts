@@ -30,14 +30,18 @@ describe('userService.searchUser - pagination', () => {
 
   it('default page = 1, limit = 5 if not provided any query', async () => {
     const query: userFilters = { name: 'masud' };
-
+   
     const mockUsers: userAttributes[] = [];
+    const expectedFilters = {name: 'masud'};
+    const expectedLimit = 5;
+    const expectedOffset = 0;
+
     const repoSpy = jest
       .spyOn(userRepository, 'searchUser')
       .mockResolvedValue(mockUsers);
 
     await userService.searchUser(query);
 
-    expect(repoSpy).toHaveBeenCalledWith({ name: 'masud' }, 5, 0);
+    expect(repoSpy).toHaveBeenCalledWith(expectedFilters, expectedLimit, expectedOffset);
   });
 });

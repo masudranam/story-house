@@ -57,7 +57,7 @@ describe('CommentController', () => {
 
     it('should update comment', async () => {
       const updated = {
-        id: 'comment',
+        id: 'asldkfj',
         content: 'Updated content',
       } as unknown as commentAttributes;
       jest
