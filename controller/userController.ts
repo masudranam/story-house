@@ -7,13 +7,20 @@ import { Auth } from '../database/models/auth.ts';
 import { responseFormatter } from '../utils/responseFormatteUtils.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
 
+
 export class UserController {
+
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
       const user: userAttributes = await userService.getUserById(req.params.id);
-      user
-        ? res.status(httpStatus.OK).json(user)
-        : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
+      // user
+      //   ? res.status(httpStatus.OK).json(user)
+      //   : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
+      if(user){
+        responseFormatter.format(req, res, user, httpStatus.OK);
+      }else{
+        responseFormatter.format(req, res, {error: 'User not found'}, httpStatus.NOT_FOUND);
+      }
     } catch (err) {
       next(err);
     }
