@@ -81,12 +81,12 @@ describe('StoryController', () => {
       await controller.deleteStoryByStoryId(req, res, next);
 
       expect(storyService.deleteStoryByStoryId).toHaveBeenCalledWith(
-        'story1',
-        'user1',
+        'story',
+        'user',
       );
       expect(res.status).toHaveBeenCalledWith(httpStatus.OK);
       expect(res.json).toHaveBeenCalledWith({
-        message: 'story with id story1 deleted successfully',
+        message: 'story with id story deleted successfully',
       });
     });
 

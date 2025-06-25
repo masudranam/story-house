@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1750763117334" clover="3.2.0">
-  <project timestamp="1750763117334" name="All files">
-    <metrics statements="427" coveredstatements="260" conditionals="131" coveredconditionals="50" methods="82" coveredmethods="33" elements="640" coveredelements="343" complexity="0" loc="427" ncloc="427" packages="9" files="29" classes="29"/>
+<coverage generated="1750825216039" clover="3.2.0">
+  <project timestamp="1750825216039" name="All files">
+    <metrics statements="426" coveredstatements="260" conditionals="131" coveredconditionals="50" methods="82" coveredmethods="33" elements="639" coveredelements="343" complexity="0" loc="426" ncloc="426" packages="9" files="29" classes="29"/>
     <package name="__test__.fixtures">
       <metrics statements="15" coveredstatements="15" conditionals="7" coveredconditionals="6" methods="4" coveredmethods="4"/>
       <file name="authFixtures.ts" path="D:\cphub-backend\__test__\fixtures\authFixtures.ts">
@@ -36,14 +36,14 @@
       <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="mockRequest.ts" path="D:\cphub-backend\__test__\utils\mockRequest.ts">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="3" count="4" type="stmt"/>
-        <line num="4" count="16" type="stmt"/>
+        <line num="3" count="5" type="stmt"/>
+        <line num="4" count="21" type="stmt"/>
       </file>
       <file name="mockResponse.ts" path="D:\cphub-backend\__test__\utils\mockResponse.ts">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
-        <line num="3" count="4" type="stmt"/>
-        <line num="4" count="5" type="stmt"/>
-        <line num="9" count="5" type="stmt"/>
+        <line num="3" count="5" type="stmt"/>
+        <line num="4" count="10" type="stmt"/>
+        <line num="9" count="10" type="stmt"/>
       </file>
     </package>
     <package name="controller">
@@ -189,9 +189,9 @@
       </file>
     </package>
     <package name="database">
-      <metrics statements="35" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+      <metrics statements="34" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
       <file name="database.ts" path="D:\cphub-backend\database\database.ts">
-        <metrics statements="35" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <metrics statements="34" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
         <line num="1" count="4" type="stmt"/>
         <line num="2" count="4" type="stmt"/>
         <line num="4" count="4" type="stmt"/>
@@ -222,7 +222,6 @@
         <line num="70" count="4" type="stmt"/>
         <line num="71" count="0" type="stmt"/>
         <line num="72" count="0" type="stmt"/>
-        <line num="73" count="0" type="stmt"/>
         <line num="74" count="0" type="stmt"/>
         <line num="75" count="0" type="stmt"/>
         <line num="77" count="0" type="stmt"/>
