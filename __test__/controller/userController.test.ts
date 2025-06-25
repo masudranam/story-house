@@ -14,6 +14,7 @@ jest.mock('../../utils/responseFormatteUtils.ts', () => ({
 
 describe('UserController', () => {
   const controller = new UserController();
+  const formatSpy = jest.spyOn(responseFormatter, 'format');
 
   const res = mockResponse();
 
@@ -29,15 +30,17 @@ describe('UserController', () => {
       jest.spyOn(userService, 'getUserById').mockResolvedValue(mockUser);
 
       await controller.getUserById(req, res, next);
-      expect(res.json).toHaveBeenCalledWith(mockUser);
+      expect(formatSpy).toHaveBeenCalledWith(req, res, mockUser, httpStatus.OK);
     });
 
     it('getUserById should return 404 if not found', async () => {
       jest.spyOn(userService, 'getUserById').mockResolvedValue(null);
 
       await controller.getUserById(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(httpStatus.NOT_FOUND);
-      expect(res.json).toHaveBeenCalledWith({ error: 'User not found' });
+      const callArgs = formatSpy.mock.calls[0];
+    
+      expect(callArgs[3]).toEqual(httpStatus.NOT_FOUND);
+      expect(callArgs[2]).toEqual({ error: 'User not found' });
     });
 
     it('called next middleware when error occurs', async () => {
