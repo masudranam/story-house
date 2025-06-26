@@ -2,7 +2,6 @@ import { commentAttributes } from '../../dto/comment/commentAttributes.ts';
 import { searchCommentParams } from '../../dto/comment/searchCommentParams.ts';
 
 export const mockCommentOutput: commentAttributes = {
-  id: 'c0a80123-7f1d-4f4c-b9a7-1e2f7d0a1234',
   content: 'This story is amazing! I felt like I was there.',
   storyId: 'a1b2c3d4-5678-90ab-cdef-1234567890ab',
   userId: 'd4c3b2a1-8765-0ba9-fedc-ba0987654321',

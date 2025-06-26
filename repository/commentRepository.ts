@@ -8,6 +8,7 @@ class CommentRepository {
   async postCommentByStoryId(
     comment: commentAttributes,
   ): Promise<commentAttributes> {
+   
     const story = await Story.findByPk(comment.storyId);
     if (!story) throw new Error('Story not found');
     const { content, storyId, userId } = comment;
