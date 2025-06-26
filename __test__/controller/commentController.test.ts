@@ -92,7 +92,7 @@ describe('CommentController', () => {
         .mockResolvedValue(1);
 
       await controller.deleteCommentByCommentId(req, res, next);
-      expect(res.status).toHaveBeenCalledWith(httpStatus.NO_CONTENT);
+      expect(res.status).toHaveBeenCalledWith(httpStatus.OK);
       expect(res.json).toHaveBeenCalledWith({
         message: 'comment with id comment has been deleted',
       });

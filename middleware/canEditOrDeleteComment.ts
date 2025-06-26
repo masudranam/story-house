@@ -12,7 +12,7 @@ export async function canEditOrDeleteComment(
   try {
     const commentId = req.params.id;
     const comment = await Comment.findOne({ where: { id: commentId } });
-    if (!comment) throw new Error('comment does not exist');
+    if (!comment) throw new Error('comment not found');
 
     const userId = req.user?.id;
     const userrole = req.user?.role;

@@ -8,9 +8,10 @@ import { userRequest } from '../dto/user/userRequest.ts';
 export class CommentController {
   async postComment(req: userRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.id;
-      req.body.userId = userId;
+      req.body.userId = req.user!.id;
+      req.body.storyId = req.params.id;
       const comment = await commentService.postCommentByStoryId(req.body);
+      console.log(comment);
       res.status(httpStatus.CREATED).json(comment);
     } catch (err) {
       next(err);
@@ -43,8 +44,7 @@ export class CommentController {
       const commentId = req.params.id;
       const userId = req.user!.id;
       await commentService.deleteCommentByCommentId(commentId, userId);
-      res
-        .status(httpStatus.NO_CONTENT)
+        res.status(httpStatus.OK)
         .json({ message: `comment with id ${commentId} has been deleted` });
     } catch (err) {
       next(err);

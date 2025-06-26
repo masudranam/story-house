@@ -6,7 +6,6 @@ import { canEditOrDeleteComment } from '../middleware/canEditOrDeleteComment.ts'
 import { validateRequest } from '../middleware/validateRequest.ts';
 import {
   commentBodySchema,
-  commentParamsSchema,
   commentSchema,
 } from '../dto/comment/commentAttributes.ts';
 import { searchCommentParamsSchema } from '../dto/comment/searchCommentParams.ts';
@@ -15,7 +14,7 @@ const router = express.Router();
 
 router
   .post(
-    '/',
+    '/:id',
     authMiddleware,
     validateRequest({ body: commentBodySchema, params: checkUUID }),
     commentController.postComment,
