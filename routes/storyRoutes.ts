@@ -4,7 +4,10 @@ import { storyController } from '../controller/storyController.ts';
 import { authMiddleware } from '../middleware/authMiddleware.ts';
 import { canEditOrDeleteStory } from '../middleware/canEditOrDeleteStory.ts';
 import { validateRequest } from '../middleware/validateRequest.ts';
-import { storyBodySchema, storyUpdateSchema } from '../dto/story/storyAttributes.ts';
+import {
+  storyBodySchema,
+  storyUpdateSchema,
+} from '../dto/story/storyAttributes.ts';
 import { storyFiltersSchema } from '../dto/story/storyFilters.ts';
 import { checkUUID } from '../dto/DTO.ts';
 const router = express.Router();

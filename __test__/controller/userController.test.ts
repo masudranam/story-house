@@ -38,7 +38,7 @@ describe('UserController', () => {
 
       await controller.getUserById(req, res, next);
       const callArgs = formatSpy.mock.calls[0];
-    
+
       expect(callArgs[3]).toEqual(httpStatus.NOT_FOUND);
       expect(callArgs[2]).toEqual({ error: 'User not found' });
     });
