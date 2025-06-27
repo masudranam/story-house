@@ -26,7 +26,7 @@ describe('CommentController', () => {
       body: mockCommentInput,
     });
 
-    it('should post comment successfully', async () => {
+    it('post comment successfully if no error happens', async () => {
       const mockComment = mockCommentInput;
       jest
         .spyOn(commentService, 'postCommentByStoryId')
@@ -55,7 +55,7 @@ describe('CommentController', () => {
       body: { content: 'Updated content' },
     });
 
-    it('should update comment', async () => {
+    it('update comment ', async () => {
       const updated = {
         id: 'asldkfj',
         content: 'Updated content',
@@ -69,7 +69,7 @@ describe('CommentController', () => {
       expect(res.json).toHaveBeenCalledWith(updated);
     });
 
-    it('should call next on error', async () => {
+    it('call next on error when error occurs', async () => {
       const error = new Error();
       jest
         .spyOn(commentService, 'editCommentByCommentId')
@@ -86,7 +86,7 @@ describe('CommentController', () => {
       params: { id: 'comment' },
     });
 
-    it('should delete comment', async () => {
+    it('delete comment with specific comment given', async () => {
       jest
         .spyOn(commentService, 'deleteCommentByCommentId')
         .mockResolvedValue(1);
@@ -98,7 +98,7 @@ describe('CommentController', () => {
       });
     });
 
-    it('should call next on error', async () => {
+    it('call next on error', async () => {
       const error = new Error();
       jest
         .spyOn(commentService, 'deleteCommentByCommentId')
@@ -112,7 +112,7 @@ describe('CommentController', () => {
   describe('searchComment', () => {
     const req = mockRequest({ query: { author: 'masud' } });
 
-    it('should return search result', async () => {
+    it('return comment search result', async () => {
       const mockResult = [mockCommentOutput];
       jest
         .spyOn(commentService, 'searchComments')
