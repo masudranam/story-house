@@ -59,7 +59,7 @@ describe('CommentService', () => {
       expect(result).toEqual({ id: '1', content: 'Edited content' });
     });
 
-    it('should throw if comment not found', async () => {
+    it('throw error if comment not found', async () => {
       (commentRepository.findCommentById as jest.Mock).mockResolvedValue(null);
       await expect(
         commentService.editCommentByCommentId('1', 'X', 'u1'),
@@ -89,7 +89,7 @@ describe('CommentService', () => {
   });
 
   describe('searchComments', () => {
-    it('should return paginated comments', async () => {
+    it('return paginated comment with specific query', async () => {
       const params: searchCommentParams = { page: 2, limit: 5 };
       const mockRows = [{ id: '1', content: 'Hi' }];
       const mockCount = 8;

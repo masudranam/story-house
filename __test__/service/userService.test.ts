@@ -43,7 +43,7 @@ describe('UserService', () => {
   });
 
     describe('updateUserName', () => {
-    it('should update username if newUsername provided', async () => {
+    it('update username if newUsername provided', async () => {
       const curUsername = 'old';
       const newUsername = 'new';
 
@@ -54,7 +54,7 @@ describe('UserService', () => {
       );
     });
 
-    it('should throw error if newUsername not provided', async () => {
+    it('throw error if newUsername not provided', async () => {
       await expect(userService.updateUserName('cur', '')).rejects.toThrow(
         'New username required',
       );
@@ -69,7 +69,7 @@ describe('UserService', () => {
   });
 
 describe('userService.searchUser - pagination', () => {
-  it('should call repository with correct filters, limit and offset', async () => {
+  it('call repository with correct filters, limit and offset', async () => {
     const query: userFilters = {
       name: 'masud',
       page: 2,

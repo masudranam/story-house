@@ -130,7 +130,7 @@ describe('StoryController', () => {
       body: { title: 'New', description: 'Updated' },
     });
 
-    it(' return 200 and updated story successfully', async () => {
+    it('return 200 and updated story successfully', async () => {
       const updated: storyAttributes = {
         title: 'New',
         description: 'Updated',

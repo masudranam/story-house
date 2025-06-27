@@ -10,7 +10,7 @@ describe('StoryService', () => {
   afterEach(() => jest.clearAllMocks());
 
   describe('postStory', () => {
-    it('should create and return a story', async () => {
+    it('create story and return story information', async () => {
       const input: createStoryDTO = mockStoryInput;
 
       const mockStory = { id: '1', ...input };
@@ -24,7 +24,7 @@ describe('StoryService', () => {
   });
 
   describe('getAllStories', () => {
-    it('should return filtered, paginated, and sorted stories', async () => {
+    it('return filtered and paginated stories', async () => {
       const query: storyFilters = {
         title: 'trip',
         page: 1,
@@ -57,7 +57,7 @@ describe('StoryService', () => {
   });
 
   describe('deleteAllStories', () => {
-    it('should return count of deleted stories', async () => {
+    it('return number of story deleted', async () => {
       (storyRepository.deleteAllStories as jest.Mock).mockResolvedValue(5);
 
       const result = await storyService.deleteAllStories();
@@ -66,7 +66,7 @@ describe('StoryService', () => {
   });
 
   describe('deleteStoryByStoryId', () => {
-    it('should delete the story if authorized', async () => {
+    it('delte the story if user is authorized', async () => {
       (storyRepository.deleteStoryByStoryId as jest.Mock).mockResolvedValue(1);
 
       const result = await storyService.deleteStoryByStoryId('s1', 'u1');
@@ -83,7 +83,7 @@ describe('StoryService', () => {
   });
 
   describe('getStoryByStoryId', () => {
-    it('should return a story by ID', async () => {
+    it('return a story with given ID', async () => {
       const story = { id: '1', title: 'trip' };
       (storyRepository.findStoryByStoryId as jest.Mock).mockResolvedValue(
         story,
@@ -103,7 +103,7 @@ describe('StoryService', () => {
   });
 
   describe('updateStoryByStoryId', () => {
-    it('should update story title and description', async () => {
+    it('update story title and description', async () => {
       const story = { id: '1', title: 'Old' };
       const updated = { id: '1', title: 'New', description: 'Updated' };
 
