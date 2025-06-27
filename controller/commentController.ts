@@ -44,7 +44,8 @@ export class CommentController {
       const commentId = req.params.id;
       const userId = req.user!.id;
       await commentService.deleteCommentByCommentId(commentId, userId);
-        res.status(httpStatus.OK)
+      res
+        .status(httpStatus.OK)
         .json({ message: `comment with id ${commentId} has been deleted` });
     } catch (err) {
       next(err);

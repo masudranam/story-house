@@ -17,7 +17,7 @@ describe('UserService', () => {
       expect(result).toEqual(mockUser);
     });
   });
- 
+
   describe('searchUser', () => {
     it('should return all users matching filters', async () => {
       const filters: userFilters = { name: 'Masud', username: 'masud123' };
@@ -42,7 +42,7 @@ describe('UserService', () => {
     });
   });
 
-    describe('updateUserName', () => {
+  describe('updateUserName', () => {
     it('update username if newUsername provided', async () => {
       const curUsername = 'old';
       const newUsername = 'new';
@@ -59,55 +59,58 @@ describe('UserService', () => {
         'New username required',
       );
     });
-  })
+  });
 
-    describe('deleteUserById', () => {
+  describe('deleteUserById', () => {
     it('should call repository delete by id', async () => {
       await userService.deleteUserById('123');
       expect(userRepository.deleteUserById).toHaveBeenCalledWith('123');
     });
   });
 
-describe('userService.searchUser - pagination', () => {
-  it('call repository with correct filters, limit and offset', async () => {
-    const query: userFilters = {
-      name: 'masud',
-      page: 2,
-      limit: 5,
-    };
+  describe('userService.searchUser - pagination', () => {
+    it('call repository with correct filters, limit and offset', async () => {
+      const query: userFilters = {
+        name: 'masud',
+        page: 2,
+        limit: 5,
+      };
 
-    const mockUsers: userAttributes[] = [
-      getMockUser(),
-      getMockUser(),
-      getMockUser(),
-    ];
+      const mockUsers: userAttributes[] = [
+        getMockUser(),
+        getMockUser(),
+        getMockUser(),
+      ];
 
-    const repoSpy = jest
-      .spyOn(userRepository, 'searchUser')
-      .mockResolvedValue(mockUsers);
-    const result = await userService.searchUser(query);
+      const repoSpy = jest
+        .spyOn(userRepository, 'searchUser')
+        .mockResolvedValue(mockUsers);
+      const result = await userService.searchUser(query);
 
-    expect(repoSpy).toHaveBeenCalledWith({ name: 'masud' }, 5, 5);
+      expect(repoSpy).toHaveBeenCalledWith({ name: 'masud' }, 5, 5);
 
-    expect(result).toEqual(mockUsers);
+      expect(result).toEqual(mockUsers);
+    });
+
+    it('default page = 1, limit = 5 if not provided any query', async () => {
+      const query: userFilters = { name: 'masud' };
+
+      const mockUsers: userAttributes[] = [];
+      const expectedFilters = { name: 'masud' };
+      const expectedLimit = 5;
+      const expectedOffset = 0;
+
+      const repoSpy = jest
+        .spyOn(userRepository, 'searchUser')
+        .mockResolvedValue(mockUsers);
+
+      const res = await userService.searchUser(query);
+
+      expect(repoSpy).toHaveBeenCalledWith(
+        expectedFilters,
+        expectedLimit,
+        expectedOffset,
+      );
+    });
   });
-
-  it('default page = 1, limit = 5 if not provided any query', async () => {
-    const query: userFilters = { name: 'masud'};
-   
-    const mockUsers: userAttributes[] = [];
-    const expectedFilters = {name: 'masud'};
-    const expectedLimit = 5;
-    const expectedOffset = 0;
-
-    const repoSpy = jest
-      .spyOn(userRepository, 'searchUser')
-      .mockResolvedValue(mockUsers);
-
-    const res = await userService.searchUser(query);
-
-    expect(repoSpy).toHaveBeenCalledWith(expectedFilters, expectedLimit, expectedOffset);
-  });
-});
-
 });

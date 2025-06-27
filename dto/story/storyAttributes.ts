@@ -26,7 +26,6 @@ export const storyBodySchema = z.object({
     }),
 });
 
-
 export const storyUpdateSchema = z.object({
   title: z
     .string()
