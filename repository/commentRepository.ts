@@ -14,11 +14,11 @@ class CommentRepository {
     return await Comment.create({ content, storyId, userId });
   }
 
-  async findCommentById(id: string) {
+  async findCommentById(id: string): Promise<commentAttributes | null> {
     return await Comment.findByPk(id);
   }
 
-  async editCommentByCommentId(id: string, content: string) {
+  async editCommentByCommentId(id: string, content: string): Promise<commentAttributes> {
     const [count, rows] = await Comment.update(
       { content },
       { where: { id }, returning: true },
@@ -27,7 +27,7 @@ class CommentRepository {
     return comment;
   }
 
-  async deleteCommentByCommentId(id: string) {
+  async deleteCommentByCommentId(id: string): Promise<number> {
     return await Comment.destroy({ where: { id } });
   }
 
