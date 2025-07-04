@@ -1,7 +1,7 @@
- 
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 interface TokenPayload {
   userId: string;
@@ -10,8 +10,8 @@ interface TokenPayload {
 
 
 const Navbar = () => {
-   const [username, setUsername] = useState<string | null>(null);
-   const [showDropdown, setShowDropdown] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const Navbar = () => {
       } catch {
         setUsername(null);
       }
-    }else{
+    } else {
       setUsername(null);
     }
   }, [localStorage.getItem('token')]);
@@ -40,17 +40,17 @@ const Navbar = () => {
         <Link to="/" className="hover:underline">Home</Link>
         <Link to="#" className="hover:underline">About</Link>
         <Link to="#" className="hover:underline">Contact</Link>
-        {username?(
-           <div className="inline-block relative">
-            <button onClick={()=>setShowDropdown(!showDropdown)}>{username}</button>
+        {username ? (
+          <div className="inline-block relative">
+            <button className = "hover:underline" onClick={() => setShowDropdown(!showDropdown)}>{username}</button>
             {showDropdown && (
-            <div className="absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-lg">
-              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">Profile</Link>
-              <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-200">Logout</button>
-            </div>
+              <div className="absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-lg">
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">Profile</Link>
+                <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-200">Logout</button>
+              </div>
             )}
           </div>
-        ):(
+        ) : (
           <Link to="/login" className="hover:underline">Login</Link>
         )}
       </div>

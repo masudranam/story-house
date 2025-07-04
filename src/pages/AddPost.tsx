@@ -12,11 +12,10 @@ const AddPost = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log('hello');
-     const res =  await API.post('/stories', { title, description: content });
-     console.log(res);
+      const res = await API.post('/stories', { title, description: content });
+      console.log(res);
       alert('Post published');
-      navigate('/');
+      navigate('/profile');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Publish failed');
     } finally {
@@ -50,11 +49,10 @@ const AddPost = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 rounded text-white font-semibold transition ${
-            loading
-              ? 'bg-teal-400 cursor-not-allowed'
-              : 'bg-teal-600 hover:bg-teal-700'
-          }`}
+          className={`w-full py-2 rounded text-white font-semibold transition ${loading
+            ? 'bg-teal-400 cursor-not-allowed'
+            : 'bg-teal-600 hover:bg-teal-700'
+            }`}
         >
           {loading ? 'Publishing...' : 'Publish'}
         </button>

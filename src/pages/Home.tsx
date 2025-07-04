@@ -3,10 +3,10 @@ import PostCard from '../components/PostCard';
 import API from '../services/api';
  
 interface Post {
-  id: number;
+  id: string;
   title: string;
-  content: string;
-  author: string;
+  description: string;
+  authorId: string;
   createdAt: string;
 }
 
@@ -36,8 +36,8 @@ const Home = () => {
   const filteredPosts = posts.filter(
     post =>
       post.title.toLowerCase().includes(search.toLowerCase()) ||
-      post.content.toLowerCase().includes(search.toLowerCase()) ||
-      post.author.toLowerCase().includes(search.toLowerCase())
+      post.description.toLowerCase().includes(search.toLowerCase()) ||
+      post.authorId.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -54,7 +54,7 @@ const Home = () => {
 
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {filteredPosts.length > 0 ? (
-          filteredPosts.map(post => <PostCard description={''} date={''} key={post.id} {...post} />)
+          filteredPosts.map(post => <PostCard  key={post.id} {...post} />)
         ) : (
           <p className="text-gray-600 col-span-full">No matching posts found.</p>
         )}
