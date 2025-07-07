@@ -50,11 +50,25 @@ const Profile = () => {
         navigate('/add-post');
     };
 
+    const hadnleEdit = (id: string) => {
+        navigate(`/edit-post/${id}`);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (confirm('Are you sure want to delete this post?')) {
+            try {
+                await API.delete(`/stories/${id}`);
+                setPosts(posts.filter(post => post.id !== id));
+            } catch (error) {
+                console.error('Failed to delete post:', error);
+            }
+        }
+    }
+
     return (
         <div className="max-w-4xl mx-auto mt-8 px-4">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">Welcome, {username}</h1>
-
             </div>
 
             <button
@@ -70,6 +84,8 @@ const Profile = () => {
                     <PostCard
                         key={post.id}
                         {...post}
+                        onDelete={handleDelete}
+                        onEdit={hadnleEdit}
                     />
                 ))}
             </div>

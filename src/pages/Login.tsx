@@ -12,6 +12,7 @@ const Login = () => {
     try {
       const res = await API.post('/users/login', { identifier, password });
       let token = res.data.token;
+      
       if (token.startsWith('Bearer ')) token = token.split(' ')[1];
       localStorage.setItem('token', token);
       navigate('/profile');
