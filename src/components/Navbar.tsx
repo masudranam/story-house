@@ -1,4 +1,4 @@
-// src/components/Navbar.tsx
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
@@ -29,7 +29,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-700 text-white px-6 py-4 flex justify-between items-center">
+    <nav className="bg-blue-700 text-white px-6 py-4 flex justify-between items-center caret-transparent">
       <h1 className="text-xl font-bold">BlogApp</h1>
 
       <div className="space-x-4">
@@ -39,14 +39,18 @@ const Navbar = () => {
 
         {username ? (
           <div className="inline-block relative">
-            <button onClick={() => setShowDropdown(!showDropdown)} className="hover:underline">
-              {username}
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold hover:bg-green-800 focus:outline-none"
+              title={username.slice(0,1)}
+            >
+              {username?.charAt(0).toUpperCase()}
             </button>
 
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-36 bg-white text-black rounded shadow-lg">
-                <Link to="/profile"   className="block px-4 py-2 hover:bg-gray-200">Profile</Link>
-                <Link to="/settings"  className="block px-4 py-2 hover:bg-gray-200">Settings</Link>
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">Profile</Link>
+                <Link to="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</Link>
                 <button
                   onClick={handleLogout}
                   className="block w-full text-left px-4 py-2 hover:bg-gray-200"

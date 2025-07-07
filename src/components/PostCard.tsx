@@ -33,7 +33,7 @@ const PostCard = ({ id, title, description, authorId, createdAt, onEdit, onDelet
 
   return (
 
-    <div className="relative bg-white p-4 rounded shadow border h-full flex flex-col justify-between">
+    <div className="relative bg-white rounded shadow border h-full flex flex-col justify-between">
  
       {(onEdit || onDelete) && (
         <div className="absolute top-2 right-2">

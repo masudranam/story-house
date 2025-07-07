@@ -14,17 +14,21 @@ interface CommentsSectionProps {
     userId: string;
 }
 
+const PER_PAGE = 5;
+
 const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editedContent, setEditedContent] = useState('');
+    const [page, setPage] = useState(1);
 
+    /** fetch comments (all) once, then paginate client‑side */
     const fetchComments = async () => {
         try {
-            const res = await API.get(`/comments?storyId=${storyId}`);
-            setComments(res.data);
-        } catch (err) {
+            const { data } = await API.get(`/comments?storyId=${storyId}`);
+            setComments(data);
+        } catch {
             console.error('Failed to load comments');
         }
     };
@@ -33,31 +37,30 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         fetchComments();
     }, [storyId]);
 
+    /* helpers */
+    const totalPages = Math.ceil(comments.length / PER_PAGE);
+    const visible = comments.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
     const handleSubmit = async () => {
         if (!newComment.trim()) return;
-
         try {
             await API.post(`/comments/${storyId}`, { content: newComment.trim() });
             setNewComment('');
-            fetchComments();
-        } catch (err) {
+            await fetchComments();
+            setPage(1); // jump to first page to show newest first
+        } catch {
             alert('Failed to post comment');
         }
     };
 
     const handleDelete = async (commentId: string) => {
-        if (!window.confirm('Delete this comment?')) return;
+        if (!confirm('Delete this comment?')) return;
         try {
             await API.delete(`/comments/${commentId}`);
-            setComments(comments.filter(c => c.id !== commentId));
+            await fetchComments();
         } catch {
             alert('Failed to delete');
         }
-    };
-
-    const handleEdit = (comment: Comment) => {
-        setEditingId(comment.id);
-        setEditedContent(comment.content);
     };
 
     const handleSaveEdit = async (commentId: string) => {
@@ -65,7 +68,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
             await API.put(`/comments/${commentId}`, { content: editedContent.trim() });
             setEditingId(null);
             setEditedContent('');
-            fetchComments();
+            await fetchComments();
         } catch {
             alert('Failed to update');
         }
@@ -73,12 +76,16 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
 
     return (
         <div className="mt-6">
-           
+            {/* input */}
             <div className="flex items-start gap-2 mb-4">
-                <img src="/default-avatar.png" alt="avatar" className="w-9 h-9 rounded-full" />
+                <button
+                    className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
+                    title="you"
+                >
+                    {userId.charAt(0).toUpperCase()}
+                </button>
                 <input
-                    type="text"
-                    className="w-full border rounded-full px-4 py-2 bg-gray-100 focus:outline-none"
+                    className="flex-grow border rounded-full px-4 py-2 bg-gray-100 focus:outline-none"
                     placeholder="Write a comment..."
                     value={newComment}
                     onChange={e => setNewComment(e.target.value)}
@@ -86,50 +93,86 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                 />
             </div>
 
-           
+            {/* list */}
             <div className="space-y-3">
-                {comments.map(comment => (
-                    <div key={comment.id} className="flex items-start gap-2">
-                        <img src="/default-avatar.png" alt="user" className="w-8 h-8 rounded-full" />
-                        <div className="bg-gray-100 px-4 py-2 rounded-xl max-w-[80%] w-full">
-                           
-                            {editingId === comment.id ? (
+                {visible.map(c => (
+                    <div key={c.id} className="flex items-start gap-2">
+                        <button
+                            className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
+                            title={c.userId}
+                        >
+                            {c.userId.charAt(0).toUpperCase()}
+                        </button>
+
+                        <div className="bg-gray-100 px-4 py-2 rounded-xl w-full">
+                            {editingId === c.id ? (
                                 <textarea
+                                    className="w-full border rounded p-2 text-sm"
                                     value={editedContent}
                                     onChange={e => setEditedContent(e.target.value)}
-                                    className="w-full border rounded p-2 mt-1 text-sm"
                                 />
                             ) : (
-                                <p className="text-sm mt-1">{comment.content}</p>
+                                <p className="text-sm">{c.content}</p>
                             )}
 
                             <p className="text-xs text-gray-500 mt-1">
-                                {new Date(comment.createdAt).toLocaleTimeString()}
+                                {new Date(c.createdAt).toLocaleTimeString()}
                             </p>
 
-                          
-                            {comment.userId === userId && (
+                            {c.userId === userId && (
                                 <div className="text-xs space-x-3 mt-2">
-                                    {editingId === comment.id ? (
+                                    {editingId === c.id ? (
                                         <>
-                                            <button onClick={() => handleSaveEdit(comment.id)} className="text-blue-600">Save</button>
-                                            <button onClick={() => setEditingId(null)} className="text-gray-500">Cancel</button>
+                                            <button onClick={() => handleSaveEdit(c.id)} className="text-blue-600">
+                                                Save
+                                            </button>
+                                            <button onClick={() => setEditingId(null)} className="text-gray-500">
+                                                Cancel
+                                            </button>
                                         </>
                                     ) : (
                                         <>
-                                            <button onClick={() => handleEdit(comment)} className="text-blue-600">Edit</button>
-                                            <button onClick={() => handleDelete(comment.id)} className="text-red-600">Delete</button>
+                                            <button onClick={() => { setEditingId(c.id); setEditedContent(c.content); }} className="text-blue-600">
+                                                Edit
+                                            </button>
+                                            <button onClick={() => handleDelete(c.id)} className="text-red-600">
+                                                Delete
+                                            </button>
                                         </>
                                     )}
                                 </div>
                             )}
-
                         </div>
                     </div>
                 ))}
             </div>
+
+            {/* pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-3 mt-6">
+                    <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                    >
+                        Prev
+                    </button>
+
+                    <span className="text-sm font-medium text-gray-700">
+                        Page {page} of {totalPages}
+                    </span>
+
+                    <button
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
-    )
+    );
 };
 
 export default CommentsSection;

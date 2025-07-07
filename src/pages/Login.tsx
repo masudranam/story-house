@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
+import TextInput from '../components/TextInput';
 
 const Login = () => {
   const [identifier, setIdentifier] = useState('');
@@ -12,7 +13,7 @@ const Login = () => {
     try {
       const res = await API.post('/users/login', { identifier, password });
       let token = res.data.token;
-      
+
       if (token.startsWith('Bearer ')) token = token.split(' ')[1];
       localStorage.setItem('token', token);
       navigate('/profile');
@@ -26,22 +27,21 @@ const Login = () => {
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md z-10">
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
+          <TextInput
             type="text"
-            placeholder="Username or Email"
+            name="identifier"
             value={identifier}
-            onChange={e => setIdentifier(e.target.value)}
+            onChange={e =>setIdentifier(e.target.value)}
+            placeholder='Username or email'
             required
-            
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <input
+          <TextInput
             type="password"
-            placeholder="Password"
+            toggleVisibility
             value={password}
             onChange={e => setPassword(e.target.value)}
+            placeholder='Enter password'
             required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
             type="submit"

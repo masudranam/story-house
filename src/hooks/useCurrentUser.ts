@@ -11,7 +11,7 @@ interface User {
   name: string;
   username: string;
   email: string;
-  // Add more fields if needed
+  
 }
 
 const getUserIdFromToken = (): string | null => {

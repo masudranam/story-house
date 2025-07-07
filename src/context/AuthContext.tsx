@@ -1,34 +1,43 @@
 // context/AuthContext.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
-import type {ReactNode} from 'react';
-import {jwtDecode} from 'jwt-decode';
+import type { ReactNode } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 interface User { id: number; username: string }
-interface AuthCtx { user: User | null; token: string | null; login: (t:string,u:User)=>void; logout: ()=>void }
+interface AuthCtx { user: User | null; token: string | null; login: (t: string, u: User) => void; logout: () => void }
 const AuthContext = createContext<AuthCtx>(null!);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token,setToken] = useState<string|null>(()=>localStorage.getItem('token'));
-  const [user,setUser]   = useState<User|null>(()=>JSON.parse(localStorage.getItem('user')||'null'));
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const [user, setUser] = useState<User | null>(() => JSON.parse(localStorage.getItem('user') || 'null'));
 
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     if (!token) return;
-    const { exp }:{ exp:number } = jwtDecode(token);
-    const ms = exp*1000 - Date.now();
+    const { exp, user: tokenUser }: { exp: number, user: User } = jwtDecode(token);
+    const ms = exp * 1000 - Date.now();
     if (ms <= 0) logout();
     const id = setTimeout(logout, ms);
+    setUser(tokenUser)
     return () => clearTimeout(id);
-  },[token]);
+  }, [token]);
 
-  const login = (t:string) => {
+  const login = (t: string) => {
     localStorage.setItem('token', t);
-    setToken(t); 
+
+    if (!token) return;
+    const { exp, user: tokenUser }: { exp: number, user: User } = jwtDecode(token);
+    const ms = exp * 1000 - Date.now();
+    if (ms <= 0) logout();
+    const id = setTimeout(logout, ms);
+    setUser(tokenUser)
+
+    setToken(t);
   };
 
   const logout = () => {
     localStorage.clear();
-    setToken(null); 
+    setToken(null);
   };
 
   return <AuthContext.Provider value={{ user, token, login, logout }}>{children}</AuthContext.Provider>;

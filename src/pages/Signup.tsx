@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import API from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
+import TextInput from '../components/TextInput';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -30,37 +31,37 @@ const Signup = () => {
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md z-10">
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Sign Up</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
+          <TextInput
             type="text"
-            placeholder="Full Name"
+            name="name"
             value={name}
             onChange={e => setName(e.target.value)}
+            placeholder="Full Name"
             required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <input
+          <TextInput
             type="text"
-            placeholder="Username"
+            name="username"
             value={username}
             onChange={e => setUsername(e.target.value)}
+            placeholder="Username"
             required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <input
+          <TextInput
             type="email"
-            placeholder="Email"
+            name="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
+            placeholder="Email Address"
             required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <input
+          <TextInput
             type="password"
-            placeholder="Password"
+            toggleVisibility
             value={password}
             onChange={e => setPassword(e.target.value)}
+            placeholder='Enter password'
             required
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
             type="submit"
