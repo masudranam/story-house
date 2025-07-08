@@ -23,7 +23,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
     const [editedContent, setEditedContent] = useState('');
     const [page, setPage] = useState(1);
 
-    /** fetch comments (all) once, then paginate client‑side */
+   
     const fetchComments = async () => {
         try {
             const { data } = await API.get(`/comments?storyId=${storyId}`);
@@ -37,7 +37,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         fetchComments();
     }, [storyId]);
 
-    /* helpers */
+    
     const totalPages = Math.ceil(comments.length / PER_PAGE);
     const visible = comments.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -47,7 +47,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
             await API.post(`/comments/${storyId}`, { content: newComment.trim() });
             setNewComment('');
             await fetchComments();
-            setPage(1); // jump to first page to show newest first
+            setPage(1);  
         } catch {
             alert('Failed to post comment');
         }
@@ -76,7 +76,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
 
     return (
         <div className="mt-6">
-            {/* input */}
+             
             <div className="flex items-start gap-2 mb-4">
                 <button
                     className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
@@ -93,7 +93,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                 />
             </div>
 
-            {/* list */}
+            
             <div className="space-y-3">
                 {visible.map(c => (
                     <div key={c.id} className="flex items-start gap-2">
@@ -147,7 +147,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                 ))}
             </div>
 
-            {/* pagination */}
+            
             {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-3 mt-6">
                     <button

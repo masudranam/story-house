@@ -91,9 +91,6 @@ const UserInfo = () => {
                     required
                     disabled={!editMode}
                 />
-           
-
-             
                 <label className="block font-medium mb-1">Username</label>
                 <TextInput
                     name="username"

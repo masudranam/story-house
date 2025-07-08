@@ -10,7 +10,7 @@ interface Post {
   createdAt: string;
 }
 
-const POSTS_PER_PAGE = 8;
+const POSTS_PER_PAGE = 12;
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -50,15 +50,7 @@ const Home = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-blue-700 caret-transparent">Latest Posts</h2>
-        <button
-          onClick={() => setSortAsc(!sortAsc)}
-          className="text-sm px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Sort: {sortAsc ? 'Oldest' : 'Newest'}
-        </button>
-      </div>
+      <h2 className="text-2xl font-bold text-blue-700 caret-transparent mb-4">Latest Posts</h2>
 
       <input
         type="text"
@@ -68,8 +60,14 @@ const Home = () => {
           setSearch(e.target.value);
           setCurrentPage(1);
         }}
-        className="mb-6 w-full max-w-md px-4 py-2 border rounded-xl border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+        className="mb-6 w-full max-w-md px-4 py-2 border rounded-3xl border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
       />
+      <button
+        onClick={() => setSortAsc(!sortAsc)}
+        className=" px-4 py-2 border rounded-4xl border-gray-300 focus:outline-none focus:ring-2 ml-2"
+      >
+        Sort: {sortAsc ? 'Oldest' : 'Newest'}
+      </button>
 
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {paginated.length > 0 ? (

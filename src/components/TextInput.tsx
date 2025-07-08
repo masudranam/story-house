@@ -7,8 +7,9 @@ interface TextInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
+  className?:string;
   required?: boolean;
-  toggleVisibility?: boolean; // enable eye icon if password
+  toggleVisibility?: boolean; 
    disabled?: boolean;
 }
 
@@ -20,10 +21,11 @@ const TextInput = ({
   placeholder,
   required = false,
   toggleVisibility = false,
+  className,
   disabled = false,
 }: TextInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const defaultClass = "w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10";
   const inputType =
     type === 'password' && toggleVisibility ? (showPassword ? 'text' : 'password') : type;
 
@@ -37,7 +39,7 @@ const TextInput = ({
         placeholder={placeholder}
         disabled = {disabled}
         required={required}
-        className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+        className={className??defaultClass}
       />
       {type === 'password' && toggleVisibility && (
         <button

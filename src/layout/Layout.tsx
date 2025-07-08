@@ -1,12 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-
+ 
 const Layout = () => {
   return (
-    <div className="felx flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow px-4 py-6">
+      <main className="flex-grow px-4 py-8">
         <Outlet /> 
       </main>
       <Footer />
