@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express, { NextFunction } from 'express';
+import cors from 'cors';
 
 import userRoutes from './routes/userRoutes.ts';
 import storyRoutes from './routes/storyRoutes.ts';
@@ -15,6 +16,10 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
+app.use(cors({
+  origin:'http://localhost:3001',
+  credentials: true,
+}))
 
 await initDatabase();
 
@@ -31,4 +36,3 @@ app.get('/', (req, res, next: NextFunction) => {
 app.use(errorHandler);
 app.listen(PORT);
 
-export default app;

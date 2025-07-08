@@ -17,7 +17,7 @@ class StoryService {
     if (query.title) filters.title = query.title;
 
     const page = Number(query.page) || 1;
-    let limit = Number(query.limit) || 10;
+    let limit = Number(query.limit) || 100;
 
     const offset = (page - 1) * limit;
 

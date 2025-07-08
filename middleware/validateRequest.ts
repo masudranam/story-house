@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodSchema, ZodError } from 'zod';
+import { httpStatus } from '../utils/httpStatus.ts';
 
 interface ValidateSchemas {
   body?: ZodSchema;
@@ -14,7 +15,7 @@ export const validateRequest =
       if (schemas.body) {
         const result = schemas.body.safeParse(req.body);
         if (!result.success) {
-          res.status(400).json({
+          res.status(httpStatus.BAD_REQUEST).json({
             errors: result.error.errors.map((e) => ({
               field: e.path.join('.'),
               message: e.message,
@@ -28,7 +29,7 @@ export const validateRequest =
       if (schemas.params) {
         const result = schemas.params.safeParse(req.params);
         if (!result.success) {
-          res.status(400).json({
+          res.status(httpStatus.BAD_REQUEST).json({
             errors: result.error.errors.map((e) => ({
               field: e.path.join('.'),
               message: e.message,
@@ -42,7 +43,7 @@ export const validateRequest =
       if (schemas.query) {
         const result = schemas.query.safeParse(req.query);
         if (!result.success) {
-          res.status(400).json({
+          res.status(httpStatus.BAD_REQUEST).json({
             errors: result.error.errors.map((e) => ({
               field: e.path.join('.'),
               message: e.message,

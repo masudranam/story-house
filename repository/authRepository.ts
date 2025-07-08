@@ -1,5 +1,5 @@
 import { Auth } from '../database/models/auth.ts';
-import { passwordHandler } from '../utils/hashedPassword.ts';
+import { passwordHandler } from '../utils/passwordHandler.ts';
 import { User } from '../database/models/user.ts';
 import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { sequelize } from '../database/database.ts';

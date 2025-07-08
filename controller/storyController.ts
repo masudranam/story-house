@@ -7,6 +7,7 @@ import { userRequest } from '../dto/user/userRequest.ts';
 export class StoryController {
   async postStory(req: userRequest, res: Response, next: NextFunction) {
     try {
+      console.log(req.body);
       req.body.authorId = req.user!.id;
       const story = await storyService.postStory(req.body);
       res
@@ -20,7 +21,7 @@ export class StoryController {
   async getStories(req: Request, res: Response, next: NextFunction) {
     try {
       const stories = await storyService.getAllStories(req.query);
-      res.status(httpStatus.OK).json(stories);
+      res.status(httpStatus.OK).json({total: stories.length, stories});
     } catch (err) {
       next(err);
     }
@@ -53,7 +54,7 @@ export class StoryController {
       const deleted = await storyService.deleteStoryByStoryId(storyId, userId);
       res
         .status(httpStatus.OK)
-        .json({ message: `story with id ${storyId} deleted successfully` });
+        .json({ message: `story with id ${storyId} deleted successfully`});
     } catch (err) {
       next(err);
     }

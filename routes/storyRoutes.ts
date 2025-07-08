@@ -27,7 +27,6 @@ router
   .delete('/', storyController.deleteAllStories)
   .get(
     '/:id',
-    authMiddleware,
     validateRequest({ params: checkUUID }),
     storyController.getStoryByStoryId,
   )
