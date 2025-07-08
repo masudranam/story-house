@@ -1,7 +1,7 @@
 import { AuthService } from '../../services/authService.ts';
 import { userRepository } from '../../repository/userRepository.ts';
 import { authRepository } from '../../repository/authRepository.ts';
-import { passwordHandler } from '../../utils/hashedPassword.ts';
+import { passwordHandler } from '../../utils/passwordHandler.ts';
 import { generateToken } from '../../utils/jwtHandler.ts';
 import { signUpUser } from '../../dto/auth/signupUserDTO.ts';
 import { loginUser } from '../../dto/auth/loginUserDTO.ts';

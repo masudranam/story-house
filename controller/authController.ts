@@ -4,9 +4,10 @@ import { Auth } from '../database/database.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { authService } from '../services/authService.ts';
 import { responseFormatter } from '../utils/responseFormatteUtils.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
 export class AuthController {
-  async signUpUser(req: Request, res: Response, next: NextFunction) {
+  async signUpUser(req: userRequest, res: Response, next: NextFunction) {
     try {
       const user = await authService.signUpUser(req.body);
       responseFormatter.format(
@@ -23,7 +24,7 @@ export class AuthController {
     }
   }
 
-  async loginUser(req: Request, res: Response, next: NextFunction) {
+  async loginUser(req: userRequest, res: Response, next: NextFunction) {
     try {
       const result = await authService.loginUser(req.body);
       responseFormatter.format(req, res, result, httpStatus.OK);
@@ -32,7 +33,7 @@ export class AuthController {
     }
   }
 
-  async getAllAuth(req: Request, res: Response, next: NextFunction) {
+  async getAllAuth(req: userRequest, res: Response, next: NextFunction) {
     try {
       const auth = await Auth.findAll();
       if (!auth.length) {

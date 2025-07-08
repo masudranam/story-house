@@ -32,7 +32,7 @@ class CommentRepository {
   }
 
   async searchComments(params: searchCommentParams) {
-    const { content, author, storyId, page = 1, limit = 10 } = params;
+    const { content, author, storyId, page = 1, limit = 1000 } = params;
 
     const where: NonNullable<FindAndCountOptions['where']> = {};
     if (content) where.content = { [Op.iLike]: `%${content}%` };

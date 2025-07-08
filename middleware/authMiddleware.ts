@@ -11,7 +11,7 @@ export async function authMiddleware(
 ) {
   try {
     const authHeader = req.headers.authorization;
-
+  
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       res.status(httpStatus.FORBIDDEN).json({ message: 'No token provided' });
       return;
@@ -32,7 +32,7 @@ export async function authMiddleware(
 
     // req.headers["x-user-id"] = decoded.userId;
     // req.headers["x-user-role"] = `${decoded.role}`;
-
+ 
     req.user = {
       id: decoded.userId,
       role: decoded.role,

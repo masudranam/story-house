@@ -31,7 +31,7 @@ class CommentService {
   async searchComments(
     params: searchCommentParams,
   ): Promise<commentAttributes[]> {
-    const { page = 1, limit = 10 } = params;
+    const { page = 1, limit = 100 } = params;
     const { rows, count } = await commentRepository.searchComments(params);
     return rows;
   }

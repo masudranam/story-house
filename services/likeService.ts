@@ -15,6 +15,10 @@ class LikeService {
     return await likeRepository.removeLike(userId, storyId);
   }
 
+  async hasLikeStory(userId: string, storyId: string){
+    return await likeRepository.hasLiked(userId, storyId);
+  }
+
   async getLikesCount(storyId: string) {
     return await likeRepository.countLikes(storyId);
   }

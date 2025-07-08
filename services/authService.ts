@@ -2,7 +2,7 @@ import { userRepository } from '../repository/userRepository.ts';
 import { authRepository } from '../repository/authRepository.ts';
 import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { loginUser } from '../dto/auth/loginUserDTO.ts';
-import { passwordHandler } from '../utils/hashedPassword.ts';
+import { passwordHandler } from '../utils/passwordHandler.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
 
@@ -36,7 +36,7 @@ export class AuthService {
 
     const token = generateToken(user.id, user.role);
 
-    return { message: 'Login seccessful', token: `Bearer ${token}` };
+    return { message: 'Login seccessful', username: user.username, token: `Bearer ${token}` };
   }
 }
 

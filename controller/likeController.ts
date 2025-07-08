@@ -30,6 +30,18 @@ class LikeController {
     }
   }
 
+  async hasLikedStory(req: Request, res: Response, next: NextFunction){
+    try{
+      const userId = req.user!.id;
+      const {storyId} = req.params;
+
+      const result = await likeService.hasLikeStory(userId, storyId);
+      res.json(result);
+    }catch(err){
+      next(err);
+    }
+  }
+
   async getLikesCount(req: Request, res: Response, next: NextFunction) {
     try {
       const { storyId } = req.params;
