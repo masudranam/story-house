@@ -1,6 +1,6 @@
+// src/components/AdminMenu.tsx
 import { NavLink } from 'react-router-dom';
 import {
-  Home,
   LayoutDashboard,
   Users,
   FileText,
@@ -8,37 +8,41 @@ import {
   Settings,
 } from 'lucide-react';
 
-export default function AdminSidebar({ open }: { open: boolean }) {
+export default function AdminMenu() {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-600 transition ${
-      isActive ? 'bg-blue-700 font-semibold' : ''
-    }`;
+    `inline-flex items-center gap-1 px-4 py-2 rounded-md transition
+     ${isActive ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-200'}`;
 
   return (
-    <aside className={`bg-blue-800 text-white h-full p-4 ${open ? 'block' : 'hidden'} md:block`}>
-      <h2 className="text-2xl font-bold mb-4">Admin</h2>
+    <nav className="w-full border-b">
+      <div className="mx-auto flex flex-wrap gap-2 p-3 max-w-6xl">
+        
 
-      <NavLink to="/" className={linkClass}>
-        <Home size={18} /> {open && 'Home'}
-      </NavLink>
-
-      <nav className="space-y-2">
         <NavLink to="/admin/dashboard" className={linkClass}>
-          <LayoutDashboard size={18} /> {open && 'Dashboard'}
+          <LayoutDashboard size={18} />
+          <span>Dashboard</span>
         </NavLink>
+
         <NavLink to="/admin/users" className={linkClass}>
-          <Users size={18} /> {open && 'Users'}
+          <Users size={18} />
+          <span>Users</span>
         </NavLink>
+
         <NavLink to="/admin/posts" className={linkClass}>
-          <FileText size={18} /> {open && 'Posts'}
+          <FileText size={18} />
+          <span>Posts</span>
         </NavLink>
+
         <NavLink to="/admin/comments" className={linkClass}>
-          <MessageCircle size={18} /> {open && 'Comments'}
+          <MessageCircle size={18} />
+          <span>Comments</span>
         </NavLink>
+
         <NavLink to="/admin/settings" className={linkClass}>
-          <Settings size={18} /> {open && 'Settings'}
+          <Settings size={18} />
+          <span>Settings</span>
         </NavLink>
-      </nav>
-    </aside>
+      </div>
+    </nav>
   );
 }

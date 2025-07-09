@@ -8,6 +8,11 @@ interface Post {
   description: string;
   authorId: string;
   createdAt: string;
+  author:{
+    name:string;
+    username:string;
+    email:string;
+  }
 }
 
 const POSTS_PER_PAGE = 12;

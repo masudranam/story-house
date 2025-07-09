@@ -1,22 +1,27 @@
 import { useEffect, useState } from 'react';
 import API from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 interface Comment {
   id: string;
   userId: string;
   content: string;
   createdAt: string;
+  storyId: string;
   author: {
     id: string;
     username: string;
   };
 }
 
+const COMMENTS_PER_PAGE = 6;
+
 export default function Comments() {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchComments = async () => {
     setLoading(true);
@@ -31,12 +36,21 @@ export default function Comments() {
 
   useEffect(() => {
     fetchComments();
-  }, [page, search]);
+  }, []);
+
+  const filtered = comments.filter(
+    (c) =>
+      c.content.toLowerCase().includes(search.toLowerCase()) ||
+      c.author.username.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filtered.length / COMMENTS_PER_PAGE);
+  const visible = filtered.slice((page - 1) * COMMENTS_PER_PAGE, page * COMMENTS_PER_PAGE);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Delete this comment?')) return;
     try {
-      await API.delete(`comments/${id}`);
+      await API.delete(`/comments/${id}`);
       fetchComments();
     } catch (err) {
       alert('Failed to delete comment');
@@ -44,56 +58,82 @@ export default function Comments() {
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Moderate Comments</h1>
+    <div className="max-w-6xl mx-auto px-4">
+      <h1 className="text-2xl font-bold mb-6">Moderate Comments</h1>
 
       <input
         type="text"
-        placeholder="Search by comment or user..."
+        placeholder="Search by content or username..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 px-3 py-2 border rounded w-full max-w-sm"
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1);
+        }}
+        className="mb-6 px-4 py-2 border rounded w-full max-w-md"
       />
 
       {loading ? (
         <div>Loading comments...</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border shadow">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-2 text-left">Comment</th>
-                <th className="px-4 py-2">User</th>
-                <th className="px-4 py-2">Post</th>
-                <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {comments.map((c) => (
-                <tr key={c.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2 max-w-md">{c.content}</td>
-                  <td className="px-4 py-2">{c.author.username}</td>
-                  <td className="px-4 py-2">{c.content}</td>
-                  <td className="px-4 py-2">{new Date(c.createdAt).toLocaleDateString()}</td>
-                  <td className="px-4 py-2">
-                    <button
-                      onClick={() => handleDelete(c.id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded text-sm"
-                    >
-                      Delete
-                    </button>
-                    {/* Optional:
-                    <button className="ml-2 px-3 py-1 bg-gray-500 text-white rounded text-sm">
-                      Ban User
-                    </button>
-                    */}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {visible.map((c) => (
+              <div
+                key={c.id}
+                className="bg-white border rounded-lg shadow p-4 hover:shadow-md cursor-pointer relative"
+                onClick={() =>
+                  navigate(`/stories/${c.storyId}`, { state: { scrollToComment: true } })
+                }
+              >
+                <p className="text-sm text-gray-800 font-medium mb-1">
+                  @{c.author.username}
+                </p>
+
+                <p className="text-sm text-gray-600 line-clamp-3">
+                  {c.content.length > 100 ? c.content.slice(0, 100) + '...' : c.content}
+                </p>
+
+                <p className="text-xs text-gray-400 mt-2">
+                  {new Date(c.createdAt).toLocaleString()}
+                </p>
+
+                <div className="absolute top-2 right-2 space-x-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(c.id);
+                    }}
+                    className="text-xs text-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-4 mt-6 items-center">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+              >
+                Prev
+              </button>
+              <span className="text-sm text-gray-700">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

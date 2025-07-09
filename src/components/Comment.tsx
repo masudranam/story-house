@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import API from '../services/api';
+import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 interface Comment {
     id: string;
@@ -7,6 +9,11 @@ interface Comment {
     userId: string;
     content: string;
     createdAt: string;
+    author:{
+        id: string;
+        name:string;
+        username:string;
+    }
 }
 
 interface CommentsSectionProps {
@@ -22,6 +29,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editedContent, setEditedContent] = useState('');
     const [page, setPage] = useState(1);
+    const {user} = useUser();
 
    
     const fetchComments = async () => {
@@ -78,12 +86,13 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         <div className="mt-6">
              
             <div className="flex items-start gap-2 mb-4">
-                <button
-                    className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
+                <Link 
+                to={`/profile`}
+                    className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold hover:bg-blue-700"
                     title="you"
                 >
-                    {userId.charAt(0).toUpperCase()}
-                </button>
+                    {user?.username.charAt(0)}
+                </Link>
                 <input
                     className="flex-grow border rounded-full px-4 py-2 bg-gray-100 focus:outline-none"
                     placeholder="Write a comment..."
@@ -97,12 +106,13 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
             <div className="space-y-3">
                 {visible.map(c => (
                     <div key={c.id} className="flex items-start gap-2">
-                        <button
-                            className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold"
-                            title={c.userId}
-                        >
-                            {c.userId.charAt(0).toUpperCase()}
-                        </button>
+                <Link 
+                to={`/profile/${c.author.id}`}
+                    className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold hover:bg-blue-700"
+                    title={c.author.name}
+                >
+                    {c.author.name.charAt(0)}
+                </Link>
 
                         <div className="bg-gray-100 px-4 py-2 rounded-xl w-full">
                             {editingId === c.id ? (

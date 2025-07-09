@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import TextInput from '../components/TextInput';
+import { useUser } from '../context/UserContext';
 
 const Login = () => {
+  const {setUser} = useUser();
+
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -16,6 +19,14 @@ const Login = () => {
 
       if (token.startsWith('Bearer ')) token = token.split(' ')[1];
       localStorage.setItem('token', token);
+
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      setUser({
+        userId: decoded.userId,
+        username: decoded.username,
+        role: decoded.role,
+      });
+      
       navigate('/profile');
     } catch {
       alert('Login failed');
@@ -31,7 +42,7 @@ const Login = () => {
             type="text"
             name="identifier"
             value={identifier}
-            onChange={e =>setIdentifier(e.target.value)}
+            onChange={e => setIdentifier(e.target.value)}
             placeholder='Username or email'
             required
           />

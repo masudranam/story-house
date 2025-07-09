@@ -108,7 +108,7 @@ const UserInfo = () => {
                 />
            
 
-            {/* Dynamic Buttons Area */}
+       
             <div className="pt-2">
                 {!editMode ? (
                     <button

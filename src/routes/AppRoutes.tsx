@@ -26,21 +26,26 @@ const AppRoutes = () => {
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="profile/:userId" element={<Profile />} />
         <Route path="edit-post/:id" element={<EditPost />} />
 
         <Route path="settings" element={<Settings />}>
           <Route index element={<UserInfo />} />
-          <Route path="info" element={<UserInfo />} />
           <Route path="security" element={<Security />} />
         </Route>
 
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={<AdminLayout />} >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="posts" element={<Posts />} />
           <Route path="comments" element={<Comments />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<Settings />}>
+            <Route index element={<UserInfo />} />
+            <Route path="info" element={<UserInfo />} />
+            <Route path="security" element={<Security />} />
+          </Route>
+          
         </Route>
       </Route>
 

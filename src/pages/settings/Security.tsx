@@ -8,46 +8,56 @@ import TextInput from '../../components/TextInput';
 
 interface TokenPayload {
     userId: string;
+    role:Number;
+    username: string;
 }
 
 const Security = () => {
-    const [oldPw, setOldPw] = useState('');
-    const [newPw, setNewPw] = useState('');
-    const navigate = useNavigate();
+ const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const navigate = useNavigate();
 
-    const changePassword = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await API.post('/auth/change-password', { oldPw, newPw });
-        alert('Password updated');
-        setOldPw(''); setNewPw('');
-    };
+  const token = localStorage.getItem('token');
+  let userId = '';
 
-    const deleteAccount = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Not logged in');
-            return;
-        }
+  try {
+    if (!token) throw new Error('No token');
+    const decoded = jwtDecode<TokenPayload>(token);
+    userId = decoded.userId;
+  } catch {
+    alert('Invalid or missing token. Please login again.');
+    navigate('/login');
+    return null;
+  }
 
-        let userId: string;
-        try {
-            const decoded = jwtDecode<TokenPayload>(token);
-            userId = decoded.userId;
-        } catch {
-            alert('Invalid token');
-            return;
-        }
+  const changePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await API.patch(`/users/change-password/${userId}`, { oldPassword, newPassword }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Password updated successfully');
+      setOldPassword('');
+      setNewPassword('');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to change password');
+    }
+  };
 
-        if (!window.confirm('Are you sure you want to delete your account?')) return;
+  const deleteAccount = async () => {
+    if (!window.confirm('Are you sure you want to delete your account?')) return;
 
-        try {
-            await API.delete(`/users/${userId}`);
-            localStorage.removeItem('token');
-            navigate('/signup');
-        } catch (error) {
-            alert('Failed to delete account');
-        }
-    };
+    try {
+      await API.delete(`/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      localStorage.removeItem('token');
+      alert('Account deleted');
+      navigate('/signup');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to delete account');
+    }
+  };
 
     return (
         <div className="space-y-6">
@@ -57,17 +67,17 @@ const Security = () => {
                 <TextInput
                     type="password"
                     placeholder="Current password"
-                    value={oldPw}
-                    onChange={e => setOldPw(e.target.value)}
+                    value={oldPassword}
+                    onChange={e => setOldPassword(e.target.value)}
                     toggleVisibility
                     required
                 />
                 <TextInput
                     type="password"
                     placeholder="New password"
-                    value={newPw}
+                    value={newPassword}
                     toggleVisibility
-                    onChange={e => setNewPw(e.target.value)}
+                    onChange={e => setNewPassword(e.target.value)}
                     required
                 />
                 <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
