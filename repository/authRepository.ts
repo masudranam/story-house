@@ -40,6 +40,14 @@ class AuthRepository {
       { where: { username: curUsername }, ...options },
     );
   }
+
+    async updatePassword(userId: string, newHashedPassword: string) {
+    return Auth.update(
+      { password: newHashedPassword },
+      { where: { userId } }
+    );
+  }   
+
 }
 
 export const authRepository = new AuthRepository();

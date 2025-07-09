@@ -1,7 +1,7 @@
 import { Op, WhereOptions } from 'sequelize';
 
 import { createStoryDTO } from '../dto/DTO.ts';
-import { Story } from '../database/database.ts';
+import { Story, User } from '../database/database.ts';
 import { storyFilters } from '../dto/story/storyFilters.ts';
 import { storyAttributes } from '../dto/story/storyAttributes.ts';
 
@@ -29,12 +29,19 @@ class StoryRepository {
       where.title = { [Op.iLike]: `%${filters.title}%` };
     }
 
-    const stories: storyAttributes[] = await Story.findAll({
-      where,
-      order: [['updatedAt', sort]],
-      limit,
-      offset,
-    });
+const stories: storyAttributes[] = await Story.findAll({
+  where,
+  order: [['updatedAt', sort]],
+  limit,
+  offset,
+  include: [
+    {
+      model: User,
+      as: 'author',
+      attributes: ['name','username', 'email'], // only the fields you want
+    },
+  ],
+});
     return stories;
   };
 
@@ -44,7 +51,14 @@ class StoryRepository {
   }
 
   async findStoryByStoryId(id: string): Promise<storyAttributes | null> {
-    const story: storyAttributes | null = await Story.findByPk(id);
+    const story: storyAttributes | null = await Story.findByPk(id,
+       {
+    include: {
+      model: User,
+      as: 'author', // optional alias if you used one
+      attributes: ['name', 'username', 'email'],
+    },
+  });
 
     return story;
   }
@@ -62,8 +76,7 @@ class StoryRepository {
   async deleteStoryByStoryId(storyId: string, userId: string): Promise<number> {
     const deleteCount = await Story.destroy({
       where: {
-        id: storyId,
-        authorId: userId,
+        id: storyId
       },
     });
     return deleteCount;

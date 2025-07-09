@@ -33,11 +33,29 @@ export class AuthService {
     );
 
     if (!isMatch) throw new Error('Invalid credentials');
-
-    const token = generateToken(user.id, user.role);
+    const token = generateToken(user.id,user.username, user.role);
 
     return { message: 'Login seccessful', username: user.username, token: `Bearer ${token}` };
   }
+
+async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    const auth = await authRepository.findAuthByUserId(userId);
+
+    if (!auth) throw new Error('User auth  not found');
+
+    const match = await passwordHandler.comparePassword(oldPassword, auth.password); 
+
+    if (!match) throw new Error('Old password is incorrect');
+
+    const sameAsOld = await passwordHandler.comparePassword(newPassword, auth.password);
+    if (sameAsOld) throw new Error('New password must differ from old one');
+
+    const hashed = await passwordHandler.hashedPassword(newPassword);
+    await authRepository.updatePassword(userId, hashed);
+
+    return { message: 'Password changed successfully' };
+  }
+  
 }
 
 export const authService = new AuthService();

@@ -50,6 +50,7 @@ export class StoryController {
   ) {
     try {
       const storyId = req.params.id;
+   
       const userId = req.user!.id;
       const deleted = await storyService.deleteStoryByStoryId(storyId, userId);
       res
