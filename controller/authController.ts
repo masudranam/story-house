@@ -33,6 +33,23 @@ export class AuthController {
     }
   }
 
+  async changePassword(req: userRequest, res: Response, next: NextFunction) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const userId = req.user?.id;
+
+      if (!userId){
+        res.status(httpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });
+        return;
+      }
+
+      const result = await authService.changePassword(userId, oldPassword, newPassword);
+      responseFormatter.format(req, res,result,httpStatus.OK)
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async getAllAuth(req: userRequest, res: Response, next: NextFunction) {
     try {
       const auth = await Auth.findAll();

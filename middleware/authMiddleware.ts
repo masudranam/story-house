@@ -11,18 +11,16 @@ export async function authMiddleware(
 ) {
   try {
     const authHeader = req.headers.authorization;
-  
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       res.status(httpStatus.FORBIDDEN).json({ message: 'No token provided' });
       return;
     }
 
     const token = authHeader.split(' ')[1];
-
     const decoded = jwt.verify(
       token,
       (process.env.JWT_SECRET as string) || 'secret',
-    ) as { userId: string; role: number; exp: number };
+    ) as { userId: string; username: string,role: number; exp: number };
 
     const currentTime = Math.floor(Date.now() / 1000);
     if (decoded.exp < currentTime) {
@@ -36,6 +34,7 @@ export async function authMiddleware(
     req.user = {
       id: decoded.userId,
       role: decoded.role,
+      username: decoded.username
     };
     next();
   } catch (err) {

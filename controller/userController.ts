@@ -6,6 +6,7 @@ import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
 import { responseFormatter } from '../utils/responseFormatteUtils.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
+import { Op, Sequelize } from 'sequelize';
 
 export class UserController {
   async getUserById(req: Request, res: Response, next: NextFunction) {
@@ -91,15 +92,28 @@ export class UserController {
     }
   }
 
-  async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      await User.destroy({ where: {} });
-      await Auth.destroy({ where: {}, restartIdentity: true });
-      res.status(httpStatus.OK).json({ message: 'All users deleted' });
-    } catch (err) {
-      next(err);
-    }
+
+async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
+  try {
+ 
+    const admins = await User.findAll({ where: { role: { [Op.eq]: 1 } } });
+ 
+    const adminIds = admins.map(admin => admin.id);
+ 
+    await User.destroy({ where: { role: { [Op.ne]: 1 } } });
+
+  
+    await Auth.destroy({
+      where: { userId: { [Op.notIn]: adminIds } },
+      restartIdentity: true,
+    });
+
+    res.status(httpStatus.OK).json({ message: 'All non-admin users deleted' });
+  } catch (err) {
+    next(err);
   }
+}
+
 }
 
 export const userController = new UserController();

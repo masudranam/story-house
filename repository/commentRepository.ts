@@ -45,13 +45,13 @@ class CommentRepository {
         model: User,
         as: 'author',
         where: { username: { [Op.iLike]: `%${author}%` } },
-        attributes: ['id', 'username'],
+        attributes: ['id', 'name', 'username'],
       });
     } else {
       include.push({
         model: User,
         as: 'author',
-        attributes: ['id', 'username'],
+        attributes: ['id','name', 'username'],
       });
     }
     const options: FindAndCountOptions = {
