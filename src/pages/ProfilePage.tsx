@@ -76,7 +76,7 @@ const Profile = () => {
 
     return (
         <div className="max-w-4xl mx-auto mt-8 px-4">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 caret-transparent">
                 <h1 className="text-2xl font-bold">
                     {isOwnProfile ? 'Welcome, ' : 'Posts by '}
                     {username}
@@ -86,7 +86,7 @@ const Profile = () => {
             {isOwnProfile && (
                 <button
                     onClick={handleAddPost}
-                    className="mb-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    className="mb-6 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
                 >
                     Add New Post
                 </button>
@@ -98,7 +98,7 @@ const Profile = () => {
                     <PostCard
                         key={post.id}
                         {...post}
-                        onDelete={isOwnProfile ? handleDelete : undefined}
+                        onDelete={isOwnProfile || user?.role === 1? handleDelete : undefined}
                         onEdit={isOwnProfile ? handleEdit : undefined}
                     />
                 ))}

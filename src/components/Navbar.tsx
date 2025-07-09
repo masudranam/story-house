@@ -31,7 +31,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-blue-700 text-blue-50 px-8 py-6 flex justify-between items-center caret-transparent">
-      <h1 className="text-xl font-bold"> <Link to="/" >BlogApp</Link></h1>
+      <h1 className="text-xl font-bold">  <Link to="/" >BlogApp</Link></h1>
 
       <div className="space-x-4">
         <Link to="/" className="hover:underline ">Home</Link>
@@ -49,19 +49,19 @@ const Navbar = () => {
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0 mt-2 w-30 bg-white text-black rounded ">
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">Profile</Link>
+              <div className="absolute right-0.5 mt-2 w-30 bg-white text-black rounded ">
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-300">Profile</Link>
                 {user.role === 1 && (
-                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-200">
+                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-300">
                     Admin
                   </Link>
                 )}
-                <Link to="/settings" className="block px-4 py-2 hover:bg-gray-200">Settings</Link>
+                <Link to="/settings" className="block px-4 py-2 hover:bg-gray-300">Settings</Link>
 
                 <button
                   onClick={handleLogout}
                   title="You will loged out from the user"
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-300 cursor-pointer"
                 >
                   Logout
                 </button>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
+import { useUser } from '../../context/UserContext';
 
 interface Post {
   id: string;
@@ -23,6 +24,7 @@ export default function Posts() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
   const [page, setPage] = useState(1);
+  const {user} = useUser();
   const navigate = useNavigate();
 
   const fetchPosts = async () => {
@@ -82,6 +84,7 @@ export default function Posts() {
           onChange={(e) => {
             setSearch(e.target.value);
             setPage(1);
+            
           }}
           className="px-4 py-2 border rounded w-full sm:w-1/2"
         />

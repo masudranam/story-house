@@ -9,10 +9,10 @@ interface Comment {
     userId: string;
     content: string;
     createdAt: string;
-    author:{
+    author: {
         id: string;
-        name:string;
-        username:string;
+        name: string;
+        username: string;
     }
 }
 
@@ -29,9 +29,9 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editedContent, setEditedContent] = useState('');
     const [page, setPage] = useState(1);
-    const {user} = useUser();
+    const { user } = useUser();
 
-   
+
     const fetchComments = async () => {
         try {
             const { data } = await API.get(`/comments?storyId=${storyId}`);
@@ -45,7 +45,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         fetchComments();
     }, [storyId]);
 
-    
+
     const totalPages = Math.ceil(comments.length / PER_PAGE);
     const visible = comments.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
@@ -55,7 +55,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
             await API.post(`/comments/${storyId}`, { content: newComment.trim() });
             setNewComment('');
             await fetchComments();
-            setPage(1);  
+            setPage(1);
         } catch {
             alert('Failed to post comment');
         }
@@ -84,10 +84,10 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
 
     return (
         <div className="mt-6">
-             
+
             <div className="flex items-start gap-2 mb-4">
-                <Link 
-                to={`/profile`}
+                <Link
+                    to={`/profile`}
                     className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold hover:bg-blue-700"
                     title="you"
                 >
@@ -102,17 +102,17 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                 />
             </div>
 
-            
+
             <div className="space-y-3">
                 {visible.map(c => (
                     <div key={c.id} className="flex items-start gap-2">
-                <Link 
-                to={`/profile/${c.author.id}`}
-                    className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold hover:bg-blue-700"
-                    title={c.author.name}
-                >
-                    {c.author.name.charAt(0)}
-                </Link>
+                        <Link
+                            to={`/profile/${c.author.id}`}
+                            className="w-9 h-9 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold hover:bg-blue-700"
+                            title={c.author.name}
+                        >
+                            {c.author.name.charAt(0)}
+                        </Link>
 
                         <div className="bg-gray-100 px-4 py-2 rounded-xl w-full">
                             {editingId === c.id ? (
@@ -157,7 +157,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                 ))}
             </div>
 
-            
+
             {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-3 mt-6">
                     <button

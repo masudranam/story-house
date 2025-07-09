@@ -51,7 +51,7 @@ const PostCard = ({
 
   return (
     <div className="relative bg-white rounded shadow border h-full flex flex-col justify-between">
-      {/* Edit/Delete menu if available */}
+     
       {(onEdit || onDelete) && (
         <div className="absolute top-2 right-2 z-10">
           <button

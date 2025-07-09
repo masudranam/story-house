@@ -90,7 +90,7 @@ export default function Comments() {
                 </p>
 
                 <p className="text-sm text-gray-600 line-clamp-3">
-                  {c.content.length > 100 ? c.content.slice(0, 100) + '...' : c.content}
+                  {c.content.length > 100 ? c.content.slice(0, 50) + '...' : c.content}
                 </p>
 
                 <p className="text-xs text-gray-400 mt-2">

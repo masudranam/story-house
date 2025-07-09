@@ -3,12 +3,19 @@ import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import TextInput from '../components/TextInput';
 import { useUser } from '../context/UserContext';
+import { jwtDecode } from 'jwt-decode';
 
+interface TokenPayload {
+  userId: string;
+  username: string;
+  role:number;
+}
 const Login = () => {
-  const {setUser} = useUser();
+  const {user, setUser} = useUser();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const[rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +27,8 @@ const Login = () => {
       if (token.startsWith('Bearer ')) token = token.split(' ')[1];
       localStorage.setItem('token', token);
 
-      const decoded = JSON.parse(atob(token.split('.')[1]));
+      const decoded = jwtDecode<TokenPayload>(token);
+
       setUser({
         userId: decoded.userId,
         username: decoded.username,
@@ -54,6 +62,17 @@ const Login = () => {
             placeholder='Enter password'
             required
           />
+             <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="remember"
+          checked={rememberMe}
+          onChange={(e) => setRememberMe(e.target.checked)}
+        />
+        <label htmlFor="remember" className="text-sm">
+          Remember me
+        </label>
+      </div>
           <button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition"
