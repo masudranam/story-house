@@ -4,6 +4,7 @@ import { User } from '../database/models/user.ts';
 import { signUpUser } from '../dto/auth/signupUserDTO.ts';
 import { userFilters } from '../dto/user/userFilters.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
+import { Story, Comment } from '../database/database.ts';
 
 class UserRepository {
   async findUserByIdentifier(
@@ -43,14 +44,54 @@ class UserRepository {
     return await User.destroy({ where: { id } });
   }
 
-  async searchUser(filters: userFilters, limit: number, offset: number) {
-    const users: userAttributes[] = await User.findAll({
-      where: filters,
-      limit,
-      offset,
-    });
-    return users;
+async searchUsers(
+  filters: userFilters,
+  limit: number,
+  offset: number
+): Promise<{ count: number; rows: userAttributes[] }> {
+  const where: WhereOptions = {};
+
+  if (filters.username)
+    where.username = { [Op.iLike]: `%${filters.username}%` };
+  
+  if (filters.name)
+    where.username = { [Op.iLike]: `%${filters.name}%` };
+
+  if (filters.email)
+    where.email = { [Op.iLike]: `%${filters.email}%` };
+
+  if (filters.role !== undefined)
+    where.role = filters.role;
+
+  return await User.findAndCountAll({
+    where,
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']],
+  });
+}
+
+  async getAllStates() {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const [totalUsers, newUsers, totalPosts, newPosts, totalComments] = await Promise.all([
+      User.count(),
+      User.count({ where: { createdAt: { [Op.gte]: oneWeekAgo } } }),
+      Story.count(),
+      Story.count({ where: { createdAt: { [Op.gte]: oneWeekAgo } } }),
+      Comment.count(),
+    ]);
+
+    return {
+      totalUsers,
+      newUsersThisWeek: newUsers,
+      totalPosts,
+      newPostsThisWeek: newPosts,
+      totalComments,
+    };
   }
+
 }
 
 export const userRepository = new UserRepository();

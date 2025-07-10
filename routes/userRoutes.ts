@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { userController } from '../controller/userController.ts';
+import { UserController, userController } from '../controller/userController.ts';
 import { authMiddleware } from '../middleware/authMiddleware.ts';
 import { authorizeOwner } from '../middleware/authorizeOwner.ts';
 import { validateRequest } from '../middleware/validateRequest.ts';
@@ -14,6 +14,7 @@ router.get(
   userController.searchUsers,
 );
 router.delete('/', userController.deleteAllUsers);
+router.get('/states',authMiddleware, userController.getStats);
 
 router
   .route('/:id')
@@ -34,5 +35,6 @@ router
     validateRequest({ query: userFiltersSchema, params: checkUUID }),
     userController.updateUsernameById,
   );
+ 
 
 export default router;

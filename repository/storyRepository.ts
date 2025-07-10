@@ -22,14 +22,14 @@ class StoryRepository {
     sort: 'ASC' | 'DESC',
     limit: number,
     offset: number,
-  ): Promise<storyAttributes[]> => {
+  ): Promise<{count: number; rows: storyAttributes[]}> => {
     const where: WhereOptions = {};
     if (filters.authorId) where.authorId = filters.authorId;
     if (filters.title) {
       where.title = { [Op.iLike]: `%${filters.title}%` };
     }
 
-const stories: storyAttributes[] = await Story.findAll({
+const {count, rows} = await Story.findAndCountAll({
   where,
   order: [['updatedAt', sort]],
   limit,
@@ -42,7 +42,7 @@ const stories: storyAttributes[] = await Story.findAll({
     },
   ],
 });
-    return stories;
+    return {count, rows};
   };
 
   async deleteAllStories(): Promise<number> {
