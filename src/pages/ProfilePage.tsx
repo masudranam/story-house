@@ -22,16 +22,16 @@ const Profile = () => {
   const isOwnProfile = !userId || userId === user?.userId;
 
   useEffect(() => {
-   
-    // if (!user) {
-    //   navigate('/login');
-    //   return;
-    // }
+   if(user === null)return;
+    if (!user) {
+      navigate('/login');
+      return;
+    }
    
     if (isOwnProfile) {
       setUsername(user?.username ?? 'User');
     }
-  },[userId]);
+  },[user,userId]);
 
   useEffect(() => {
     const fetchPosts = async () => {

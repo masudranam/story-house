@@ -30,7 +30,6 @@ const PostDetail = () => {
   const [loading, setLoading] = useState(true);
   const [likeLoading, setLikeLoading] = useState(false);
 
-
   useEffect(() => {
     const fetchPost = async () => {
       try {

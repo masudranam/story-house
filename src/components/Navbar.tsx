@@ -34,9 +34,9 @@ const Navbar = () => {
       <h1 className="text-xl font-bold">  <Link to="/" >BlogApp</Link></h1>
 
       <div className="space-x-4">
-        <Link to="/" className="hover:underline ">Home</Link>
-        <Link to="#" className="hover:underline">About</Link>
-        <Link to="#" className="hover:underline">Contact</Link>
+        <Link to="/" className="hover:underline">Home</Link>
+        <Link to="/about" className="hover:underline">About</Link>
+        <Link to="/contact" className="hover:underline mr-150">Contact</Link>
 
         {user?.username ? (
           <div className="inline-block relative" ref={dropdownRef}>

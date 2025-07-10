@@ -1,4 +1,3 @@
-import { MessageCircle, ThumbsUp } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Props } from '../dtos/PostCardProps.dto';
@@ -87,7 +86,7 @@ const PostCard = ({
           <Link
             to={`/profile/${authorId}`}
             onClick={e => e.stopPropagation()} 
-            className="text-blue-600 hover:underline"
+            className="text-blue-600 hover:font-bold"
           >
             {author.name}
           </Link>{' '}

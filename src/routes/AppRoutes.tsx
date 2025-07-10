@@ -15,6 +15,8 @@ import AdminLayout from '../layout/AdminLayout';
 import Users from '../pages/admin/Users';
 import Posts from '../pages/admin/Posts';
 import Comments from '../pages/admin/Comments';
+import Contact from '../pages/Contact';
+import About from '../pages/About';
 
 const AppRoutes = () => {
   return (
@@ -28,6 +30,9 @@ const AppRoutes = () => {
         <Route path="profile" element={<Profile />} />
         <Route path="profile/:userId" element={<Profile />} />
         <Route path="edit-post/:id" element={<EditPost />} />
+        <Route path='contact' element={<Contact />} />
+        <Route path='about' element={<About />} />
+
 
         <Route path="settings" element={<Settings />}>
           <Route index element={<UserInfo />} />

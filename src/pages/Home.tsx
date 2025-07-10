@@ -14,9 +14,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [likesCount, setLikesCount] = useState(0);
-  const [commentsCount, setCommentsCount] = useState(0);
-
+ 
   const { user } = useUser();
   const navigate = useNavigate();
 
@@ -50,7 +48,7 @@ const Home = () => {
     navigate(`/edit-post/${id}`);
   };
 
-  const handleDelete = async (id: string) => {
+  async function handleDelete(id: string) {
     if (confirm('Are you sure you want to delete this post?')) {
       try {
         await API.delete(`/stories/${id}`);
@@ -59,7 +57,7 @@ const Home = () => {
         console.error('Failed to delete post:', error);
       }
     }
-  };
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
@@ -104,7 +102,7 @@ const Home = () => {
             />
           ))
         ) : (
-          <p className="text-gray-600 col-span-full">No matching posts found.</p>
+          <p className="text-gray-600 col-span-full">No posts found.</p>
         )}
       </div>
 
