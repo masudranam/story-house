@@ -55,7 +55,7 @@ export class CommentController {
   async searchComment(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await commentService.searchComments(req.query);
-      res.status(httpStatus.OK).json(result);
+      res.status(httpStatus.OK).json({ rows: result.rows, count: result.count });
     } catch (err) {
       next(err);
     }

@@ -14,7 +14,7 @@ export async function authorizeOwner(
     const userId = req.user?.id;
     const userrole = req.user?.role;
     
-    if(userrole === userRole.ADMIN && req.method === 'DELETE'){
+    if(paramId === userId && userrole === userRole.ADMIN && req.method === 'DELETE'){
       res.status(httpStatus.UNAUTHORIZED).json({ message: 'Admin cannot remove' });
       return;
     }

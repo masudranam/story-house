@@ -21,14 +21,13 @@ class StoryService {
 
     const offset = (page - 1) * limit;
 
-    const stories = await storyRepository.getAllStories(
+    const {count, rows} = await storyRepository.getAllStories(
       filters,
       sort,
       limit,
       offset,
     );
-    if (!stories) throw new Error('No story exist');
-    return stories;
+    return {count, rows};
   }
 
   async deleteAllStories(): Promise<{ deleted: number }> {

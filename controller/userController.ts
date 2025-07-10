@@ -7,7 +7,8 @@ import { Auth } from '../database/models/auth.ts';
 import { responseFormatter } from '../utils/responseFormatteUtils.ts';
 import { userAttributes } from '../dto/user/userAtrributes.ts';
 import { Op, Sequelize } from 'sequelize';
-
+import { userFiltersSchema } from '../dto/user/userFilters.ts';
+ 
 export class UserController {
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
@@ -68,6 +69,7 @@ export class UserController {
   async deleteUserById(req: Request, res: Response, next: NextFunction) {
     try {
       const user: userAttributes = await userService.getUserById(req.params.id);
+      console.log(user);
 
       if (!user?.id) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
@@ -83,14 +85,15 @@ export class UserController {
     }
   }
 
-  async searchUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      const users = await userService.searchUser(req.query);
-      responseFormatter.format(req, res, users, httpStatus.OK);
-    } catch (err) {
-      next(err);
-    }
+async searchUsers(req: Request, res: Response, next: NextFunction) {
+  try {
+     const filters = userFiltersSchema.parse(req.query); 
+    const result = await userService.searchUsers(filters);
+    res.status(200).json(result); 
+  }catch(err){
+    next(err);
   }
+}
 
 
 async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
@@ -114,6 +117,14 @@ async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+ async getStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const stats = await userService.getAllStates();
+      res.status(200).json(stats);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export const userController = new UserController();

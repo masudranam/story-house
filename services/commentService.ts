@@ -28,13 +28,11 @@ class CommentService {
     return commentRepository.deleteCommentByCommentId(commentId);
   }
 
-  async searchComments(
-    params: searchCommentParams,
-  ): Promise<commentAttributes[]> {
-    const { page = 1, limit = 100 } = params;
-    const { rows, count } = await commentRepository.searchComments(params);
-    return rows;
-  }
+async searchComments(
+  params: searchCommentParams,
+): Promise<{ rows: commentAttributes[]; count: number }> {
+  return await commentRepository.searchComments(params);
+}
 }
 
 export const commentService = new CommentService();
