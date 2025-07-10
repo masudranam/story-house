@@ -14,6 +14,9 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [likesCount, setLikesCount] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+
   const { user } = useUser();
   const navigate = useNavigate();
 
@@ -37,6 +40,8 @@ const Home = () => {
     }
   };
 
+ 
+
   useEffect(() => {
     fetchPosts();
   }, [currentPage, sortAsc, search]);
@@ -49,7 +54,7 @@ const Home = () => {
     if (confirm('Are you sure you want to delete this post?')) {
       try {
         await API.delete(`/stories/${id}`);
-        fetchPosts(); // refetch after delete
+        fetchPosts();
       } catch (error) {
         console.error('Failed to delete post:', error);
       }

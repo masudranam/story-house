@@ -1,23 +1,8 @@
 import { MessageCircle, ThumbsUp } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import type { Props } from '../dtos/PostCardProps.dto';
 
-interface Props {
-  id: string;
-  title: string;
-  description: string;
-  authorId: string;
-  createdAt: string;
-  author: {
-    name: string;
-    username: string;
-    email: string;
-  };
-  likesCount?: number;
-  commentsCount?: number;
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
-}
 
 const PostCard = ({
   id,
@@ -48,6 +33,8 @@ const PostCard = ({
     setShowMenu(false);
     onDelete?.(id);
   };
+
+  
 
   return (
     <div className="relative bg-white rounded shadow border h-full flex flex-col justify-between">
@@ -84,6 +71,7 @@ const PostCard = ({
         </div>
       )}
 
+
       
       <Link
         to={`/stories/${id}`}
@@ -106,14 +94,6 @@ const PostCard = ({
           
           on {new Date(createdAt).toLocaleDateString()}
           <div className="mt-4 flex gap-6 text-sm text-gray-600 items-center">
-            <div className="flex items-center gap-1">
-              <ThumbsUp size={16} className="text-blue-500" />
-              {likesCount || 0}
-            </div>
-            <div className="flex items-center gap-1">
-              <MessageCircle size={16} className="text-gray-500" />
-              {commentsCount || 0}
-            </div>
           </div>
         </small>
       </Link>
