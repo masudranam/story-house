@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import API from '../../services/api';
 
 interface Stats {
   totalUsers: number;
@@ -8,15 +10,28 @@ interface Stats {
   newPostsThisWeek: number;
 }
 
-const stats: Stats = {
-  totalUsers: 5,
-  totalPosts: 5,
-  totalComments: 5,
-  newUsersThisWeek: 3,
-  newPostsThisWeek: 2,
-};
-
 export default function Dashboard() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await API.get('/users/states');
+        setStats(res.data);
+      } catch (err) {
+        console.error('Failed to load dashboard stats', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  if (loading) return <div>Loading dashboard...</div>;
+  if (!stats) return <div>Failed to load stats.</div>;
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>

@@ -20,14 +20,24 @@ export default function Comments() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const res = await API.get(`/comments`);
-      setComments(res.data);
+      const res = await API.get('/comments', {
+        params: {
+          content: search,
+          author: search,
+          page,
+          limit: COMMENTS_PER_PAGE,
+        },
+      });
+
+      setComments(res.data.rows);
+      setTotal(res.data.count);
     } catch (err) {
       console.error('Failed to fetch comments', err);
     }
@@ -36,16 +46,9 @@ export default function Comments() {
 
   useEffect(() => {
     fetchComments();
-  }, []);
+  }, [page, search]);
 
-  const filtered = comments.filter(
-    (c) =>
-      c.content.toLowerCase().includes(search.toLowerCase()) ||
-      c.author.username.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filtered.length / COMMENTS_PER_PAGE);
-  const visible = filtered.slice((page - 1) * COMMENTS_PER_PAGE, page * COMMENTS_PER_PAGE);
+  const totalPages = Math.ceil(total / COMMENTS_PER_PAGE);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Delete this comment?')) return;
@@ -74,10 +77,12 @@ export default function Comments() {
 
       {loading ? (
         <div>Loading comments...</div>
+      ) : comments.length === 0 ? (
+        <p>No comments found.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {visible.map((c) => (
+            {comments.map((c) => (
               <div
                 key={c.id}
                 className="bg-white border rounded-lg shadow p-4 hover:shadow-md cursor-pointer relative"
@@ -85,9 +90,7 @@ export default function Comments() {
                   navigate(`/stories/${c.storyId}`, { state: { scrollToComment: true } })
                 }
               >
-                <p className="text-sm text-gray-800 font-medium mb-1">
-                  @{c.author.username}
-                </p>
+                <p className="text-sm text-gray-800 font-medium mb-1">@{c.author.username}</p>
 
                 <p className="text-sm text-gray-600 line-clamp-3">
                   {c.content.length > 100 ? c.content.slice(0, 50) + '...' : c.content}

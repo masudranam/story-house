@@ -13,7 +13,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
- 
+
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) throw new Error("useUser must be used inside UserProvider");
@@ -28,12 +28,19 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     if (token) {
       try {
         const decoded = JSON.parse(atob(token.split('.')[1]));
+        const now = Date.now() / 1000;
+        if (decoded.exp && decoded.exp < now) {
+          localStorage.removeItem('token'); // clear expired token
+          return
+        }
         setUser({
           userId: decoded.userId,
           username: decoded.username,
           role: decoded.role,
         });
-      } catch {}
+      } catch { 
+        localStorage.removeItem('token');
+      }
     }
   }, []);
 

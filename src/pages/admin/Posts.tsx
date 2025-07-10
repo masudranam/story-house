@@ -1,37 +1,35 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
+import PostCard from '../../components/PostCard';
 import { useUser } from '../../context/UserContext';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  author: {
-    id: string;
-    name: string;
-    username: string;
-    email: string;
-  };
-}
+import type { Post } from '../../dtos/post.dto';
 
 const POSTS_PER_PAGE = 6;
 
 export default function Posts() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
   const [page, setPage] = useState(1);
-  const {user} = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const res = await API.get(`/stories`);
-      setPosts(res.data.stories);
+      const res = await API.get('/stories', {
+        params: {
+          page,
+          limit: POSTS_PER_PAGE,
+          search,
+          sort: sort === 'newest' ? 'desc' : 'asc',
+        },
+      });
+      setPosts(res.data.rows);
+      setTotal(res.data.count);
     } catch (err) {
       console.error('Failed to fetch posts', err);
     }
@@ -40,23 +38,7 @@ export default function Posts() {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
-
-  const filteredPosts = posts
-    .filter(
-      (p) =>
-        p.title.toLowerCase().includes(search.toLowerCase()) ||
-        p.author.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.author.username.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => {
-      const timeA = new Date(a.createdAt).getTime();
-      const timeB = new Date(b.createdAt).getTime();
-      return sort === 'newest' ? timeB - timeA : timeA - timeB;
-    });
-
-  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
-  const visiblePosts = filteredPosts.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
+  }, [page, search, sort]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
@@ -72,6 +54,8 @@ export default function Posts() {
     navigate(`/edit-post/${id}`);
   };
 
+  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+
   return (
     <div className="max-w-6xl mx-auto px-4">
       <h1 className="text-2xl font-bold mb-6">Manage Posts</h1>
@@ -84,7 +68,6 @@ export default function Posts() {
           onChange={(e) => {
             setSearch(e.target.value);
             setPage(1);
-            
           }}
           className="px-4 py-2 border rounded w-full sm:w-1/2"
         />
@@ -101,55 +84,18 @@ export default function Posts() {
 
       {loading ? (
         <div>Loading posts...</div>
-      ) : filteredPosts.length === 0 ? (
+      ) : posts.length === 0 ? (
         <p>No posts found.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {visiblePosts.map((post) => (
-              <div
+            {posts.map((post) => (
+              <PostCard
                 key={post.id}
-                onClick={() => navigate(`/stories/${post.id}`)}
-                className="relative cursor-pointer bg-white border rounded-lg shadow p-4 hover:shadow-lg transition group"
-              >
-                <h3 className="text-lg font-semibold text-blue-800 mb-2">{post.title}</h3>
-                <p className="text-sm text-gray-700 line-clamp-3">{post.content}</p>
-
-                <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/profile/${post.author.id}`);
-                    }}
-                    className="text-blue-600 hover:underline cursor-pointer"
-                  >
-                    {post.author.name}
-                  </span>
-
-                  <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                </div>
-
-                <div className="absolute top-2 right-2 flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEdit(post.id);
-                    }}
-                    className="text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(post.id);
-                    }}
-                    className="text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+                {...post}
+                onEdit={user?.userId === post.authorId ? handleEdit : undefined}
+                onDelete={user?.userId === post.authorId || user?.role === 1 ? handleDelete : undefined}
+              />
             ))}
           </div>
 
