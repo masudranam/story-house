@@ -62,6 +62,7 @@ const UserInfo = () => {
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  console.log('form submited');
   if (!profile.username.trim()) {
     setError('Username cannot be empty.');
     toast.error('Username cannot be empty.');
@@ -69,7 +70,9 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
   setIsSubmitting(true);
   try {
+ 
     await API.put(`/users/${userId}`, profile);
+     
     setEditMode(false);
     setOriginalProfile(profile);
     setError(null);
@@ -108,7 +111,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Username
                     </label>
-                    <TextInput
+                    <input
                         name="username"
                         value={profile.username}
                         onChange={handleChange}

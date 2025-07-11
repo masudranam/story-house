@@ -10,8 +10,8 @@ const PostCard = ({
   authorId,
   author,
   createdAt,
-  // likesCount,
-  // commentsCount,
+  likesCount,
+  commentsCount,
   onEdit,
   onDelete,
 }: Props) => {
@@ -77,7 +77,7 @@ const PostCard = ({
         state={{ title, description, authorId, createdAt }}
         className="block bg-white p-6 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition"
       >
-        <h3 className="text-xl font-semibold text-blue-800">{title}</h3>
+        <h3 className="text-xl font-semibold text-blue-800 line-clamp-1">{title}</h3>
         <p className="mt-2 text-gray-700 line-clamp-1">{description}</p>
 
         

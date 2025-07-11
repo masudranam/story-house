@@ -138,14 +138,11 @@ export default function Users() {
         </>
       )}
 
-      {/* Delete Confirmation Modal */}
+  
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm User Deletion</h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete this user? This action cannot be undone.
-            </p>
+           
             <div className="flex gap-3">
               <button
                 onClick={() => handleDelete(showDeleteConfirm)}

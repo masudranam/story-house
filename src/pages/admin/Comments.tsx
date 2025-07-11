@@ -76,8 +76,7 @@ export default function Comments() {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">Moderate Comments</h1>
-
-      {/* Search Input */}
+ 
       <input
         type="text"
         placeholder="Search by content or username..."
@@ -89,14 +88,14 @@ export default function Comments() {
         className="w-full max-w-md px-4 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200 bg-gray-50 mb-6"
       />
 
-      {/* Error Message */}
+     
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
           {error}
         </div>
       )}
 
-      {/* Loading State */}
+  
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
@@ -105,7 +104,6 @@ export default function Comments() {
         <div className="text-center text-gray-600 py-6">No comments found.</div>
       ) : (
         <>
-          {/* Comment Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {comments.map((c) => (
               <div
@@ -120,16 +118,10 @@ export default function Comments() {
                   @{c.author.username}
                 </p>
                 <p className="text-sm text-gray-600 line-clamp-3">
-                  {c.content.length > 100 ? c.content.slice(0, 100) + '...' : c.content}
+                  {c.content}
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
-                  {new Date(c.createdAt).toLocaleString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  {new Date(c.createdAt).toLocaleString( )}
                 </p>
                 {deleteConfirmId === c.id ? (
                   <div className="absolute top-2 right-2 flex gap-2">
@@ -139,7 +131,7 @@ export default function Comments() {
                         handleDelete(c.id);
                       }}
                       disabled={deleteLoading}
-                      className="text-sm text-white bg-red-600 px-3 py-1 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 disabled:opacity-50 flex items-center"
+                      className="text-sm text-white bg-red-500 px-3 py-1 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 disabled:opacity-50 flex items-center"
                     >
                       {deleteLoading ? (
                         <span className="flex items-center">
@@ -178,7 +170,7 @@ export default function Comments() {
             ))}
           </div>
 
-          {/* Pagination */}
+           
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-8">
               <button

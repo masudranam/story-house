@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { ThumbsUp } from 'lucide-react'; // Optional icon library
-import API from '../services/api';
-
+ 
 interface LikeButtonProps {
   likesCount: number;
   userLiked: boolean;
@@ -20,7 +18,7 @@ const LikeButton = ({
     <div className="flex items-center gap-2 mt-4 cursor-pointer text-gray-600">
       <button
         onClick={onToggle}
-        className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+        className={`flex items-center gap-1 px-3 py-1 rounded-full cursor-pointer ${
           userLiked ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
         }`}
       >

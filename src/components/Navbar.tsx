@@ -62,7 +62,7 @@ const Navbar = () => {
               className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
               title={user.username}
             >
-              <span className="text-sm font-medium">{user.username?.charAt(0).toUpperCase()}</span>
+              <span className="text-sm font-medium">{user.username?.charAt(0)}</span>
             </button>
 
             {showDropdown && (

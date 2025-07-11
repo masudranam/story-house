@@ -39,9 +39,7 @@ const Security = () => {
         }
         setIsSubmitting(true);
         try {
-            await API.patch(`/users/change-password/${userId}`, { oldPassword, newPassword }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await API.patch(`/users/change-password/${userId}`, { oldPassword, newPassword });
             setOldPassword('');
             setNewPassword('');
             setError(null);
