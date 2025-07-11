@@ -1,7 +1,5 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
 import { useUser } from '../context/UserContext';
 
 const Navbar = () => {
@@ -30,38 +28,69 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-700 text-blue-50 px-8 py-6 flex justify-between items-center caret-transparent">
-      <h1 className="text-xl font-bold">  <Link to="/" >BlogApp</Link></h1>
+    <nav className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg">
+      <h1 className="text-2xl font-semibold tracking-tight">
+        <Link to="/" className="hover:text-blue-200 transition-colors duration-200">
+          BlogApp
+        </Link>
+      </h1>
 
-      <div className="space-x-4">
-        <Link to="/" className="hover:underline">Home</Link>
-        <Link to="/about" className="hover:underline">About</Link>
-        <Link to="/contact" className="hover:underline mr-150">Contact</Link>
+      <div className="flex items-center space-x-6">
+        <Link
+          to="/"
+          className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
+        >
+          Home
+        </Link>
+        <Link
+          to="/about"
+          className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
+        >
+          About
+        </Link>
+        <Link
+          to="/contact"
+          className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
+        >
+          Contact
+        </Link>
 
         {user?.username ? (
-          <div className="inline-block relative" ref={dropdownRef}>
+          <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="w-9 h-9 bg-blue-600 text-white rounded-full  hover:bg-green-800 cursor-pointer"
+              className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
               title={user.username}
             >
-              {user.username?.charAt(0)}
+              <span className="text-sm font-medium">{user.username?.charAt(0).toUpperCase()}</span>
             </button>
 
             {showDropdown && (
-              <div className="absolute right-0.5 mt-2 w-30 bg-white text-black rounded ">
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-300">Profile</Link>
+              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl overflow-hidden transform transition-all duration-200 ease-in-out origin-top">
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
+                >
+                  Profile
+                </Link>
                 {user.role === 1 && (
-                  <Link to="/admin" className="block px-4 py-2 hover:bg-gray-300">
+                  <Link
+                    to="/admin"
+                    className="block px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
+                  >
                     Admin
                   </Link>
                 )}
-                <Link to="/settings" className="block px-4 py-2 hover:bg-gray-300">Settings</Link>
-
+                <Link
+                  to="/settings"
+                  className="block px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
+                >
+                  Settings
+                </Link>
                 <button
                   onClick={handleLogout}
-                  title="You will loged out from the user"
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-300 cursor-pointer"
+                  title="You will be logged out"
+                  className="block w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
                 >
                   Logout
                 </button>
@@ -69,7 +98,12 @@ const Navbar = () => {
             )}
           </div>
         ) : (
-          <Link to="/login" className="hover:underline">Login</Link>
+          <Link
+            to="/login"
+            className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
+          >
+            Login
+          </Link>
         )}
       </div>
     </nav>

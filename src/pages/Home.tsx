@@ -38,8 +38,6 @@ const Home = () => {
     }
   };
 
- 
-
   useEffect(() => {
     fetchPosts();
   }, [currentPage, sortAsc, search]);
@@ -60,32 +58,34 @@ const Home = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold text-blue-700 mb-4">Latest Posts</h2>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">Latest Posts</h2>
 
-      <input
-        type="text"
-        placeholder="Search posts..."
-        value={search}
-        onChange={e => {
-          setSearch(e.target.value);
-          setCurrentPage(1);
-        }}
-        className="mb-6 w-full max-w-md px-4 py-1 border rounded-3xl border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
-      />
-      <button
-        onClick={() => {
-          setSortAsc(!sortAsc);
-          setCurrentPage(1);
-        }}
-        className="px-4 py-1 border rounded-4xl border-gray-300 focus:outline-none focus:ring-2 ml-2"
-      >
-        Sort: {sortAsc ? 'Oldest' : 'Newest'}
-      </button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+        <input
+          type="text"
+          placeholder="Search posts..."
+          value={search}
+          onChange={e => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="w-full sm:w-80 px-4 py-2 border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
+        />
+        <button
+          onClick={() => {
+            setSortAsc(!sortAsc);
+            setCurrentPage(1);
+          }}
+          className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+        >
+          Sort: {sortAsc ? 'Oldest' : 'Newest'}
+        </button>
+      </div>
 
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading ? (
-          <p>Loading...</p>
+          <p className="text-gray-500 col-span-full text-center">Loading...</p>
         ) : posts.length > 0 ? (
           posts.map(post => (
             <PostCard
@@ -102,15 +102,15 @@ const Home = () => {
             />
           ))
         ) : (
-          <p className="text-gray-600 col-span-full">No posts found.</p>
+          <p className="text-gray-500 col-span-full text-center">No posts found.</p>
         )}
       </div>
 
-      <div className="flex justify-center items-center gap-3 mt-8">
+      <div className="flex justify-center items-center gap-4 mt-10">
         <button
           onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
         >
           Prev
         </button>
@@ -120,7 +120,7 @@ const Home = () => {
         <button
           onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
         >
           Next
         </button>
