@@ -1,22 +1,25 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import API from '../services/api';
 import PostCard from '../components/PostCard';
 import type { Post } from '../dtos/post.dto';
-import { useUser } from '../context/UserContext';
+ 
+import { useAuth } from '../context/AuthContext';
 
-const POSTS_PER_PAGE = 8;
+const POSTS_PER_PAGE = 9;
 
 const Profile = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [username, setUsername] = useState('');
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('q') || '';
+
 
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user } = useAuth();
   const { userId } = useParams();
 
   const isOwnProfile = !userId || userId === user?.userId;
@@ -33,8 +36,7 @@ const Profile = () => {
     }
   }, [user, userId]);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
+   const fetchPosts = async () => {
       setLoading(true);
       try {
         const idToFetch = userId || user?.userId;
@@ -61,6 +63,11 @@ const Profile = () => {
       }
     };
 
+  useEffect(()=>{
+    setCurrentPage(1);
+  },[search]);
+
+  useEffect(() => {
     if (user || userId) fetchPosts();
   }, [user, userId, currentPage, search]);
 
@@ -81,7 +88,7 @@ const Profile = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col lg:flex-row gap-8 caret-transparent">
-        {/* User Information Sidebar */}
+       
         <div className="lg:w-1/4 bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center mb-4">
             <div className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-semibold">
@@ -110,7 +117,7 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Main Content */}
+      
         <div className="lg:w-3/4">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -126,17 +133,6 @@ const Profile = () => {
               Add New Post
             </button>
           )}
-
-          <input
-            type="text"
-            placeholder="Search posts..."
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="mb-6 w-full sm:w-80 px-4 py-2 border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-700 placeholder-gray-400"
-          />
 
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             {loading ? (

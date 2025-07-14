@@ -54,10 +54,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       if (decoded.exp) {
         const ms = decoded.exp * 1000 - Date.now();
+        console.log('session time left ', ms / (1000 * 60));
         const id = setTimeout(() => {
           logout();
           toast.error('Session expired. Please log in again.');
         }, ms);
+       
         return () => clearTimeout(id);
       }
     } catch (err) {

@@ -1,14 +1,15 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import API from '../services/api';
 import CommentsSection from '../components/Comment';
 import LikeButton from '../components/LikeButton';
-import { useUser } from '../context/UserContext';
+
 import type { Post } from '../dtos/post.dto';
+import { useAuth } from '../context/AuthContext';
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { user } = useUser();
+  const { user } = useAuth();
   const userId = user?.userId;
 
   const [post, setPost] = useState<Post | null>(null);
@@ -36,20 +37,20 @@ const PostDetail = () => {
     if (id) fetchPost();
   }, [id]);
 
-    const fetchLikes = async () => {
-      try {
-        const [{ data: likeRes }, { data: likedRes }] = await Promise.all([
-          API.get(`/likes/${id}`),
-          API.get(`/likes/liked/${id}`),
-        ]);
-        setLikesCount(likeRes.likes);
-        setUserLiked(likedRes);
-        setError(null);
-      } catch {
-        setError('Could not fetch like information.');
-        console.warn('Could not fetch like info');
-      }
-    };  
+  const fetchLikes = async () => {
+    try {
+      const [{ data: likeRes }, { data: likedRes }] = await Promise.all([
+        API.get(`/likes/${id}`),
+        API.get(`/likes/liked/${id}`),
+      ]);
+      setLikesCount(likeRes.likes);
+      setUserLiked(likedRes);
+      setError(null);
+    } catch {
+      setError('Could not fetch like information.');
+      console.warn('Could not fetch like info');
+    }
+  };
 
   useEffect(() => {
     if (id) fetchLikes();
@@ -96,24 +97,29 @@ const PostDetail = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-5 p-6 bg-white rounded-2xl shadow-lg space-y-6">
-      
+
       <div>
         <h1 className="text-2xl font-semibold text-gray-800 mb-2">{post.title}</h1>
         <p className="text-sm text-gray-500">
           Posted by{' '}
-          <span className="font-medium text-blue-600 hover:font-bold cursor-pointer">
-            {post.author.name}
-          </span>{' '}
+          <Link
+            to={`/profile/${post.authorId}`}
+            onClick={e => e.stopPropagation()}
+            className='text-blue-600 hover:font-bold'
+          > 
+          {post.author.name}
+          </Link>{' '}
+
           on {new Date(post.createdAt).toLocaleDateString()}
         </p>
       </div>
 
-      
+
       <div className="bg-gray-50 p-4 rounded-lg text-gray-800 leading-relaxed whitespace-pre-wrap">
         {post.description}
       </div>
 
-       
+
       <div className="flex items-center justify-between">
         <LikeButton
           likesCount={likesCount}
@@ -126,7 +132,7 @@ const PostDetail = () => {
         )}
       </div>
 
-     
+
       <div className="border-t border-gray-200 pt-6">
         <CommentsSection storyId={post.id} userId={userId || ''} />
       </div>

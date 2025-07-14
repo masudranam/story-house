@@ -1,21 +1,24 @@
 import { useEffect, useState } from 'react';
 import PostCard from '../components/PostCard';
 import API from '../services/api';
-import { useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+ 
 import type { Post } from '../dtos/post.dto';
+import { useAuth } from '../context/AuthContext';
 
 const POSTS_PER_PAGE = 8;
 
 const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [search, setSearch] = useState('');
   const [sortAsc, setSortAsc] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('q') || '';
+
  
-  const { user } = useUser();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const fetchPosts = async () => {
@@ -39,6 +42,9 @@ const Home = () => {
   };
 
  
+  useEffect(()=>{
+    setCurrentPage(1);
+  },[search]);
 
   useEffect(() => {
     fetchPosts();
@@ -59,20 +65,12 @@ const Home = () => {
     }
   }
 
+ 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <h2 className="text-2xl font-bold text-blue-700 mb-4">Latest Posts</h2>
 
-      <input
-        type="text"
-        placeholder="Search posts..."
-        value={search}
-        onChange={e => {
-          setSearch(e.target.value);
-          setCurrentPage(1);
-        }}
-        className="mb-6 w-full max-w-md px-4 py-1 border rounded-3xl border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
-      />
+      
       <button
         onClick={() => {
           setSortAsc(!sortAsc);
@@ -99,6 +97,8 @@ const Home = () => {
               onEdit={
                 user?.userId === post.authorId ? handleEdit : undefined
               }
+              likesCount={1}
+              commentsCount={5}
             />
           ))
         ) : (

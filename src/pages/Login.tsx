@@ -1,23 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
 import TextInput from '../components/TextInput';
-import { useUser } from '../context/UserContext';
-import { jwtDecode } from 'jwt-decode';
+ 
+import { useAuth } from '../context/AuthContext';
 
-interface TokenPayload {
-  userId: string;
-  username: string;
-  role:number;
-}
+ 
 const Login = () => {
-  const {user, setUser} = useUser();
+  const {user, login, token} = useAuth();
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const[rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
+
+  useEffect(()=>{
+    if(token){
+      navigate('/');
+    }
+  })
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -25,16 +28,7 @@ const Login = () => {
       let token = res.data.token;
 
       if (token.startsWith('Bearer ')) token = token.split(' ')[1];
-      localStorage.setItem('token', token);
-
-      const decoded = jwtDecode<TokenPayload>(token);
-
-      setUser({
-        userId: decoded.userId,
-        username: decoded.username,
-        role: decoded.role,
-      });
-      
+      login(token, rememberMe);
       navigate('/profile');
     } catch {
       alert('Login failed');

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../../services/api';
 import toast from 'react-hot-toast';
 
@@ -19,19 +19,23 @@ const COMMENTS_PER_PAGE = 6;
 
 export default function Comments() {
   const [comments, setComments] = useState<Comment[]>([]);
-  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('q') || '';
+
+  
   const navigate = useNavigate();
 
   const fetchComments = async () => {
     setLoading(true);
     setError(null);
     try {
+      console.log(search);
       const res = await API.get('/comments', {
         params: {
           content: search,
@@ -50,10 +54,13 @@ export default function Comments() {
       setLoading(false);
     }
   };
-
+  useEffect(()=>{
+    setPage(1);
+  },[search])
+  
   useEffect(() => {
     fetchComments();
-  }, [page, search]);
+  }, [search,page]);
 
   const handleDelete = async (id: string) => {
     setDeleteLoading(true);
@@ -76,19 +83,7 @@ export default function Comments() {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">Moderate Comments</h1>
- 
-      <input
-        type="text"
-        placeholder="Search by content or username..."
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1);
-        }}
-        className="w-full max-w-md px-4 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200 bg-gray-50 mb-6"
-      />
 
-     
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
           {error}

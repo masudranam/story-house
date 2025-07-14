@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import {  useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Props } from '../dtos/PostCardProps.dto';
-
+ 
 
 const PostCard = ({
   id,
@@ -33,20 +33,18 @@ const PostCard = ({
     onDelete?.(id);
   };
 
-  
+ 
 
   return (
     <div className="relative bg-white h-full flex flex-col justify-between">
-     
       {(onEdit || onDelete) && (
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 right-3">
           <button
             onClick={toggleMenu}
             className="text-gray-600 hover:text-black focus:outline-none"
           >
             ⋮
           </button>
-
           {showMenu && (
             <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow z-20">
               {onEdit && (
@@ -70,8 +68,6 @@ const PostCard = ({
         </div>
       )}
 
-
-      
       <Link
         to={`/stories/${id}`}
         state={{ title, description, authorId, createdAt }}
@@ -80,21 +76,29 @@ const PostCard = ({
         <h3 className="text-xl font-semibold text-blue-800 line-clamp-1">{title}</h3>
         <p className="mt-2 text-gray-700 line-clamp-1">{description}</p>
 
-        
         <small className="text-gray-500 mt-3 block">
           By{' '}
           <Link
             to={`/profile/${authorId}`}
-            onClick={e => e.stopPropagation()} 
+            onClick={e => e.stopPropagation()}
             className="text-blue-600 hover:font-bold"
           >
             {author.name}
           </Link>{' '}
-          
           on {new Date(createdAt).toLocaleDateString()}
-          <div className="mt-4 flex gap-6 text-sm text-gray-600 items-center">
-          </div>
         </small>
+
+        
+        {/* <div className="mt-4 ml-6 flex gap-20 text-sm text-gray-600 items-center">
+          <div className="flex items-center gap-1">
+            <ThumbsUp className="w-4 h-4" />
+            <span>{likesCount || 0}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <MessageCircle className="w-4 h-4" />
+            <span>{commentsCount || 0}</span>
+          </div>
+        </div> */}
       </Link>
     </div>
   );

@@ -35,7 +35,6 @@ const UserCard = ({ id, username, email, role, createdAt, onDelete }: Props) => 
         <button
           onClick={(e) => {
             e.stopPropagation();
-            
             onDelete(id);
           }}
           className="absolute top-2 right-2 text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"

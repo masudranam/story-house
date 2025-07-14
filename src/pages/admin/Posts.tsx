@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { use, useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../../services/api';
 import PostCard from '../../components/PostCard';
-import { useUser } from '../../context/UserContext';
+ 
 import type { Post } from '../../dtos/post.dto';
+import { useAuth } from '../../context/AuthContext';
 
 const POSTS_PER_PAGE = 6;
 
@@ -12,12 +13,14 @@ export default function Posts() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'newest' | 'oldest'>('newest');
   const [page, setPage] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const { user } = useUser();
+   const [searchParams] = useSearchParams();
+  const search = searchParams.get('q') || '';
+
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const fetchPosts = async () => {
@@ -41,6 +44,10 @@ export default function Posts() {
       setLoading(false);
     }
   };
+
+  useEffect(()=>{
+    setPage(1);
+  },[search]);
 
   useEffect(() => {
     fetchPosts();
@@ -68,20 +75,11 @@ export default function Posts() {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Posts</h1>
+      
 
       {/* Search and Sort */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search by title or author..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          className="w-full sm:w-1/2 px-4 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200 bg-gray-50"
-        />
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Posts</h1>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as 'newest' | 'oldest')}

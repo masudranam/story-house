@@ -1,35 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../../services/api';
-import { jwtDecode } from 'jwt-decode';
 import TextInput from '../../components/TextInput';
-
-interface TokenPayload {
-    userId: string;
-    role: number;
-    username: string;
-}
-
+import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
+ 
 const Security = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const {user, token} = useAuth();
     const navigate = useNavigate();
-
-    const token = localStorage.getItem('token');
-    let userId = '';
-
-    try {
-        if (!token) throw new Error('No token');
-        const decoded = jwtDecode<TokenPayload>(token);
-        userId = decoded.userId;
-    } catch {
-        setError('Invalid or missing token. Please login again.');
-        navigate('/login');
-        return null;
-    }
+   const userId = user?.userId;
 
     const changePassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,6 +29,7 @@ const Security = () => {
             setError(null);
             alert('Password updated successfully!');
         } catch (err: any) {
+            toast.error('Failed error to change');
             setError(err.response?.data?.message || 'Failed to change password.');
         } finally {
             setIsSubmitting(false);
@@ -70,7 +55,7 @@ const Security = () => {
 
     return (
         <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow-lg space-y-4">
-            {/* Change Password Section */}
+            
             <div>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6">Change Password</h2>
                 {error && (

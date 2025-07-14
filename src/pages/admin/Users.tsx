@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import API from '../../services/api';
 import UserCard from '../../components/UserCard';
 import type { User } from '../../dtos/User.dto';
+import { useSearchParams } from 'react-router-dom';
 
 const USERS_PER_PAGE = 6;
 
@@ -9,12 +10,13 @@ export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get('q') || '';
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -58,33 +60,25 @@ export default function Users() {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Users</h1>
+     
 
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search by username or email..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          className="w-full sm:w-1/2 px-4 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200 bg-gray-50"
-        />
+         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Users</h1>
         <select
           value={roleFilter}
           onChange={(e) => {
             setRoleFilter(e.target.value as 'all' | 'admin' | 'user');
             setPage(1);
           }}
-          className="w-full sm:w-40 px-3 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200 bg-gray-50 text-sm font-medium text-gray-600"
+           className="  sm:w-40 px-3 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200  text-sm font-medium"
         >
           <option value="all">All Roles</option>
           <option value="admin">Admins</option>
           <option value="user">Users</option>
         </select>
-      </div>
+        </div>
+       
 
       {/* Error Message */}
       {error && (

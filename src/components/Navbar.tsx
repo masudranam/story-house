@@ -1,12 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+ 
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
-  const { user, setUser } = useUser();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [input, setInput] = useState('');
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user, logout} = useAuth();
+
+
+  useEffect(()=>{
+    const timeout = setTimeout(()=>{
+      const params = new URLSearchParams(location.search);
+      if(input){
+        params.set('q',input);
+      }else{
+        params.delete('q');
+      }
+      toast.success(`${location.pathname}?${params.toString()}`);
+      navigate(`${location.pathname}?${params.toString()}`, {replace:true});
+    },1000);
+    return ()=> clearTimeout(timeout);
+  },[input])
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -22,38 +41,35 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+    logout();
     navigate('/login');
   };
 
   return (
     <nav className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg">
       <h1 className="text-2xl font-semibold tracking-tight">
-        <Link to="/" className="hover:text-blue-200 transition-colors duration-200">
+        <Link to="/" className="hover:text-blue-200 transition-colors duration-300">
           BlogApp
         </Link>
       </h1>
 
+      
+        <input 
+        type='text'
+        placeholder='Search'
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        className='w-full max-w-md px-4 py-1 border border-b-purple-400 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500'
+        />
+     
       <div className="flex items-center space-x-6">
         <Link
           to="/"
-          className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
+          className="text-lg font-medium  hover:text-blue-200 transition-colors duration-300"
         >
           Home
         </Link>
-        <Link
-          to="/about"
-          className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
-        >
-          About
-        </Link>
-        <Link
-          to="/contact"
-          className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
-        >
-          Contact
-        </Link>
+        
 
         {user?.username ? (
           <div className="relative" ref={dropdownRef}>

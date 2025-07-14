@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import API from '../services/api';
 import { Link } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 interface Comment {
   id: string;
@@ -21,7 +22,7 @@ interface CommentsSectionProps {
   userId: string;
 }
 
-const PER_PAGE = 5;
+const PER_PAGE = 6;
 
 const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
@@ -30,7 +31,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
   const [editedContent, setEditedContent] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const { user } = useUser();
+  const { user } = useAuth();
 
   const fetchComments = async () => {
     try {
@@ -40,7 +41,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
       setComments(res.data.rows);
       setTotal(res.data.count);
     } catch {
-      console.error('Failed to load comments');
+      toast.error('Failed to load comments');
     }
   };
 
@@ -57,8 +58,9 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
       setNewComment('');
       setPage(1); 
       fetchComments();
+      toast.success('Comment posted successfully');
     } catch {
-      alert('Failed to post comment');
+      toast.error('Failed to post comment');
     }
   };
 
@@ -67,8 +69,9 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
     try {
       await API.delete(`/comments/${commentId}`);
       fetchComments();
+      toast.success('Comment deleted succesfully');
     } catch {
-      alert('Failed to delete');
+      toast.error('Failed to delete');
     }
   };
 
@@ -78,13 +81,14 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
       setEditingId(null);
       setEditedContent('');
       fetchComments();
+      toast.success('Comment successfully updated');
     } catch {
-      alert('Failed to update');
+      toast.error('Failed to udpate comments');
     }
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-4">
       <div className="flex items-start gap-2 mb-4">
         <Link
           to={`/profile`}
@@ -116,7 +120,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
             <div className="bg-gray-100 px-4 py-2 rounded-xl w-full">
               {editingId === c.id ? (
                 <textarea
-                  className="w-full border rounded p-2 text-sm"
+                  className="w-full border rounded p-1 text-sm"
                   value={editedContent}
                   onChange={(e) => setEditedContent(e.target.value)}
                 />

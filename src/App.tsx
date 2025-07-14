@@ -2,10 +2,11 @@ import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 import AppRoutes from "./routes/AppRoutes";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <UserProvider>
+    <AuthProvider>
       <BrowserRouter>
         <AppRoutes />
         <Toaster
@@ -41,7 +42,7 @@ function App() {
           }}
         />
       </BrowserRouter>
-    </UserProvider>
+    </AuthProvider>
   );
 }
 
