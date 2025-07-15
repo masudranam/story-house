@@ -76,7 +76,7 @@ const Home = () => {
           setSortAsc(!sortAsc);
           setCurrentPage(1);
         }}
-        className="px-4 py-1 border rounded-4xl border-gray-300 focus:outline-none focus:ring-2 ml-2"
+        className="px-4 py-1 border rounded-4xl border-gray-300 focus:outline-none focus:ring-2 ml-2 mb-1"
       >
         Sort: {sortAsc ? 'Oldest' : 'Newest'}
       </button>

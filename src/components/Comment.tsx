@@ -3,19 +3,7 @@ import API from '../services/api';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-
-interface Comment {
-  id: string;
-  storyId: string;
-  userId: string;
-  content: string;
-  createdAt: string;
-  author: {
-    id: string;
-    name: string;
-    username: string;
-  };
-}
+import type { Comment } from '../dtos/comment.dto';
 
 interface CommentsSectionProps {
   storyId: string;
@@ -56,7 +44,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
     try {
       await API.post(`/comments/${storyId}`, { content: newComment.trim() });
       setNewComment('');
-      setPage(1); 
+      setPage(1);
       fetchComments();
       toast.success('Comment posted successfully');
     } catch {

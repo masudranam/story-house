@@ -20,7 +20,7 @@ const Navbar = () => {
       }else{
         params.delete('q');
       }
-      toast.success(`${location.pathname}?${params.toString()}`);
+     // toast.success(`${location.pathname}?${params.toString()}`);
       navigate(`${location.pathname}?${params.toString()}`, {replace:true});
     },1000);
     return ()=> clearTimeout(timeout);
@@ -46,7 +46,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg">
+    <nav className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg fixed top-0 left-0 w-full z-50 ">
       <h1 className="text-2xl font-semibold tracking-tight">
         <Link to="/" className="hover:text-blue-200 transition-colors duration-300">
           BlogApp
@@ -63,13 +63,13 @@ const Navbar = () => {
         />
      
       <div className="flex items-center space-x-6">
-        <Link
+        {/* <Link
           to="/"
           className="text-lg font-medium  hover:text-blue-200 transition-colors duration-300"
         >
           Home
         </Link>
-        
+         */}
 
         {user?.username ? (
           <div className="relative" ref={dropdownRef}>

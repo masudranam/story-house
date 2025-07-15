@@ -13,7 +13,7 @@ const createUser = (i) => ({
  
 
 const signUpUsers = async () => {
-  for (let i = 2000; i <= 500000; i++) {
+  for (let i = 4000; i <= 500000; i++) {
     try {
       
       const user = createUser(i);

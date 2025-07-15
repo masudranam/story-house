@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import toast from 'react-hot-toast';
 
 const AddPost = () => {
   const [title, setTitle] = useState('');
@@ -13,11 +14,10 @@ const AddPost = () => {
     setLoading(true);
     try {
       const res = await API.post('/stories', { title, description: content });
-      console.log(res);
-      alert('Post published');
+      toast.success('Post has been published');       
       navigate('/profile');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Publish failed');
+      toast.error('Publish failed');
     } finally {
       setLoading(false);
     }

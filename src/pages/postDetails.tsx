@@ -6,6 +6,7 @@ import LikeButton from '../components/LikeButton';
 
 import type { Post } from '../dtos/post.dto';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -64,10 +65,12 @@ const PostDetail = () => {
         await API.delete(`/likes/${id}`);
         setLikesCount((c) => Math.max(0, c - 1));
         setUserLiked(false);
+        toast.success('You unliked a post');
       } else {
         await API.post(`/likes/${id}`);
         setLikesCount((c) => c + 1);
         setUserLiked(true);
+        toast.success('You liked a post');
       }
       setError(null);
     } catch {

@@ -2,18 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../../services/api';
 import toast from 'react-hot-toast';
-
-interface Comment {
-  id: string;
-  userId: string;
-  content: string;
-  createdAt: string;
-  storyId: string;
-  author: {
-    id: string;
-    username: string;
-  };
-}
+import DeleteConfirmModal from '../../components/DeleteConfirmation';
+import type { Comment } from '../../dtos/comment.dto';
+ 
 
 const COMMENTS_PER_PAGE = 6;
 
@@ -47,9 +38,7 @@ export default function Comments() {
       setComments(res.data.rows);
       setTotal(res.data.count);
     } catch (err) {
-      setError('Failed to load comments. Please try again.');
       toast.error('Failed to load comments.');
-      console.error('Failed to fetch comments', err);
     } finally {
       setLoading(false);
     }
@@ -119,37 +108,11 @@ export default function Comments() {
                   {new Date(c.createdAt).toLocaleString( )}
                 </p>
                 {deleteConfirmId === c.id ? (
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(c.id);
-                      }}
-                      disabled={deleteLoading}
-                      className="text-sm text-white bg-red-500 px-3 py-1 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 disabled:opacity-50 flex items-center"
-                    >
-                      {deleteLoading ? (
-                        <span className="flex items-center">
-                          <svg className="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                          </svg>
-                          Deleting
-                        </span>
-                      ) : (
-                        'Confirm'
-                      )}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteConfirmId(null);
-                      }}
-                      className="text-sm text-gray-600 bg-gray-200 px-3 py-1 rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  <DeleteConfirmModal
+                    onConfirm={() => handleDelete(c.id)}
+                    onCancel={() => setDeleteConfirmId(null)}
+                    loading={deleteLoading}
+                  />
                 ) : (
                   <button
                     onClick={(e) => {

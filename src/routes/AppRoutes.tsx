@@ -17,6 +17,7 @@ import Posts from '../pages/admin/Posts';
 import Comments from '../pages/admin/Comments';
 import Contact from '../pages/Contact';
 import About from '../pages/About';
+import NotFound from '../components/NotFound';
 
 const AppRoutes = () => {
   return (
@@ -50,10 +51,10 @@ const AppRoutes = () => {
             <Route path="info" element={<UserInfo />} />
             <Route path="security" element={<Security />} />
           </Route>
-          
+
         </Route>
       </Route>
-
+      <Route path="*" element={<NotFound />} />
 
     </Routes>
 

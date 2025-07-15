@@ -3,20 +3,25 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import API from '../services/api';
 import PostCard from '../components/PostCard';
 import type { Post } from '../dtos/post.dto';
- 
+
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const POSTS_PER_PAGE = 9;
 
 const Profile = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [username, setUsername] = useState('');
+  const [profile, setProfile] = useState<{
+    name: '',
+    username: '',
+    email: '',
+    createdAt: ''
+  } | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const search = searchParams.get('q') || '';
-
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -30,42 +35,52 @@ const Profile = () => {
       navigate('/login');
       return;
     }
-
-    if (isOwnProfile) {
-      setUsername(user?.username ?? 'User');
-    }
   }, [user, userId]);
 
-   const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        const idToFetch = userId || user?.userId;
+  const fetchProfile = async () => {
 
-        const res = await API.get('/stories', {
-          params: {
-            authorId: idToFetch,
-            page: currentPage,
-            limit: POSTS_PER_PAGE,
-            title: search || undefined,
-          },
-        });
+    try {
+      const idToFetch = userId || user?.userId;
+      const profile = await API.get(`/users/${idToFetch}`);
+      setProfile(profile.data);
+    } catch (err) {
+      setProfile(null);
+      toast.error('Failed to load user profile');
+    }
+  }
 
-        setPosts(res.data.rows);
-        setTotalPages(Math.ceil(res.data.count / POSTS_PER_PAGE));
+  useEffect(() => {
+    console.log(profile);
+    fetchProfile();
+  }, [userId, user?.userId]);
 
-        if (!isOwnProfile && res.data.rows.length > 0) {
-          setUsername(res.data.rows[0].author.name);
-        }
-      } catch {
-        setPosts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-  useEffect(()=>{
+  const fetchPosts = async () => {
+    setLoading(true);
+    try {
+      const idToFetch = userId || user?.userId;
+
+      const res = await API.get('/stories', {
+        params: {
+          authorId: idToFetch,
+          page: currentPage,
+          limit: POSTS_PER_PAGE,
+          title: search || undefined,
+        },
+      });
+
+      setPosts(res.data.rows);
+      setTotalPages(Math.ceil(res.data.count / POSTS_PER_PAGE));
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     setCurrentPage(1);
-  },[search]);
+  }, [search]);
 
   useEffect(() => {
     if (user || userId) fetchPosts();
@@ -88,23 +103,25 @@ const Profile = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col lg:flex-row gap-8 caret-transparent">
-       
+
         <div className="lg:w-1/4 bg-white rounded-lg shadow-md p-6">
           <div className="flex items-center mb-4">
             <div className="w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl font-semibold">
-              {username.charAt(0).toUpperCase()}
+              {profile?.username.charAt(0).toUpperCase()}
             </div>
             <div className="ml-4">
-              <h2 className="text-xl font-bold text-gray-900">{username}</h2>
+              <h2 className="text-xl font-bold text-gray-900">{profile?.username}</h2>
               <p className="text-sm text-gray-500">
                 {isOwnProfile ? 'Your Profile' : 'User Profile'}
               </p>
             </div>
           </div>
           <div className="border-t pt-4">
-            <p className="text-sm text-gray-600">Posts: {posts.length}</p>
+            <p className="text-sm text-gray-600">Name : {profile?.name}</p>
+            <p className="text-sm text-gray-600">Username : {profile?.username}</p>
+            <p className="text-sm text-gray-600">Email : {profile?.email}</p>
             <p className="text-sm text-gray-600">
-              Joined: {'N/A'}
+              Joined: {new Date(profile?.createdAt || '').toLocaleDateString()}
             </p>
             {isOwnProfile && (
               <button
@@ -117,11 +134,11 @@ const Profile = () => {
           </div>
         </div>
 
-      
+
         <div className="lg:w-3/4">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-gray-900">
-              {isOwnProfile ? 'Your Posts' : `Posts by ${username}`}
+              {isOwnProfile ? 'Your Posts' : `Posts by ${profile?.username}`}
             </h1>
           </div>
 
