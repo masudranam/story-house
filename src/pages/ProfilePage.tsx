@@ -6,6 +6,7 @@ import type { Post } from '../dtos/post.dto';
 
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import Pagination from '../components/Pagination';
 
 const POSTS_PER_PAGE = 9;
 
@@ -87,7 +88,7 @@ const Profile = () => {
   }, [user, userId, currentPage, search]);
 
   const handleAddPost = () => navigate('/posts/create');
-  const handleEdit = (id: string) => navigate(`/posts/:${id}/edit`);
+  const handleEdit = (id: string) => navigate(`/posts/${id}/edit`);
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this post?')) {
@@ -125,7 +126,7 @@ const Profile = () => {
             </p>
             {isOwnProfile && (
               <button
-                onClick={() => navigate('/settings')}
+                onClick={() => navigate('/users/settings')}
                 className="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
               >
                 Edit Profile
@@ -145,7 +146,7 @@ const Profile = () => {
           {isOwnProfile && (
             <button
               onClick={handleAddPost}
-              className="mb-6 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+              className="mb-6 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 caret-transparent"
             >
               Add New Post
             </button>
@@ -170,27 +171,11 @@ const Profile = () => {
             )}
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-10">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-              >
-                Prev
-              </button>
-              <span className="text-sm font-medium text-gray-700">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <Pagination
+            page={currentPage}
+            setPage={setCurrentPage}
+            totalPages={totalPages}
+          />
         </div>
       </div>
     </div>

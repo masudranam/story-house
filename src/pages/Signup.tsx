@@ -58,7 +58,7 @@ export default function Signup() {
       console.log('Submitting:', formData); // Debug log
       await API.post('/users/signup', formData);
       toast.success('Signup successful! Please log in.');
-      navigate('/login');
+      navigate('/users/login');
     } catch (err: any) {
       console.error('API Error:', err.response || err); // Debug log
       const errorMessage = err.response?.data?.message || 'Signup failed. Please try again.';

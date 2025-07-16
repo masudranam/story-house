@@ -23,7 +23,7 @@ const EditPost = () => {
                 });
             } else {
                 try {
-                    toast.success(id || '');
+                    
                     const res = await API.get(`/stories/${id}`);
                     setTitle(res.data.story.title);
                     setDescription(res.data.story.description);
@@ -32,7 +32,7 @@ const EditPost = () => {
                         description: res.data.story.description,
                     });
                 } catch {
-                    alert('Failed to load post');
+                    toast.error('Failed to load post');
                     navigate('/');
                 }
             }
@@ -53,8 +53,8 @@ const EditPost = () => {
             updatedTitle === originalPost.title &&
             updatedDescription === originalPost.description
         ) {
-            alert('No changes to update');
-            return;
+            toast.success('No update happens');
+            navigate('/profile');
         }
 
         try {
@@ -62,9 +62,10 @@ const EditPost = () => {
                 title: updatedTitle,
                 description: updatedDescription,
             });
+            toast.success('Successfully updated');
             navigate('/profile');
         } catch (err) {
-            alert('Failed to update post');
+            toast.error('Failed to update post');
         }
     };
 

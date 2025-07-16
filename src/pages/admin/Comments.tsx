@@ -71,7 +71,7 @@ export default function Comments() {
   const totalPages = Math.ceil(total / COMMENTS_PER_PAGE);
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
+    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg caret-transparent">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">Moderate Comments</h1>
 
       {error && (

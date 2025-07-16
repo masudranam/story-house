@@ -15,9 +15,9 @@ import AdminLayout from '../layout/AdminLayout';
 import Users from '../pages/admin/Users';
 import Posts from '../pages/admin/Posts';
 import Comments from '../pages/admin/Comments';
-import Contact from '../pages/Contact';
 import About from '../pages/About';
 import NotFound from '../components/NotFound';
+import PrivateRoute from './PrivateRoutes';
 
 const AppRoutes = () => {
   return (
@@ -25,33 +25,48 @@ const AppRoutes = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="stories/:id" element={<PostDetail />} />
-        <Route path="posts/create" element={<AddPost />} />
         <Route path="users/login" element={<Login />} />
         <Route path="users/signup" element={<Signup />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="profile/:userId" element={<Profile />} />
-        <Route path="posts/:id/edit" element={<EditPost />} />
-        <Route path='contact' element={<Contact />} />
-        <Route path='about' element={<About />} />
+        <Route path="about" element={<About />} />
 
+        
+        <Route path="posts/create" element={
+          <PrivateRoute><AddPost /></PrivateRoute>
+        } />
+ 
+        <Route path="profile" element={
+          <PrivateRoute><Profile /></PrivateRoute>
+        } />
+        <Route path="profile/:userId" element={
+          <PrivateRoute><Profile /></PrivateRoute>
+        } />
+ 
+        <Route path="posts/:id/edit" element={
+          <PrivateRoute><EditPost /></PrivateRoute>
+        } />
 
-        <Route path="settings" element={<Settings />}>
+       
+        <Route path="users/settings" element={
+          <PrivateRoute><Settings /></PrivateRoute>
+        }>
           <Route index element={<UserInfo />} />
           <Route path="security" element={<Security />} />
         </Route>
 
-        <Route path="/admin" element={<AdminLayout />} >
+      
+        <Route path="/admin" element={
+          <PrivateRoute><AdminLayout /></PrivateRoute>
+        }>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="posts" element={<Posts />} />
           <Route path="comments" element={<Comments />} />
-          <Route path="settings" element={<Settings />}>
+          <Route path="settings" element={<Settings />} >
             <Route index element={<UserInfo />} />
             <Route path="info" element={<UserInfo />} />
             <Route path="security" element={<Security />} />
           </Route>
-
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />

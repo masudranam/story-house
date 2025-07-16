@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import type { Comment } from '../dtos/comment.dto';
 import Pagination from './Pagination';
+import DeleteConfirmModal from './DeleteConfirmation';
 
 interface CommentsSectionProps {
   storyId: string;
@@ -18,6 +19,8 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
   const [newComment, setNewComment] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const { user } = useAuth();
@@ -54,13 +57,16 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
   };
 
   const handleDelete = async (commentId: string) => {
-    if (!confirm('Delete this comment?')) return;
+    if(!confirm('Confirm delete'))return;
     try {
       await API.delete(`/comments/${commentId}`);
       fetchComments();
       toast.success('Comment deleted succesfully');
     } catch {
       toast.error('Failed to delete');
+    }finally{
+      setDeleteConfirmId(null);
+
     }
   };
 
@@ -141,12 +147,19 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         ))}
       </div>
 
-       <Pagination
+      <Pagination
         page={page}
         totalPages={totalPages}
         setPage={setPage}
+      />
+
+      {deleteConfirmId && (
+        <DeleteConfirmModal
+          loading={deleteLoading}
+          onConfirm={() => handleDelete(deleteConfirmId)}
+          onCancel={() => setDeleteConfirmId(null)}
         />
-     
+      )}
     </div>
   );
 };

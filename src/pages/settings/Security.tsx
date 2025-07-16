@@ -57,16 +57,16 @@ const Security = () => {
         <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow-lg space-y-4">
 
             <div>
-                <h2 className="text-2xl font-semibold text-gray-800 mb-6">Change Password</h2>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-6 caret-transparent">Change Password</h2>
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+                    <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm caret-transparent">
                         {error}
                     </div>
                 )}
                 <form onSubmit={changePassword} className="space-y-4">
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2 caret-transparent">
                                 Current Password
                             </label>
                             <TextInput
@@ -80,7 +80,7 @@ const Security = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2 caret-transparent">
                                 New Password
                             </label>
                             <TextInput
@@ -115,7 +115,7 @@ const Security = () => {
             </div>
 
             
-            <div className="border-t border-gray-200 pt-6">
+            <div className="border-t border-gray-200 pt-6 caret-transparent">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Danger Zone</h2>
                 <div className="bg-red-50 p-4 rounded-lg border border-red-200">
                     <p className="text-sm text-red-700 mb-4">

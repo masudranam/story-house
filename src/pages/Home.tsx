@@ -78,7 +78,7 @@ const Home = () => {
 
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="max-w-6xl mx-auto px-4 py-6 text caret-transparent">
       <h2 className="text-2xl font-bold text-blue-700 mb-4">Dashboard</h2>
 
 

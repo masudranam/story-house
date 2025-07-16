@@ -81,7 +81,7 @@ const UserInfo = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Your Username</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6 caret-transparent">Your Username</h2>
 
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>
@@ -89,7 +89,7 @@ const UserInfo = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className={`p-4 rounded-lg ${editMode ? 'bg-gray-50 border' : 'bg-gray-100'}`}>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2 caret-transparent">Username</label>
           <input
             name="username"
             value={profile.username}

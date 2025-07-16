@@ -87,18 +87,6 @@ const PostCard = ({
           </Link>{' '}
           on {new Date(createdAt).toLocaleDateString()}
         </small>
-
-        
-        {/* <div className="mt-4 ml-6 flex gap-20 text-sm text-gray-600 items-center">
-          <div className="flex items-center gap-1">
-            <ThumbsUp className="w-4 h-4" />
-            <span>{likesCount || 0}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <MessageCircle className="w-4 h-4" />
-            <span>{commentsCount || 0}</span>
-          </div>
-        </div> */}
       </Link>
     </div>
   );

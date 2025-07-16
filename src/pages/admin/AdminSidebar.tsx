@@ -14,7 +14,7 @@ export default function AdminMenu() {
     }`;
 
   return (
-    <nav className="w-full border-b border-gray-200 bg-white shadow-sm">
+    <nav className="w-full border-b border-gray-200 bg-white shadow-sm caret-transparent">
       <div className="mx-auto flex flex-wrap gap-3 p-4 max-w-4xl">
         <NavLink to="/admin/dashboard" className={linkClass}>
           <LayoutDashboard size={18} />

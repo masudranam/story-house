@@ -51,7 +51,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
+    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg caret-transparent">
       <h1 className="text-2xl font-semibold text-gray-800 mb-6">Admin Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard label="Total Users" value={stats.totalUsers} link="/admin/users" />

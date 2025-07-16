@@ -48,7 +48,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg fixed top-0 left-0 w-full z-50 ">
       <h1 className="text-2xl font-semibold tracking-tight">
-        <Link to="/" className="hover:text-blue-200 transition-colors duration-300">
+        <Link to="/" className="hover:text-blue-200 transition-colors duration-300 caret-transparent">
           BlogApp
         </Link>
       </h1>
@@ -62,7 +62,7 @@ const Navbar = () => {
         className='w-full max-w-md px-4 py-1 border border-b-purple-400 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500'
         />
      
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-6 caret-transparent">
       
 
         {user?.username ? (
@@ -92,7 +92,7 @@ const Navbar = () => {
                   </Link>
                 )}
                 <Link
-                  to="/settings"
+                  to="/users/settings"
                   className="block px-4 py-2.5 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150"
                 >
                   Settings
@@ -110,7 +110,7 @@ const Navbar = () => {
         ) : (
           <Link
             to="/users/login"
-            className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
+            className="text-sm font-medium hover:text-blue-200 transition-colors duration-200 caret-transparent"
           >
             Login
           </Link>
