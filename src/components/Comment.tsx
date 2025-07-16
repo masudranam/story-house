@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import type { Comment } from '../dtos/comment.dto';
 import Pagination from './Pagination';
 import DeleteConfirmModal from './DeleteConfirmation';
+import DeleteConfirmPopup from './DeleteConfirmPopup';
 
 interface CommentsSectionProps {
   storyId: string;
@@ -57,16 +58,19 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
   };
 
   const handleDelete = async (commentId: string) => {
-    if(!confirm('Confirm delete'))return;
+    //if(!confirm('Confirm delete'))return;
+    setDeleteLoading(true);
     try {
+      console.log('delete id', commentId);
       await API.delete(`/comments/${commentId}`);
+      setDeleteConfirmId(null);
       fetchComments();
       toast.success('Comment deleted succesfully');
     } catch {
       toast.error('Failed to delete');
-    }finally{
+    } finally {
       setDeleteConfirmId(null);
-
+      setDeleteLoading(false);
     }
   };
 
@@ -136,8 +140,22 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => { setEditingId(c.id); setEditedContent(c.content); }} className="text-blue-600">Edit</button>
-                      <button onClick={() => handleDelete(c.id)} className="text-red-600">Delete</button>
+                      
+                       {deleteConfirmId === c.id ? (
+                        <DeleteConfirmModal
+                          onCancel={() => setDeleteConfirmId(null)}
+                          onConfirm={() => handleDelete(c.id)}
+                          loading={deleteLoading}
+                          className="flex"
+                        />
+                      ):(
+                        <>
+                        <button onClick={() => { setEditingId(c.id); setEditedContent(c.content); }} className="text-blue-600">Edit</button>
+                        <button onClick={() => { setDeleteConfirmId(c.id); setEditingId(null)}} className="text-red-600">Delete</button>
+                        </>
+                      )}
+                      
+                     
                     </>
                   )}
                 </div>
@@ -152,14 +170,6 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         totalPages={totalPages}
         setPage={setPage}
       />
-
-      {deleteConfirmId && (
-        <DeleteConfirmModal
-          loading={deleteLoading}
-          onConfirm={() => handleDelete(deleteConfirmId)}
-          onCancel={() => setDeleteConfirmId(null)}
-        />
-      )}
     </div>
   );
 };

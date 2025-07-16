@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import DeleteConfirmPopup from '../components/DeleteConfirmPopup';
 import Pagination from '../components/Pagination';
 import { Loader } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const POSTS_PER_PAGE = 8;
 
@@ -68,8 +69,9 @@ const Home = () => {
     try {
       await API.delete(`/stories/${id}`);
       fetchPosts();
+      toast.success('Post has been deleted');
     } catch (error) {
-      console.error('Failed to delete post:', error);
+      toast.error('Failed to delete post');
     } finally {
       setDeleteLoading(false);
       setShowDeleteConfirmId(null);

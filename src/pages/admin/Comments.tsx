@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import DeleteConfirmModal from '../../components/DeleteConfirmation';
 import type { Comment } from '../../dtos/comment.dto';
 import Pagination from '../../components/Pagination';
+import { Loader } from 'lucide-react';
  
 
 const COMMENTS_PER_PAGE = 6;
@@ -20,14 +21,12 @@ export default function Comments() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get('q') || '';
 
-  
   const navigate = useNavigate();
 
   const fetchComments = async () => {
     setLoading(true);
     setError(null);
     try {
-      console.log(search);
       const res = await API.get('/comments', {
         params: {
           content: search,
@@ -44,6 +43,7 @@ export default function Comments() {
       setLoading(false);
     }
   };
+
   useEffect(()=>{
     setPage(1);
   },[search])
@@ -82,9 +82,7 @@ export default function Comments() {
 
   
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
-        </div>
+        <Loader />
       ) : comments.length === 0 ? (
         <div className="text-center text-gray-600 py-6">No comments found.</div>
       ) : (
@@ -100,7 +98,7 @@ export default function Comments() {
                 }
               >
                 <p className="text-sm font-medium text-blue-600 hover:underline mb-1">
-                  @{c.author.username}
+                  {c.author.username}
                 </p>
                 <p className="text-sm text-gray-600 line-clamp-3">
                   {c.content}
@@ -113,6 +111,7 @@ export default function Comments() {
                     onConfirm={() => handleDelete(c.id)}
                     onCancel={() => setDeleteConfirmId(null)}
                     loading={deleteLoading}
+                    className='flex absolute top-2 right-3 space-x-1'
                   />
                 ) : (
                   <button

@@ -4,15 +4,17 @@ interface DeleteConfirmModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  className?:string;
 }
 
 const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onConfirm,
   onCancel,
   loading = false,
+  className,
 }) => {
   return (
-    <div className="absolute top-2 right-2 flex gap-2">
+    <div className={`${className}`}>
       <button
         onClick={(e) => {
           e.stopPropagation();

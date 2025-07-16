@@ -41,7 +41,7 @@ const PostCard = ({
         <div className="absolute top-2 right-3">
           <button
             onClick={toggleMenu}
-            className="text-gray-600 hover:text-black focus:outline-none"
+            className="w-8 h-8  items-center justify-center rounded-full bg-gray-50 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 focus:outline-none "
           >
             ⋮
           </button>

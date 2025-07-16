@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
  
 import { useAuth } from '../context/AuthContext';
-import toast from 'react-hot-toast';
-
+ 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [input, setInput] = useState('');
@@ -20,12 +19,10 @@ const Navbar = () => {
       }else{
         params.delete('q');
       }
-     // toast.success(`${location.pathname}?${params.toString()}`);
       navigate(`${location.pathname}?${params.toString()}`, {replace:true});
     },1000);
     return ()=> clearTimeout(timeout);
   },[input])
-
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,7 +50,6 @@ const Navbar = () => {
         </Link>
       </h1>
 
-      
         <input 
         type='text'
         placeholder='Search'
@@ -64,12 +60,11 @@ const Navbar = () => {
      
       <div className="flex items-center space-x-6 caret-transparent">
       
-
         {user?.username ? (
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer"
               title={user.username}
             >
               <span className="text-sm font-medium">{user.username?.charAt(0)}</span>

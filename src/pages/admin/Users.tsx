@@ -61,25 +61,25 @@ export default function Users() {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg caret-transparent">
-     
 
-       
+
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Users</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Users</h1>
         <select
           value={roleFilter}
           onChange={(e) => {
             setRoleFilter(e.target.value as 'all' | 'admin' | 'user');
             setPage(1);
           }}
-           className="  sm:w-40 px-3 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200  text-sm font-medium"
+          className="  sm:w-40 px-3 py-2.5 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all duration-200  text-sm font-medium"
         >
           <option value="all">All Roles</option>
           <option value="admin">Admins</option>
           <option value="user">Users</option>
         </select>
-        </div>
-       
+      </div>
+
 
       {/* Error Message */}
       {error && (
@@ -133,11 +133,11 @@ export default function Users() {
         </>
       )}
 
-      {showDeleteConfirm &&(
+      {showDeleteConfirm && (
         <DeleteConfirmPopup
-        onConfirm={()=> handleDelete(showDeleteConfirm)}
-        onCancel={()=> setShowDeleteConfirm(null)}
-        loading={deleteLoading}
+          onConfirm={() => handleDelete(showDeleteConfirm)}
+          onCancel={() => setShowDeleteConfirm(null)}
+          loading={deleteLoading}
         />
       )}
     </div>
