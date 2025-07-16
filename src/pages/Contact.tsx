@@ -39,7 +39,7 @@ export default function Contact() {
     }
     setIsSubmitting(true);
     try {
-      // Simulate API call (replace with actual API call if needed)
+   
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success(`Thanks for contacting, ${formData.name}!`);
       setFormData({ name: '', email: '', message: '' });
@@ -56,7 +56,7 @@ export default function Contact() {
       <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Contact Us</h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Name Field */}
+        
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             Name
@@ -100,7 +100,7 @@ export default function Contact() {
           )}
         </div>
 
-        {/* Message Field */}
+      
         <div>
           <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
             Message
@@ -122,7 +122,7 @@ export default function Contact() {
           )}
         </div>
 
-        {/* Submit Button */}
+       
         <button
           type="submit"
           disabled={isSubmitting}

@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import PostCard from '../components/PostCard';
 import API from '../services/api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
- 
+
 import type { Post } from '../dtos/post.dto';
 import { useAuth } from '../context/AuthContext';
+import DeleteConfirmPopup from '../components/DeleteConfirmPopup';
+import Pagination from '../components/Pagination';
+import { Loader } from 'lucide-react';
 
 const POSTS_PER_PAGE = 8;
 
@@ -14,10 +17,12 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirmId, setShowDeleteConfirmId] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const search = searchParams.get('q') || '';
 
- 
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -41,36 +46,42 @@ const Home = () => {
     }
   };
 
- 
-  useEffect(()=>{
+
+  useEffect(() => {
     setCurrentPage(1);
-  },[search]);
+  }, [search]);
 
   useEffect(() => {
     fetchPosts();
   }, [currentPage, sortAsc, search]);
 
   const handleEdit = (id: string) => {
-    navigate(`/edit-post/${id}`);
+    navigate(`/posts/${id}/edit`);
   };
 
-  async function handleDelete(id: string) {
-    if (confirm('Are you sure you want to delete this post?')) {
-      try {
-        await API.delete(`/stories/${id}`);
-        fetchPosts();
-      } catch (error) {
-        console.error('Failed to delete post:', error);
-      }
-    }
-  }
+  const confirmDelete = (id: string) => {
+    setShowDeleteConfirmId(id);
+  };
 
- 
+  const handleDelete = async (id: string) => {
+    setDeleteLoading(true);
+    try {
+      await API.delete(`/stories/${id}`);
+      fetchPosts();
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteConfirmId(null);
+    }
+  };
+
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold text-blue-700 mb-4">Latest Posts</h2>
+      <h2 className="text-2xl font-bold text-blue-700 mb-4">Dashboard</h2>
 
-      
+
       <button
         onClick={() => {
           setSortAsc(!sortAsc);
@@ -83,7 +94,7 @@ const Home = () => {
 
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading ? (
-          <p>Loading...</p>
+          <Loader />
         ) : posts.length > 0 ? (
           posts.map(post => (
             <PostCard
@@ -91,14 +102,12 @@ const Home = () => {
               {...post}
               onDelete={
                 user?.userId === post.authorId || user?.role === 1
-                  ? handleDelete
+                  ? confirmDelete
                   : undefined
               }
               onEdit={
                 user?.userId === post.authorId ? handleEdit : undefined
               }
-              likesCount={1}
-              commentsCount={5}
             />
           ))
         ) : (
@@ -106,25 +115,19 @@ const Home = () => {
         )}
       </div>
 
-      <div className="flex justify-center items-center gap-3 mt-8">
-        <button
-          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="text-sm font-medium text-gray-700">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+      {showDeleteConfirmId && (
+        <DeleteConfirmPopup
+          onConfirm={() => handleDelete(showDeleteConfirmId)}
+          onCancel={() => setShowDeleteConfirmId(null)}
+          loading={deleteLoading}
+        />
+      )}
+
+      <Pagination
+        page={currentPage}
+        setPage={setCurrentPage}
+        totalPages={totalPages}
+      />
     </div>
   );
 };

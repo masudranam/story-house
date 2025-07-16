@@ -3,6 +3,7 @@ import API from '../../services/api';
 import UserCard from '../../components/UserCard';
 import type { User } from '../../dtos/User.dto';
 import { useSearchParams } from 'react-router-dom';
+import DeleteConfirmPopup from '../../components/DeleteConfirmPopup';
 
 const USERS_PER_PAGE = 6;
 
@@ -62,7 +63,7 @@ export default function Users() {
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
      
 
-      {/* Search and Filter */}
+       
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Users</h1>
         <select
@@ -132,39 +133,12 @@ export default function Users() {
         </>
       )}
 
-                    
-  
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-           
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleDelete(showDeleteConfirm)}
-                className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 font-medium text-sm disabled:opacity-50 flex items-center justify-center"
-                disabled={deleteLoading}
-              >
-                {deleteLoading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    Deleting...
-                  </span>
-                ) : (
-                  'Yes, Delete'
-                )}
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+      {showDeleteConfirm &&(
+        <DeleteConfirmPopup
+        onConfirm={()=> handleDelete(showDeleteConfirm)}
+        onCancel={()=> setShowDeleteConfirm(null)}
+        loading={deleteLoading}
+        />
       )}
     </div>
   );

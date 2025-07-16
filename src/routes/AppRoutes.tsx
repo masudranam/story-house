@@ -25,12 +25,12 @@ const AppRoutes = () => {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="stories/:id" element={<PostDetail />} />
-        <Route path="add-post" element={<AddPost />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
+        <Route path="posts/create" element={<AddPost />} />
+        <Route path="users/login" element={<Login />} />
+        <Route path="users/signup" element={<Signup />} />
         <Route path="profile" element={<Profile />} />
         <Route path="profile/:userId" element={<Profile />} />
-        <Route path="edit-post/:id" element={<EditPost />} />
+        <Route path="posts/:id/edit" element={<EditPost />} />
         <Route path='contact' element={<Contact />} />
         <Route path='about' element={<About />} />
 

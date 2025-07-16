@@ -42,7 +42,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/users/login');
   };
 
   return (
@@ -63,13 +63,7 @@ const Navbar = () => {
         />
      
       <div className="flex items-center space-x-6">
-        {/* <Link
-          to="/"
-          className="text-lg font-medium  hover:text-blue-200 transition-colors duration-300"
-        >
-          Home
-        </Link>
-         */}
+      
 
         {user?.username ? (
           <div className="relative" ref={dropdownRef}>
@@ -115,7 +109,7 @@ const Navbar = () => {
           </div>
         ) : (
           <Link
-            to="/login"
+            to="/users/login"
             className="text-sm font-medium hover:text-blue-200 transition-colors duration-200"
           >
             Login

@@ -86,8 +86,8 @@ const Profile = () => {
     if (user || userId) fetchPosts();
   }, [user, userId, currentPage, search]);
 
-  const handleAddPost = () => navigate('/add-post');
-  const handleEdit = (id: string) => navigate(`/edit-post/${id}`);
+  const handleAddPost = () => navigate('/posts/create');
+  const handleEdit = (id: string) => navigate(`/posts/:${id}/edit`);
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this post?')) {

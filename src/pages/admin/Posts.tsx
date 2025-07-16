@@ -2,9 +2,12 @@ import { use, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../../services/api';
 import PostCard from '../../components/PostCard';
- 
+
 import type { Post } from '../../dtos/post.dto';
 import { useAuth } from '../../context/AuthContext';
+import { Loader } from 'lucide-react';
+import Pagination from '../../components/Pagination';
+import DeleteConfirmPopup from '../../components/DeleteConfirmPopup';
 
 const POSTS_PER_PAGE = 6;
 
@@ -17,7 +20,7 @@ export default function Posts() {
   const [page, setPage] = useState(1);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-   const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const search = searchParams.get('q') || '';
 
   const { user } = useAuth();
@@ -45,9 +48,9 @@ export default function Posts() {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setPage(1);
-  },[search]);
+  }, [search]);
 
   useEffect(() => {
     fetchPosts();
@@ -68,14 +71,14 @@ export default function Posts() {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/edit-post/${id}`);
+    navigate(`/posts/${id}/edit`);
   };
 
   const totalPages = Math.ceil(total / POSTS_PER_PAGE);
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
-      
+
 
       {/* Search and Sort */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -99,14 +102,12 @@ export default function Posts() {
 
       {/* Loading State */}
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
-        </div>
+        <Loader />
       ) : posts.length === 0 ? (
         <div className="text-center text-gray-600 py-6">No posts found.</div>
       ) : (
         <>
-          {/* Post Cards */}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <PostCard
@@ -122,67 +123,26 @@ export default function Posts() {
             ))}
           </div>
 
-          {/* Pagination */}
+
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1 || loading}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium text-sm disabled:opacity-50"
-              >
-                Prev
-              </button>
-              <span className="text-sm font-medium text-gray-600">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages || loading}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium text-sm disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+            />
           )}
         </>
       )}
 
-      {/* Delete Confirmation Modal */}
+
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Post Deletion</h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete this post? This action cannot be undone.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleDelete(showDeleteConfirm)}
-                className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition-all duration-200 font-medium text-sm disabled:opacity-50 flex items-center justify-center"
-                disabled={deleteLoading}
-              >
-                {deleteLoading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
-                    Deleting...
-                  </span>
-                ) : (
-                  'Yes, Delete'
-                )}
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(null)}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmPopup
+          onConfirm={() => handleDelete(showDeleteConfirm)}
+          onCancel={() => setShowDeleteConfirm(null)}
+          loading={deleteLoading}
+        />
       )}
+      
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import toast from 'react-hot-toast';
 
 const EditPost = () => {
     const { id } = useParams<{ id: string }>();
@@ -22,6 +23,7 @@ const EditPost = () => {
                 });
             } else {
                 try {
+                    toast.success(id || '');
                     const res = await API.get(`/stories/${id}`);
                     setTitle(res.data.story.title);
                     setDescription(res.data.story.description);

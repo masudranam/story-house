@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import type { Comment } from '../dtos/comment.dto';
+import Pagination from './Pagination';
 
 interface CommentsSectionProps {
   storyId: string;
@@ -140,27 +141,12 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-3 mt-6">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span className="text-sm font-medium text-gray-700">
-            Page {page} of {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+       <Pagination
+        page={page}
+        totalPages={totalPages}
+        setPage={setPage}
+        />
+     
     </div>
   );
 };

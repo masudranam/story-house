@@ -13,4 +13,7 @@ export interface Props {
   commentsCount?: number;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
+  deleteConfirmId?: string;
+  setDeleteConfirmId?: (id: string | null) => void;
+  deleteLoading?: boolean;
 }
