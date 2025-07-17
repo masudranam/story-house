@@ -7,6 +7,7 @@ import LikeButton from '../components/LikeButton';
 import type { Post } from '../dtos/post.dto';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import Loader from '../components/Loader';
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -49,7 +50,6 @@ const PostDetail = () => {
       setError(null);
     } catch {
       setError('Could not fetch like information.');
-      console.warn('Could not fetch like info');
     }
   };
 
@@ -81,11 +81,7 @@ const PostDetail = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
-      </div>
-    );
+    <Loader />   
   }
 
   if (!post || error) {

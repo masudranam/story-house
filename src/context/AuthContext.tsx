@@ -21,6 +21,7 @@ interface AuthCtx {
   token: string | null;
   login: (t: string, rememberMe?: boolean) => void;
   logout: () => void;
+  loading:boolean;
 }
 
 const AuthContext = createContext<AuthCtx>(null!);
@@ -30,20 +31,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
   });
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) {
       setUser(null);
+      setLoading(false);
       return;
     }
     try {
       const decoded = jwtDecode<TokenPayload>(token);
+      
       const now = Date.now() / 1000;
       if (decoded.exp && decoded.exp < now) {
         localStorage.removeItem('token');
         sessionStorage.removeItem('token');
         setToken(null);
         setUser(null);
+        setLoading(false);
         toast.error('Session expired. Please log in again.');
         return;
       }
@@ -59,11 +64,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           logout();
           toast.error('Session expired. Please log in again.');
         }, ms);
+        setLoading(false);
        
         return () => clearTimeout(id);
       }
+      setLoading(false);
     } catch (err) {
-      console.error('Token decode error:', err);
+     
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
       setToken(null);
@@ -86,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast.success('Logged out successfully.');
   };
 
-  return <AuthContext.Provider value={{ user, token, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, token, login, logout , loading}}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

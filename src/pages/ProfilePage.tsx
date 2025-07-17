@@ -36,7 +36,7 @@ const Profile = () => {
   useEffect(() => {
     if (user === null) return;
     if (!user) {
-      navigate('/login');
+      navigate('/users/login');
       return;
     }
   }, [user, userId]);
@@ -54,7 +54,6 @@ const Profile = () => {
   }
 
   useEffect(() => {
-    console.log(profile);
     fetchProfile();
   }, [userId, user?.userId]);
 
