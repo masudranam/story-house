@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../../services/api';
-
-interface Stats {
+import Loader from '../../components/Loader';
+ 
+interface DashboardStats {
   totalUsers: number;
   totalPosts: number;
   totalComments: number;
@@ -11,7 +12,7 @@ interface Stats {
 }
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +24,6 @@ export default function Dashboard() {
         setError(null);
       } catch (err) {
         setError('Failed to load dashboard stats. Please try again.');
-        console.error('Failed to load dashboard stats', err);
       } finally {
         setLoading(false);
       }
@@ -33,11 +33,7 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
-      </div>
-    );
+   <Loader />
   }
 
   if (!stats || error) {
@@ -57,8 +53,8 @@ export default function Dashboard() {
         <StatCard label="Total Users" value={stats.totalUsers} link="/admin/users" />
         <StatCard label="Total Posts" value={stats.totalPosts} link="/admin/posts" />
         <StatCard label="Total Comments" value={stats.totalComments} link="/admin/comments" />
-        <StatCard label="New Users This Week" value={stats.newUsersThisWeek} link="/admin/users" />
-        <StatCard label="New Posts This Week" value={stats.newPostsThisWeek} link="/admin/posts" />
+        {/* <StatCard label="New Users This Week" value={stats.newUsersThisWeek} link="/admin/users" />
+        <StatCard label="New Posts This Week" value={stats.newPostsThisWeek} link="/admin/posts" /> */}
       </div>
     </div>
   );

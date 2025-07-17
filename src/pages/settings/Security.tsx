@@ -4,8 +4,6 @@ import API from '../../services/api';
 import TextInput from '../../components/TextInput';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import DeleteConfirmModal from '../../components/DeleteConfirmation';
-import DeleteConfirmPopup from '../../components/DeleteConfirmPopup';
 
 const Security = () => {
     const [oldPassword, setOldPassword] = useState('');
@@ -13,7 +11,7 @@ const Security = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const { user, token, logout } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const userId = user?.userId;
 
@@ -131,7 +129,7 @@ const Security = () => {
                 </div>
             </div>
 
-            {/* Delete Confirmation Modal */}
+          
             {showDeleteConfirm && (
                 <div className="absolute top-100  bg-white border border-gray-300 rounded-lg shadow-xl p-6 w-80 z-50">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Account Deletion</h3>

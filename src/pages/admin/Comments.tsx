@@ -6,7 +6,7 @@ import DeleteConfirmModal from '../../components/DeleteConfirmation';
 import type { Comment } from '../../dtos/comment.dto';
 import Pagination from '../../components/Pagination';
 import { Loader } from 'lucide-react';
- 
+
 
 const COMMENTS_PER_PAGE = 6;
 
@@ -44,13 +44,13 @@ export default function Comments() {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setPage(1);
-  },[search])
-  
+  }, [search])
+
   useEffect(() => {
     fetchComments();
-  }, [search,page]);
+  }, [search, page]);
 
   const handleDelete = async (id: string) => {
     setDeleteLoading(true);
@@ -80,7 +80,7 @@ export default function Comments() {
         </div>
       )}
 
-  
+
       {loading ? (
         <Loader />
       ) : comments.length === 0 ? (
@@ -97,14 +97,14 @@ export default function Comments() {
                   navigate(`/stories/${c.storyId}`, { state: { scrollToComment: true } })
                 }
               >
-                <p className="text-sm font-medium text-blue-600 hover:underline mb-1">
+                <p className="text-sm font-medium text-blue-600   mb-1">
                   {c.author.username}
                 </p>
                 <p className="text-sm text-gray-600 line-clamp-3">
                   {c.content}
                 </p>
                 <p className="text-xs text-gray-400 mt-2">
-                  {new Date(c.createdAt).toLocaleString( )}
+                  {new Date(c.createdAt).toLocaleString()}
                 </p>
                 {deleteConfirmId === c.id ? (
                   <DeleteConfirmModal
@@ -128,11 +128,11 @@ export default function Comments() {
             ))}
           </div>
 
-         <Pagination
-          page={page}
-          setPage={setPage}
-          totalPages={totalPages}
-         />
+          <Pagination
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </>
       )}
     </div>

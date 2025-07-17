@@ -4,7 +4,7 @@ interface DeleteConfirmPopupProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
-  className?: string; // Optional custom position/styling
+  className?: string; 
 }
 
 const DeleteConfirmPopup: React.FC<DeleteConfirmPopupProps> = ({

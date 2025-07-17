@@ -6,7 +6,6 @@ import toast from 'react-hot-toast';
 import type { Comment } from '../dtos/comment.dto';
 import Pagination from './Pagination';
 import DeleteConfirmModal from './DeleteConfirmation';
-import DeleteConfirmPopup from './DeleteConfirmPopup';
 
 interface CommentsSectionProps {
   storyId: string;
@@ -58,10 +57,8 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
   };
 
   const handleDelete = async (commentId: string) => {
-    //if(!confirm('Confirm delete'))return;
     setDeleteLoading(true);
     try {
-      console.log('delete id', commentId);
       await API.delete(`/comments/${commentId}`);
       setDeleteConfirmId(null);
       fetchComments();
@@ -146,7 +143,7 @@ const CommentsSection = ({ storyId, userId }: CommentsSectionProps) => {
                           onCancel={() => setDeleteConfirmId(null)}
                           onConfirm={() => handleDelete(c.id)}
                           loading={deleteLoading}
-                          className="flex"
+                          className="flex space-x-1"
                         />
                       ):(
                         <>

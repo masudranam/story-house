@@ -10,8 +10,6 @@ const PostCard = ({
   authorId,
   author,
   createdAt,
-  likesCount,
-  commentsCount,
   onEdit,
   onDelete,
 }: Props) => {

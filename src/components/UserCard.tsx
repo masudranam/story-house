@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-interface Props {
+interface UserProps {
   id: string;
   username: string;
   email: string;
@@ -9,7 +9,7 @@ interface Props {
   onDelete?: (id: string) => void;
 }
 
-const UserCard = ({ id, username, email, role, createdAt, onDelete }: Props) => {
+const UserCard = ({ id, username, email, role, createdAt, onDelete }: UserProps) => {
   const navigate = useNavigate();
 
   return (

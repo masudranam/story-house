@@ -1,8 +1,7 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import API from '../../services/api';
 import PostCard from '../../components/PostCard';
-
 import type { Post } from '../../dtos/post.dto';
 import { useAuth } from '../../context/AuthContext';
 import { Loader } from 'lucide-react';
@@ -80,7 +79,7 @@ export default function Posts() {
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg caret-transparent">
 
 
-      {/* Search and Sort */}
+    
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Manage Posts</h1>
         <select
@@ -93,14 +92,14 @@ export default function Posts() {
         </select>
       </div>
 
-      {/* Error Message */}
+     
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
           {error}
         </div>
       )}
 
-      {/* Loading State */}
+     
       {loading ? (
         <Loader />
       ) : posts.length === 0 ? (

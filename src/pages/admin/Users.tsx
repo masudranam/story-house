@@ -4,6 +4,8 @@ import UserCard from '../../components/UserCard';
 import type { User } from '../../dtos/User.dto';
 import { useSearchParams } from 'react-router-dom';
 import DeleteConfirmPopup from '../../components/DeleteConfirmPopup';
+import Pagination from '../../components/Pagination';
+import DeleteConfirmModal from '../../components/DeleteConfirmation';
 
 const USERS_PER_PAGE = 6;
 
@@ -81,14 +83,14 @@ export default function Users() {
       </div>
 
 
-      {/* Error Message */}
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
           {error}
         </div>
       )}
 
-      {/* Loading State */}
+
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600"></div>
@@ -97,7 +99,6 @@ export default function Users() {
         <div className="text-center text-gray-600 py-6">No users found.</div>
       ) : (
         <>
-          {/* User Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => (
               <UserCard
@@ -106,29 +107,15 @@ export default function Users() {
                 onDelete={() => setShowDeleteConfirm(user.id)}
               />
             ))}
-          </div>
+          </div> 
 
-          {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1 || loading}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium text-sm disabled:opacity-50"
-              >
-                Prev
-              </button>
-              <span className="text-sm font-medium text-gray-600">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages || loading}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium text-sm disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              setPage={setPage}
+              loading={loading}
+            />
           )}
         </>
       )}
