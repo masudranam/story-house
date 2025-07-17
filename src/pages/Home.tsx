@@ -122,6 +122,7 @@ const Home = () => {
           onConfirm={() => handleDelete(showDeleteConfirmId)}
           onCancel={() => setShowDeleteConfirmId(null)}
           loading={deleteLoading}
+          className='fixed top-20 right-160 z-50'
         />
       )}
 

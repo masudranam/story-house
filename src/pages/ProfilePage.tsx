@@ -7,6 +7,7 @@ import type { Post } from '../dtos/post.dto';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import Pagination from '../components/Pagination';
+import DeleteConfirmPopup from '../components/DeleteConfirmPopup';
 
 const POSTS_PER_PAGE = 9;
 
@@ -22,6 +23,8 @@ const Profile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const search = searchParams.get('q') || '';
 
   const navigate = useNavigate();
@@ -91,14 +94,17 @@ const Profile = () => {
   const handleEdit = (id: string) => navigate(`/posts/${id}/edit`);
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this post?')) {
+    setDeleteLoading(true);
       try {
         await API.delete(`/stories/${id}`);
-        setPosts(posts.filter(post => post.id !== id));
+        fetchPosts();
+        setShowDeleteConfirm(null);
+        toast.success('Post has been deleted');
       } catch (error) {
-        console.error('Failed to delete post:', error);
+        toast.error('Failed to delete post');
+      }finally{
+        setDeleteLoading(false);
       }
-    }
   };
 
   return (
@@ -163,13 +169,22 @@ const Profile = () => {
                   key={post.id}
                   {...post}
                   onDelete={
-                    isOwnProfile || user?.role === 1 ? handleDelete : undefined
+                    isOwnProfile || user?.role === 1 ? ()=> setShowDeleteConfirm(post.id) : undefined
                   }
                   onEdit={isOwnProfile ? handleEdit : undefined}
                 />
               ))
             )}
           </div>
+
+          {showDeleteConfirm && (
+            <DeleteConfirmPopup
+              onConfirm={() => handleDelete(showDeleteConfirm)}
+              onCancel={() => setShowDeleteConfirm(null)}
+              loading={deleteLoading}
+              className='fixed top-40 right-160 z-50'
+            />
+          )}
 
           <Pagination
             page={currentPage}

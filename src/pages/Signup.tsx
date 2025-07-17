@@ -55,7 +55,6 @@ export default function Signup() {
     }
     setIsSubmitting(true);
     try {
-      console.log('Submitting:', formData); // Debug log
       await API.post('/users/signup', formData);
       toast.success('Signup successful! Please log in.');
       navigate('/users/login');

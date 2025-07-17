@@ -139,6 +139,7 @@ export default function Posts() {
           onConfirm={() => handleDelete(showDeleteConfirm)}
           onCancel={() => setShowDeleteConfirm(null)}
           loading={deleteLoading}
+          className='fixed top-40 right-160 z-50'
         />
       )}
       

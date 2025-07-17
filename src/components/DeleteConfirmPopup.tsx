@@ -11,7 +11,7 @@ const DeleteConfirmPopup: React.FC<DeleteConfirmPopupProps> = ({
   onConfirm,
   onCancel,
   loading = false,
-  className = 'absolute top-20 right-150',
+  className,
 }) => {
   return (
     <div className={`${className} z-50 w-80 bg-white border border-gray-300 rounded-lg shadow-xl p-6`}>
