@@ -24,41 +24,53 @@ const AddPost = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 px-4">
-      <h2 className="text-2xl font-bold mb-6 text-center text-teal-700 caret-transparent">Add New Post</h2>
+  <div className="max-w-2xl mx-auto mt-12 px-4">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 sm:p-8">
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-indigo-600 mb-6">
+         Create a New Post
+      </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded shadow">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Post Title</label>
+          <input
+            type="text"
+            placeholder="What's on your mind?"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            required
+            className="w-full px-4 py-3 text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+        </div>
 
-        <textarea
-          placeholder="Content"
-          rows={6}
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Post Content</label>
+          <textarea
+            rows={6}
+            placeholder="Share your thoughts with the community..."
+            value={content}
+            onChange={e => setContent(e.target.value)}
+            required
+            className="w-full px-4 py-3 text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"
+          />
+        </div>
 
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 rounded text-white font-semibold transition ${loading
-            ? 'bg-teal-400 cursor-not-allowed'
-            : 'bg-teal-600 hover:bg-teal-700'
-            }`}
+          className={`w-full py-3 rounded-xl text-white font-semibold transition duration-200 ${
+            loading
+              ? 'bg-indigo-300 cursor-not-allowed'
+              : 'bg-indigo-600 hover:bg-indigo-700'
+          }`}
         >
-          {loading ? 'Publishing...' : 'Publish'}
+          {loading ? 'Posting...' : ' Post It'}
         </button>
       </form>
     </div>
-  );
-};
+  </div>
+);
+}
+
 
 export default AddPost;

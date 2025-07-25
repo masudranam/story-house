@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
  
 const Navbar = () => {
@@ -8,6 +8,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, logout} = useAuth();
+
+const location = useLocation();
+
+const hideSearchOnRoutes = ['/users/login', '/users/signup'];
+const shouldHideSearch = hideSearchOnRoutes.includes(location.pathname);
 
 
   useEffect(()=>{
@@ -48,7 +53,7 @@ const Navbar = () => {
           BlogApp
         </Link>
       </h1>
-
+      {!shouldHideSearch && (
         <input 
         type='text'
         placeholder='Search'
@@ -56,6 +61,7 @@ const Navbar = () => {
         onChange={(e) => setInput(e.target.value)}
         className='w-full max-w-md px-4 py-1 border border-b-purple-400 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500'
         />
+      )}
      
       <div className="flex items-center space-x-6 caret-transparent">
       

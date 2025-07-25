@@ -7,7 +7,7 @@ const inactive = 'bg-gray-100 text-gray-600 hover:bg-gray-200';
 
 const Settings = () => (
   <div className="max-w-xl mx-auto mt-8 p-6 bg-white rounded-2xl shadow-lg">
-    <h1 className="text-2xl font-semibold text-center text-gray-800 mb-8">Settings</h1>
+    <h1 className="text-2xl font-semibold text-center text-gray-800 mb-8 caret-transparent">Settings</h1>
 
     <div className="flex justify-center gap-4 mb-6">
       <NavLink

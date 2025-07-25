@@ -4,6 +4,7 @@ import API from '../services/api';
 import TextInput from '../components/TextInput';
  
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-hot-toast';
 
  
 const Login = () => {
@@ -31,7 +32,7 @@ const Login = () => {
       login(token, rememberMe);
       navigate('/profile');
     } catch {
-      alert('Login failed');
+      toast.error('Login failed');
     }
   };
 

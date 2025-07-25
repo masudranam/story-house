@@ -81,7 +81,7 @@ const PostDetail = () => {
   };
 
   if (loading) {
-    <Loader />   
+   return <Loader />   
   }
 
   if (!post || error) {
@@ -98,8 +98,8 @@ const PostDetail = () => {
     <div className="max-w-2xl mx-auto mt-5 p-6 bg-white rounded-2xl shadow-lg space-y-6">
 
       <div>
-        <h1 className="text-2xl font-semibold text-gray-800 mb-2">{post.title}</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="text-2xl font-semibold text-gray-800 mb-2  caret-transparent">{post.title}</h1>
+        <p className="text-sm text-gray-500 caret-transparent">
           Posted by{' '}
           <Link
             to={`/profile/${post.authorId}`}
@@ -114,7 +114,7 @@ const PostDetail = () => {
       </div>
 
 
-      <div className="bg-gray-50 p-4 rounded-lg text-gray-800 leading-relaxed whitespace-pre-wrap">
+      <div className="bg-gray-50 p-4 rounded-lg text-gray-800 leading-relaxed whitespace-pre-wrap caret-transparent">
         {post.description}
       </div>
 

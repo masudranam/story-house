@@ -14,6 +14,7 @@ interface TokenPayload {
   username: string;
   role: number;
   exp?: number;
+  iat?: number;
 }
 
 interface AuthCtx {
@@ -21,7 +22,7 @@ interface AuthCtx {
   token: string | null;
   login: (t: string, rememberMe?: boolean) => void;
   logout: () => void;
-  loading:boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthCtx>(null!);
@@ -41,7 +42,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       const decoded = jwtDecode<TokenPayload>(token);
-      
+
+      // const decoded = jwt.verify(
+      //   token,
+      //   (process.env.JWT_SECRET as string) || 'secret',
+      // ) as { userId: string; username: string; role: number; exp: number };
+
+     // console.log('decoded token', decoded.iat);
+
       const now = Date.now() / 1000;
       if (decoded.exp && decoded.exp < now) {
         localStorage.removeItem('token');
@@ -65,12 +73,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           toast.error('Session expired. Please log in again.');
         }, ms);
         setLoading(false);
-       
+
         return () => clearTimeout(id);
       }
       setLoading(false);
     } catch (err) {
-     
+
       localStorage.removeItem('token');
       sessionStorage.removeItem('token');
       setToken(null);
@@ -93,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     toast.success('Logged out successfully.');
   };
 
-  return <AuthContext.Provider value={{ user, token, login, logout , loading}}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, token, login, logout, loading }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
