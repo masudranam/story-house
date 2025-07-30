@@ -5,7 +5,7 @@ export const signUpUserSchema = z.object({
   username: z
     .string()
     .min(1, 'Username must be at least 1 characters')
-    .regex(/^[a-z]+$/, 'Username must be lowercase letters only'),
+    .regex(/^[a-z 0-9]+$/, 'Username must be lowercase letters only'),
   email: z.string().email({ message: 'Invalid email format' }),
   password: z.string().min(6),
 });
