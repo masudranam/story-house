@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 const SECRET = process.env.JWT_SECRET || 'secret';
-const EXPIRES = process.env.JWT_EXPIRES_IN || '60';
+const EXPIRES = process.env.JWT_EXPIRES_IN || '30m';
 
 export const generateToken = (userId: string, username: string, role: number) => {
   return jwt.sign({ userId, username, role }, SECRET, {
