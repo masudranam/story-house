@@ -1,9 +1,12 @@
+import { Op, WhereOptions } from 'sequelize';
+
 import { createStoryDTO } from '../dto/DTO.ts';
-import { Story } from '../database/database.ts';
-import { Op } from 'sequelize';
+import { Story, User } from '../database/database.ts';
+import { storyFilters } from '../dto/story/storyFilters.ts';
+import { storyAttributes } from '../dto/story/storyAttributes.ts';
 
 class StoryRepository {
-  async postStory(data: createStoryDTO) {
+  async postStory(data: createStoryDTO): Promise<storyAttributes> {
     const story = await Story.create({
       title: data.title,
       description: data.description,
@@ -15,50 +18,65 @@ class StoryRepository {
   }
 
   getAllStories = async (
-    filters: any,
+    filters: storyFilters,
     sort: 'ASC' | 'DESC',
     limit: number,
     offset: number,
-  ) => {
-    const where: any = {};
+  ): Promise<{count: number; rows: storyAttributes[]}> => {
+    const where: WhereOptions = {};
     if (filters.authorId) where.authorId = filters.authorId;
     if (filters.title) {
       where.title = { [Op.iLike]: `%${filters.title}%` };
     }
 
-    const stories = await Story.findAll({
-      where,
-      order: [['updatedAt', sort]],
-      limit,
-      offset,
-    });
-    return stories;
+const {count, rows} = await Story.findAndCountAll({
+  where,
+  order: [['updatedAt', sort]],
+  limit,
+  offset,
+  include: [
+    {
+      model: User,
+      as: 'author',
+      attributes: ['name','username', 'email'], // only the fields you want
+    },
+  ],
+});
+    return {count, rows};
   };
 
   async deleteAllStories(): Promise<number> {
-    const deleteCount = await Story.destroy({ where: {}, truncate: true });
+    const deleteCount: number = await Story.destroy({ where: {} });
     return deleteCount;
   }
 
-  async findStoryByStoryId(id: string) {
-    return await Story.findByPk(id);
+  async findStoryByStoryId(id: string): Promise<storyAttributes | null> {
+    const story: storyAttributes | null = await Story.findByPk(id,
+       {
+    include: {
+      model: User,
+      as: 'author', // optional alias if you used one
+      attributes: ['name', 'username', 'email'],
+    },
+  });
+
+    return story;
   }
 
   async updateStoryByStoryId(
     storyId: string,
     data: Partial<{ title: string; description: string }>,
-  ) {
+  ): Promise<storyAttributes | null> {
     const story = await Story.findByPk(storyId);
     if (!story) return null;
-    await story.update(data);
-    return story;
+    const updatedStory: storyAttributes = await story.update(data);
+    return updatedStory;
   }
 
-  async deleteStoryByStoryId(storyId: string, userId: string) {
+  async deleteStoryByStoryId(storyId: string, userId: string): Promise<number> {
     const deleteCount = await Story.destroy({
       where: {
-        id: storyId,
-        authorId: userId,
+        id: storyId
       },
     });
     return deleteCount;

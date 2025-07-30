@@ -20,4 +20,9 @@ export const loginUserSchema = z.object({
   password: z.string().min(6),
 });
 
-export type loginUserDTO = z.infer<typeof loginUserSchema>;
+export const changePasswordSchema = z.object({
+  oldPassword: z.string().min(5),
+  newPassword: z.string().min(5),
+});
+export type validatePassword = z.infer<typeof changePasswordSchema>;
+export type loginUser = z.infer<typeof loginUserSchema>;

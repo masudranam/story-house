@@ -6,4 +6,4 @@ export const createUserSchema = z.object({
   email: z.string().email('Invalid email'),
 });
 
-export type createUserDTO = z.infer<typeof createUserSchema>;
+export type createUser = z.infer<typeof createUserSchema>;

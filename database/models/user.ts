@@ -15,8 +15,8 @@ export const defineUserModel = (sequelize: Sequelize) => {
     {
       id: {
         type: DataTypes.UUID,
-        allowNull: false,
         defaultValue: UUIDV4,
+        allowNull: false,
         primaryKey: true,
       },
       name: { type: DataTypes.STRING, allowNull: false },
@@ -38,6 +38,7 @@ export const defineUserModel = (sequelize: Sequelize) => {
       sequelize,
       modelName: 'User',
       tableName: 'user',
+      timestamps: true,
       freezeTableName: true,
     },
   );

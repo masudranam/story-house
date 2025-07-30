@@ -1,28 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { userService } from '../services/userService.ts';
-import { userRepository } from '../repository/userRepository.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
 import { User } from '../database/models/user.ts';
 import { Auth } from '../database/models/auth.ts';
-import { createUserDTO } from '../dto/DTO.ts';
-
-class UserController {
-  async createUser(req: any, res: any, next: NextFunction) {
-    try {
-      const user: createUserDTO = req.body;
-      const result = await userRepository.createUser(user);
-      res.status(httpStatus.CREATED).json(result);
-    } catch (err) {
-      next(err);
-    }
-  }
-
+import { responseFormatter } from '../utils/responseFormatteUtils.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
+import { Op, Sequelize } from 'sequelize';
+import { userFiltersSchema } from '../dto/user/userFilters.ts';
+ 
+export class UserController {
   async getUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
-      user
-        ? res.json(user)
-        : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
+      const user: userAttributes = await userService.getUserById(req.params.id);
+      // user
+      //   ? res.status(httpStatus.OK).json(user)
+      //   : res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });
+      if (user) {
+        responseFormatter.format(req, res, user, httpStatus.OK);
+      } else {
+        responseFormatter.format(
+          req,
+          res,
+          { error: 'User not found' },
+          httpStatus.NOT_FOUND,
+        );
+      }
     } catch (err) {
       next(err);
     }
@@ -43,7 +46,6 @@ class UserController {
   async updateUsernameById(req: Request, res: Response, next: NextFunction) {
     try {
       const user = await userService.getUserById(req.params.id);
-      const authHeader = req.headers.authorization;
 
       if (!user) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not found' });
@@ -54,11 +56,9 @@ class UserController {
       const newUsername = req.body.username;
       if (!curUsername) throw new Error('no new username provided');
 
-      const token = authHeader?.split(' ')[1];
       await userService.updateUserName(curUsername, newUsername);
       res.json({
         message: `username updated from ${curUsername} to ${newUsername}`,
-        token,
       });
       return;
     } catch (err) {
@@ -68,13 +68,15 @@ class UserController {
 
   async deleteUserById(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = await userService.getUserById(req.params.id);
+      const user: userAttributes = await userService.getUserById(req.params.id);
+      console.log(user);
 
-      if (!user) {
+      if (!user?.id) {
         res.status(httpStatus.NOT_FOUND).json({ message: 'User not exist' });
         return;
       }
-      await userService.deleteUserById(user);
+
+      await userService.deleteUserById(user.id);
       res
         .status(httpStatus.OK)
         .json({ message: `User with id ${user.id} deleted successfully` });
@@ -83,20 +85,42 @@ class UserController {
     }
   }
 
-  async getAllUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      const users = await userService.getAllUser(req.query);
-      res.json(users);
-    } catch (err) {
-      next(err);
-    }
+async searchUsers(req: Request, res: Response, next: NextFunction) {
+  try {
+     const filters = userFiltersSchema.parse(req.query); 
+    const result = await userService.searchUsers(filters);
+    res.status(200).json(result); 
+  }catch(err){
+    next(err);
   }
+}
 
-  async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
+
+async deleteAllUsers(req: Request, res: Response, next: NextFunction) {
+  try {
+ 
+    const admins = await User.findAll({ where: { role: { [Op.eq]: 1 } } });
+ 
+    const adminIds = admins.map(admin => admin.id);
+ 
+    await User.destroy({ where: { role: { [Op.ne]: 1 } } });
+
+  
+    await Auth.destroy({
+      where: { userId: { [Op.notIn]: adminIds } },
+      restartIdentity: true,
+    });
+
+    res.status(httpStatus.OK).json({ message: 'All non-admin users deleted' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+ async getStats(req: Request, res: Response, next: NextFunction) {
     try {
-      await User.destroy({ where: {}, truncate: true });
-      await Auth.destroy({ where: {}, truncate: true, restartIdentity: true });
-      res.status(httpStatus.OK).json({ message: 'All users deleted' });
+      const stats = await userService.getAllStates();
+      res.status(200).json(stats);
     } catch (err) {
       next(err);
     }

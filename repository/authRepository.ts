@@ -1,28 +1,32 @@
-// repositories/user.repository.ts
 import { Auth } from '../database/models/auth.ts';
-import { Transaction } from 'sequelize';
-import { createAuthDTO } from '../dto/createAuthDTO.ts';
-import { securePassword } from '../utils/hashedPassword.ts';
+import { passwordHandler } from '../utils/passwordHandler.ts';
+import { User } from '../database/models/user.ts';
+import { signUpUser } from '../dto/auth/signupUserDTO.ts';
+import { sequelize } from '../database/database.ts';
+import { createUser } from '../dto/auth/createUserDTO.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
 
 class AuthRepository {
-  async createAuth(data: createAuthDTO, transaction: Transaction) {
-    const username = data.username;
-    const password = data.password;
-    const hashed = await securePassword.hashedPassword(password);
-    return await Auth.create({ username, password: hashed });
+  async createUserWithAuth(user: signUpUser): Promise<userAttributes> {
+    const userData: createUser = user;
+
+    const password = user.password;
+    const hashed = await passwordHandler.hashedPassword(password);
+
+    const res = await sequelize.transaction(async (t) => {
+      const createdUser: userAttributes = await User.create(userData, {
+        transaction: t,
+      });
+      const userId = createdUser.id;
+      await Auth.create({ userId, password: hashed }, { transaction: t });
+      return createdUser;
+    });
+    return res;
   }
 
-  async deleteAuthByUsername(username: any, transaction: Transaction) {
-    try {
-      return await Auth.destroy({ where: { username }, transaction });
-    } catch (err) {
-      throw new Error('Auth not found for deleted');
-    }
-  }
-
-  async findAuthByUsername(username: string) {
+  async findAuthByUserId(userId: string) {
     const auth = await Auth.findOne({
-      where: { username: username },
+      where: { userId },
     });
     return auth;
   }
@@ -36,6 +40,14 @@ class AuthRepository {
       { where: { username: curUsername }, ...options },
     );
   }
+
+    async updatePassword(userId: string, newHashedPassword: string) {
+    return Auth.update(
+      { password: newHashedPassword },
+      { where: { userId } }
+    );
+  }   
+
 }
 
 export const authRepository = new AuthRepository();

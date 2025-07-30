@@ -1,4 +1,6 @@
-import { createStoryDTO } from '../dto/DTO';
+import { createStoryDTO } from '../dto/DTO.ts';
+import { storyAttributes } from '../dto/story/storyAttributes.ts';
+import { storyFilters } from '../dto/story/storyFilters.ts';
 import { storyRepository } from '../repository/storyRepository.ts';
 
 class StoryService {
@@ -7,25 +9,25 @@ class StoryService {
     return story;
   }
 
-  async getAllStories(query: any) {
-    const filters: any = {};
+  async getAllStories(query: storyFilters) {
+    const filters: storyFilters = {};
     const sort = query.sort === 'asc' ? 'ASC' : 'DESC';
 
     if (query.authorId) filters.authorId = query.authorId;
     if (query.title) filters.title = query.title;
 
-    const page = parseInt(query.page) || 1;
-    const limit = parseInt(query.limit) || 100;
+    const page = Number(query.page) || 1;
+    let limit = Number(query.limit) || 100;
+
     const offset = (page - 1) * limit;
 
-    const stories = await storyRepository.getAllStories(
+    const {count, rows} = await storyRepository.getAllStories(
       filters,
       sort,
       limit,
       offset,
     );
-    if (!stories) throw new Error('No story exist');
-    return stories;
+    return {count, rows};
   }
 
   async deleteAllStories(): Promise<{ deleted: number }> {
@@ -52,7 +54,7 @@ class StoryService {
     const story = await storyRepository.findStoryByStoryId(storyId);
     if (!story) throw new Error('Story not found');
 
-    const updatedData: any = {
+    const updatedData: storyAttributes = {
       lastModificationTime: new Date(),
     };
 

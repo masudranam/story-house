@@ -1,27 +1,26 @@
 import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+
 import { httpStatus } from '../utils/httpStatus.ts';
-import { User } from '../database/database.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
 export async function authMiddleware(
-  req: Request,
+  req: userRequest,
   res: Response,
   next: NextFunction,
 ) {
   try {
     const authHeader = req.headers.authorization;
-
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       res.status(httpStatus.FORBIDDEN).json({ message: 'No token provided' });
       return;
     }
 
     const token = authHeader.split(' ')[1];
-
     const decoded = jwt.verify(
       token,
       (process.env.JWT_SECRET as string) || 'secret',
-    ) as { userId: string; role: number; exp: number };
+    ) as { userId: string; username: string,role: number; exp: number };
 
     const currentTime = Math.floor(Date.now() / 1000);
     if (decoded.exp < currentTime) {
@@ -29,14 +28,16 @@ export async function authMiddleware(
       return;
     }
 
-    const user = await User.findByPk(decoded.userId);
-    if (!user) {
-      res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
-      return;
-    }
-    (req as any).user = user;
+    // req.headers["x-user-id"] = decoded.userId;
+    // req.headers["x-user-role"] = `${decoded.role}`;
+ 
+    req.user = {
+      id: decoded.userId,
+      role: decoded.role,
+      username: decoded.username
+    };
     next();
-  } catch (err: any) {
+  } catch (err) {
     next(err);
   }
 }

@@ -30,6 +30,11 @@ export const defineStoryModel = (sequelize: Sequelize) => {
       authorId: {
         type: DataTypes.UUID,
         allowNull: false,
+        references: {
+          model: 'user',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
       },
       lastModifierId: {
         type: DataTypes.UUID,
@@ -44,7 +49,7 @@ export const defineStoryModel = (sequelize: Sequelize) => {
     {
       sequelize,
       modelName: 'Story',
-      tableName: 'stories',
+      tableName: 'story',
       timestamps: true,
     },
   );

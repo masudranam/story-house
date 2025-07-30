@@ -1,17 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+
 import { httpStatus } from '../utils/httpStatus.ts';
 import { userRole } from '../utils/userRole.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
 export async function authorizeOwner(
-  req: Request,
+  req: userRequest,
   res: Response,
   next: NextFunction,
 ) {
   try {
     const paramId = req.params.id;
-    const userId = (req as any).user.id;
-    const userrole = (req as any).user.role;
-
+    const userId = req.user?.id;
+    const userrole = req.user?.role;
+    
+    if(paramId === userId && userrole === userRole.ADMIN && req.method === 'DELETE'){
+      res.status(httpStatus.UNAUTHORIZED).json({ message: 'Admin cannot remove' });
+      return;
+    }
+    
     if (!userId) {
       res.status(httpStatus.UNAUTHORIZED).json({ message: 'Unauthorized' });
       return;
