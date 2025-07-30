@@ -1,17 +1,22 @@
 import { DataTypes, Sequelize, Model } from 'sequelize';
 
-//Auth table
 export class Auth extends Model {
-  declare username: string;
+  declare userId: string;
   declare password: string;
 }
 
 export const defineAuthModel = (sequelize: Sequelize) => {
   Auth.init(
     {
-      username: {
-        type: DataTypes.STRING,
-        unique: true,
+      userId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        references: {
+          model: 'user',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
       },
       password: {
         type: DataTypes.STRING,
@@ -23,6 +28,7 @@ export const defineAuthModel = (sequelize: Sequelize) => {
       freezeTableName: true,
       modelName: 'Auth',
       tableName: 'auth',
+      timestamps: true,
     },
   );
   return Auth;

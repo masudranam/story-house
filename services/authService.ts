@@ -1,55 +1,61 @@
 import { userRepository } from '../repository/userRepository.ts';
-import { sequelize } from '../database/database.ts';
 import { authRepository } from '../repository/authRepository.ts';
-import { createUserDTO, createAuthDTO } from '../dto/DTO.ts';
-import { signUpUserDTO } from '../dto/signupUserDTO.ts';
-import { loginUserDTO } from '../dto/loginUserDTO.ts';
-import { securePassword } from '../utils/hashedPassword.ts';
+import { signUpUser } from '../dto/auth/signupUserDTO.ts';
+import { loginUser } from '../dto/auth/loginUserDTO.ts';
+import { passwordHandler } from '../utils/passwordHandler.ts';
 import { generateToken } from '../utils/jwtHandler.ts';
+import { userAttributes } from '../dto/user/userAtrributes.ts';
 
-class AuthService {
-  async signUpUser(user: signUpUserDTO) {
+export class AuthService {
+  async signUpUser(user: signUpUser): Promise<userAttributes> {
     const existingUser = await userRepository.findUserByIdentifier(user);
-
     if (existingUser) throw new Error('username or email already exist');
 
-    const authData: createAuthDTO = user;
-    const userData: createUserDTO = user;
-
-    const transaction = await sequelize.transaction();
-    try {
-      await authRepository.createAuth(authData, transaction);
-      await userRepository.createUser(userData, transaction);
-
-      await transaction.commit();
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword;
-    } catch (err) {
-      await transaction.rollback();
-      throw err;
-    }
+    const createdUser = await authRepository.createUserWithAuth(user);
+    return createdUser;
   }
 
-  async loginUser(data: loginUserDTO) {
-    const user = await userRepository.findUserByIdentifier(data.identifier);
+  async loginUser(data: loginUser) {
+    const curData: Partial<signUpUser> = {
+      email: data.identifier,
+      username: data.identifier,
+    };
+
+    const user = await userRepository.findUserByIdentifier(curData);
 
     if (!user) throw new Error("User doesn't exist!");
 
-    const auth = await authRepository.findAuthByUsername(user.username);
+    const auth = await authRepository.findAuthByUserId(user.id);
 
-    if (!auth) throw new Error("User doesn't exist");
-
-    const isMatch = await securePassword.comparePassword(
+    const isMatch = await passwordHandler.comparePassword(
       data.password,
-      auth.password,
+      auth!.password,
     );
 
     if (!isMatch) throw new Error('Invalid credentials');
+    const token = generateToken(user.id,user.username, user.role);
 
-    const token = generateToken(user.id, user.role);
-
-    return { message: 'Login seccessful', token: `Bearer ${token}` };
+    return { message: 'Login seccessful', username: user.username, token: `Bearer ${token}` };
   }
+
+async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    const auth = await authRepository.findAuthByUserId(userId);
+
+    if (!auth) throw new Error('User auth  not found');
+
+    const match = await passwordHandler.comparePassword(oldPassword, auth.password); 
+
+    if (!match) throw new Error('Old password is incorrect');
+
+    const sameAsOld = await passwordHandler.comparePassword(newPassword, auth.password);
+    if (sameAsOld) throw new Error('New password must differ from old one');
+
+    const hashed = await passwordHandler.hashedPassword(newPassword);
+    await authRepository.updatePassword(userId, hashed);
+
+    return { message: 'Password changed successfully' };
+  }
+  
 }
 
 export const authService = new AuthService();

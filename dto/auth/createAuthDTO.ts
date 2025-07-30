@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const createAuthSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
+  userId: z.string().min(1, 'id is required'),
   password: z.string().min(6, 'Password must be at least 6 chars'),
 });
 

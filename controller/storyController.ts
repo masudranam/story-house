@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
+
 import { storyService } from '../services/storyService.ts';
 import { httpStatus } from '../utils/httpStatus.ts';
+import { userRequest } from '../dto/user/userRequest.ts';
 
-class StoryController {
-  async postStory(req: Request, res: Response, next: NextFunction) {
+export class StoryController {
+  async postStory(req: userRequest, res: Response, next: NextFunction) {
     try {
-      const userId = (req as any).user.id;
-      req.body.authorId = userId;
+      console.log(req.body);
+      req.body.authorId = req.user!.id;
       const story = await storyService.postStory(req.body);
       res
         .status(httpStatus.CREATED)
@@ -18,8 +20,8 @@ class StoryController {
 
   async getStories(req: Request, res: Response, next: NextFunction) {
     try {
-      const stories = await storyService.getAllStories(req.query);
-      res.status(httpStatus.OK).json(stories);
+      const {count, rows} = await storyService.getAllStories(req.query);
+      res.status(httpStatus.OK).json({count, rows});
     } catch (err) {
       next(err);
     }
@@ -41,13 +43,19 @@ class StoryController {
     }
   }
 
-  async deleteStoryByStoryId(req: Request, res: Response, next: NextFunction) {
+  async deleteStoryByStoryId(
+    req: userRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
       const storyId = req.params.id;
-      const userId = (req as any).user.id;
-      // return id
+   
+      const userId = req.user!.id;
       const deleted = await storyService.deleteStoryByStoryId(storyId, userId);
-      res.status(httpStatus.OK).json({ message: 'story deleted successfully' });
+      res
+        .status(httpStatus.OK)
+        .json({ message: `story with id ${storyId} deleted successfully`});
     } catch (err) {
       next(err);
     }
