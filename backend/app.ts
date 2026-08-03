@@ -38,5 +38,3 @@ app.get('/', (req, res, next: NextFunction) => {
 app.use(errorHandler);
 
 app.listen(PORT);
-
- 
