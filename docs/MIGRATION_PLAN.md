@@ -97,13 +97,13 @@ Env vars (`backend/.env.example`): `DATABASE_URL`, `PORT`, `JWT_ACCESS_SECRET`, 
 
 ## Phase 0 — Restructure the repo
 
-- [ ] `git mv backend legacy/backend` and `git mv frontend legacy/frontend` (keeps history; `legacy/` is reference-only from now on)
-- [ ] `git mv legacy/backend/CLAUDE.md backend/CLAUDE.md` and `git mv legacy/frontend/CLAUDE.md frontend/CLAUDE.md` back out first (they describe the NEW stack) — do this as part of the same move
-- [ ] Scaffold NestJS 11 into `backend/`: `npx @nestjs/cli new backend` (npm, strict TS), align ESLint+Prettier with repo conventions, remove sample cruft
-- [ ] Scaffold Angular into `frontend/`: `npx @angular/cli new frontend` (standalone, routing, CSS, strict), add Tailwind v4, add `proxy.conf.json` → `/api` → `http://localhost:3000`
-- [ ] Add `docker-compose.yml` at repo root: `postgres:16-alpine` for dev + a `postgres-test` service (or second database) for e2e
-- [ ] Root `README.md`: one-paragraph project description, prerequisites, how to run both apps
-- [ ] Verify: both scaffolds install and pass their own lint/build; `legacy/` untouched apart from the moves
+- [x] `git mv backend legacy/backend` and `git mv frontend legacy/frontend` (keeps history; `legacy/` is reference-only from now on)
+- [x] `git mv legacy/backend/CLAUDE.md backend/CLAUDE.md` and `git mv legacy/frontend/CLAUDE.md frontend/CLAUDE.md` back out first (they describe the NEW stack) — do this as part of the same move
+- [x] Scaffold NestJS 11 into `backend/`: `npx @nestjs/cli new backend` (npm, strict TS), align ESLint+Prettier with repo conventions, remove sample cruft (hello endpoint → `GET /health`; added missing `.gitignore`)
+- [x] Scaffold Angular into `frontend/`: **Angular 21 LTS** (`@angular/cli@21` — machine Node 20.20 doesn't meet Angular 22's ≥22.22 requirement; zoneless + vitest defaults), Tailwind v4 via `@tailwindcss/postcss` with starter `@theme` tokens, angular-eslint added, `proxy.conf.json` → `/api` → `http://localhost:3000` wired into `angular.json`, OnPush set as component-schematic default
+- [x] Add `docker-compose.yml` at repo root: `postgres:16-alpine` for dev + a `postgres-test` service (or second database) for e2e
+- [x] Root `README.md`: one-paragraph project description, prerequisites, how to run both apps
+- [x] Verify: both scaffolds install and pass their own lint/build; `legacy/` untouched apart from the moves (backend: lint 0 problems, tsc clean, 1/1 tests; frontend: lint clean, 190 kB build, 2/2 vitest)
 
 ## Phase 1 — Backend foundation
 
