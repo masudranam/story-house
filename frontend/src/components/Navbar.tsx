@@ -47,7 +47,7 @@ const shouldHideSearch = hideSearchOnRoutes.includes(location.pathname);
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg fixed top-0 left-0 w-full z-50 ">
+    <nav className="bg-linear-to-r from-blue-800 to-indigo-900 text-white px-6 py-4 flex justify-between items-center shadow-lg fixed top-0 left-0 w-full z-50 ">
       <h1 className="text-2xl font-semibold tracking-tight">
         <Link to="/" className="hover:text-blue-200 transition-colors duration-300 caret-transparent">
           BlogApp
