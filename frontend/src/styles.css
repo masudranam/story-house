@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+/* StoryHouse design tokens — use these, not arbitrary values (see .claude/rules/40-frontend-angular.md).
+   Fleshed out in Phase 7 (frontend foundation). */
+@theme {
+  --color-brand-50: oklch(0.97 0.015 262);
+  --color-brand-100: oklch(0.93 0.03 262);
+  --color-brand-500: oklch(0.55 0.2 262);
+  --color-brand-600: oklch(0.5 0.21 262);
+  --color-brand-700: oklch(0.44 0.2 262);
+  --color-brand-900: oklch(0.3 0.13 262);
+
+  --color-danger-600: oklch(0.55 0.21 27);
+
+  --radius-card: 1rem;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600;
+  }
+}
