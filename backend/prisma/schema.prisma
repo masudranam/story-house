@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id                String         @id @default(uuid()) @db.Uuid
+  name              String         @db.VarChar(100)
+  username          String         @unique @db.VarChar(30)
+  email             String         @unique @db.VarChar(254)
+  passwordHash      String         @map("password_hash")
+  role              Role           @default(USER)
+  passwordChangedAt DateTime?      @map("password_changed_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  stories           Story[]
+  comments          Comment[]
+  likes             Like[]
+  refreshTokens     RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Story {
+  id        String    @id @default(uuid()) @db.Uuid
+  title     String    @db.VarChar(200)
+  content   String
+  authorId  String    @map("author_id") @db.Uuid
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  likes     Like[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@map("stories")
+}
+
+model Comment {
+  id        String   @id @default(uuid()) @db.Uuid
+  content   String   @db.VarChar(2000)
+  storyId   String   @map("story_id") @db.Uuid
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  authorId  String   @map("author_id") @db.Uuid
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([storyId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model Like {
+  userId    String   @map("user_id") @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storyId   String   @map("story_id") @db.Uuid
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([userId, storyId])
+  @@index([storyId])
+  @@map("likes")
+}
