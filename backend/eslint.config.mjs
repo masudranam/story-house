@@ -25,11 +25,10 @@ export default tseslint.config(
     },
   },
   {
+    // Scaffold defaults weakened these; .claude/rules/10-backend-nestjs.md
+    // requires them at full strength (no `any`, no floating promises).
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );
