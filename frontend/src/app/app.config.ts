@@ -1,11 +1,26 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
-
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { AuthStore } from './core/auth/auth-store';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { errorToastInterceptor } from './core/interceptors/error-toast.interceptor';
+import { refreshInterceptor } from './core/interceptors/refresh.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes)
-  ]
+    provideRouter(routes, withComponentInputBinding()),
+    // Order matters: auth (outermost) → refresh → error toast (sees raw errors first).
+    provideHttpClient(
+      withInterceptors([authInterceptor, refreshInterceptor, errorToastInterceptor]),
+    ),
+    // Restore a session from the persisted refresh token before first render.
+    provideAppInitializer(() => inject(AuthStore).init()),
+  ],
 };
