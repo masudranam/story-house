@@ -21,9 +21,9 @@ docker compose up -d postgres
 
 # 2. Backend — http://localhost:3000, Swagger at /api/docs
 cd backend
-cp .env.example .env        # fill in secrets
+cp .env.example .env        # fill in secrets (arrives with Phase 1 of the migration plan)
 npm install
-npx prisma migrate dev
+npx prisma migrate dev      # once Prisma lands (Phase 1)
 npm run start:dev
 
 # 3. Frontend — http://localhost:4200 (proxies /api to the backend)

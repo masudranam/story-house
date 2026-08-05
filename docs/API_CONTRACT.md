@@ -13,7 +13,7 @@ Conventions (see `.claude/rules/20-rest-api.md`): list responses are `{ "data": 
 | `POST /auth/refresh` | Public | `{ refreshToken }` | **200** `{ accessToken, refreshToken }` (rotation: old refresh token is revoked) | 401 invalid/expired/revoked |
 | `POST /auth/logout` | Bearer | `{ refreshToken }` | **204** (revokes the refresh token) | 401 |
 
-Validation: `username` `/^[a-z0-9_]{3,30}$/` (one rule for signup **and** login — legacy had two conflicting regexes); `password` min 8 chars; `name` 1–100 chars; `email` valid format. Access token TTL 15m, refresh 7d. Token is a bare JWT — **no** `"Bearer "` prefix inside the value (legacy embedded it).
+Validation: `username` `/^[a-z0-9_]{3,30}$/` (one rule for signup **and** login — legacy had two conflicting regexes); `password` min 8 chars; `name` 1–100 chars; `email` valid format. Access token TTL 15m, refresh 7d. Token is a bare JWT — **no** `"Bearer "` prefix inside the value (legacy embedded it). Every `/auth` route is rate-limited and may additionally return **429** `Too Many Requests`. Refresh tokens are strictly single-use (atomic rotation — concurrent reuse loses).
 
 ## Users — `/users`
 
@@ -28,7 +28,7 @@ Validation: `username` `/^[a-z0-9_]{3,30}$/` (one rule for signup **and** login 
 | `DELETE /users/:id` | **ADMIN** | uuid param | **204** (cascades stories/comments/likes) | 403 own account; 404 |
 | `GET /users/stats` | **ADMIN** | — | **200** `{ totalUsers, totalStories, totalComments, newUsersThisWeek, newStoriesThisWeek }` | 403 |
 
-`User`: `{ id, name, username, email, role: "USER"|"ADMIN", createdAt, updatedAt }`. `PublicUser`: same minus `email`. Password/hash never serialized. Identity always derives from the JWT — no user id in URLs for self-operations (legacy `PATCH /users/change-password/:id` ignored `:id`; the IDOR-shaped route is gone).
+`User`: `{ id, name, username, email, role: "USER"|"ADMIN", createdAt, updatedAt }`. `PublicUser`: same minus `email`. Password/hash never serialized. Identity always derives from the JWT — no user id in URLs for self-operations (legacy `PATCH /users/change-password/:id` ignored `:id`; the IDOR-shaped route is gone). A successful password change revokes **all** of the user's refresh tokens — other sessions must log in again.
 
 ## Stories — `/stories`
 
@@ -67,6 +67,14 @@ Like count and `likedByMe` ship inside `Story` — the legacy `GET /likes/:story
 | `DELETE /comments/:id` | Owner or ADMIN | uuid param | **204** | 403; 404 |
 
 `Comment`: `{ id, content, storyId, author: { id, name, username }, createdAt, updatedAt }`. Comments are flat (no threading — matches legacy). Comment edits now bump `updatedAt` (legacy had no edit timestamp).
+
+## Additional deliberate changes from legacy behavior
+
+- **Admin can no longer rename other users** (legacy `PUT /users/:id` allowed owner-or-admin). The legacy UI never exposed admin-rename; profile edits are self-service via `PATCH /users/me` (which now also allows editing `name` — legacy couldn't).
+- **Story lists sort by `createdAt`**, not legacy's `updatedAt` — editing a story no longer bumps it to the top of the feed.
+- **Comment search (content/author) is admin-only** (`GET /comments`); legacy exposed it publicly but only the admin panel used it. Public reads are story-scoped (`GET /stories/:id/comments`).
+- **Admin comment/story *editing* is gone** — moderation is delete-only; edits are owner-only.
+- `GET /users` (list/search) and `GET /users/stats` require **ADMIN** — legacy served the full user list (with emails!) publicly and stats to any authenticated user.
 
 ## Deliberately removed legacy endpoints (security/design fixes — do NOT port)
 
