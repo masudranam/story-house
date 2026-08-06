@@ -36,17 +36,21 @@ export class AuthStore {
     });
   }
 
-  /** Kicked off (not awaited) at bootstrap. */
+  /**
+   * Kicked off (not awaited) at bootstrap. Everything is inside the try —
+   * including the storage read, which throws when storage is blocked
+   * (private mode, blocked cookies). sessionReady must always settle or
+   * every guarded route would hang forever.
+   */
   async init(): Promise<void> {
-    if (!getStoredRefreshToken()) {
-      this.resolveSessionReady();
-      return;
-    }
     try {
+      if (!getStoredRefreshToken()) {
+        return;
+      }
       await firstValueFrom(this.refresh());
       this._user.set(await firstValueFrom(this.usersApi.me()));
     } catch {
-      // Stored token is stale/revoked — start anonymous.
+      // Stored token is stale/revoked, or storage is unavailable — anonymous.
       this.clearSession();
     } finally {
       this.resolveSessionReady();

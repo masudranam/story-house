@@ -7,6 +7,7 @@ import {
   HostListener,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -69,13 +70,18 @@ export class NavbarComponent {
   });
 
   constructor() {
-    // Keep the box in sync with the URL so a shared/reloaded ?q= link shows its term.
+    // Keep the box in sync with the URL so a shared/reloaded ?q= link shows
+    // its term. `untracked` is essential: reading searchTerm as a dependency
+    // would re-run this on every keystroke and restore the stale URL value
+    // over what the user is typing during the debounce window.
     effect(() => {
       const url = this.currentUrl();
       const queryTerm = this.route.snapshot.queryParamMap.get('q') ?? '';
-      if (queryTerm !== this.searchTerm() && !url.startsWith('/login')) {
-        this.searchTerm.set(queryTerm);
-      }
+      untracked(() => {
+        if (queryTerm !== this.searchTerm() && !url.startsWith('/login')) {
+          this.searchTerm.set(queryTerm);
+        }
+      });
     });
 
     effect(() => {

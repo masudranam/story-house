@@ -54,8 +54,18 @@ export class StoryDetailPage {
   /** Optimistic like overlay: null = show server truth. */
   private readonly likeOverride = signal<{ liked: boolean; count: number } | null>(null);
 
+  /**
+   * Keyed on the viewer as well as the story: bootstrap no longer blocks on
+   * the session restore, so a cold load starts anonymous. Re-keying makes the
+   * story refetch once the session lands, otherwise `likedByMe` would stay
+   * false for a user who has actually liked it.
+   */
+  // A computed narrowed to the id: signal equality then means an unrelated
+  // change to the user object (e.g. a role update) does NOT refetch.
+  private readonly viewerId = computed(() => this.store.user()?.id ?? null);
+
   protected readonly story = resource({
-    params: () => ({ id: this.id() }),
+    params: () => ({ id: this.id(), viewerId: this.viewerId() }),
     loader: ({ params }) => firstValueFrom(this.storiesApi.get(params.id)),
   });
 
