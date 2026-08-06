@@ -1,14 +1,13 @@
-# Migration workflow (always applies)
+# Workflow (always applies)
 
-StoryHouse is being rewritten in place: `backend/` → NestJS 11 + Prisma + PostgreSQL, `frontend/` → Angular (latest LTS) + Tailwind. The old Express/React code lives in `legacy/` during the migration and is **reference material only**.
+StoryHouse is **NestJS 11 + Prisma + PostgreSQL** (`backend/`) and **Angular + Tailwind v4** (`frontend/`). The rewrite from the original Express/React app is complete; `docs/MIGRATION_PLAN.md` records how it was done and every decision that was settled along the way.
 
 ## Ground rules
 
-- `docs/MIGRATION_PLAN.md` is the single source of truth for what to do next. Work top-to-bottom through unchecked tasks. Check off (`- [x]`) every task you complete **in the same turn you complete it**.
-- Never edit anything under `legacy/`. Read it to answer "how did the old app behave?" — then implement the behavior properly in the new stack. Do not copy legacy code style, response envelopes, or naming mistakes into the new code.
-- Feature parity is defined by `docs/API_CONTRACT.md` (endpoints + behavior) and the UI inventory in the plan — not by line-by-line translation. Fix documented legacy quirks; don't reproduce them.
-- One plan task = one coherent, verified change. Don't start a task you can't verify.
-- The migration is finished only when `legacy/` can be deleted with nothing lost. If you discover behavior in `legacy/` that the plan/contract missed, add it to the plan as a new task instead of silently skipping it.
+- `docs/API_CONTRACT.md` is the authoritative HTTP contract. Changing behavior means updating that file, the Swagger decorators, and the Angular API services **in the same task** — never one without the others.
+- `docs/MIGRATION_PLAN.md` is a historical record now. Don't add tasks to it; it documents what was decided and why, and its "Decisions (settled)" section still binds — don't relitigate those.
+- One task = one coherent, verified change. Don't start a task you can't verify.
+- Deliberate departures from the original app's behavior are catalogued in the contract's "Deliberate UI changes" and "Deliberately removed legacy endpoints" sections. Those were fixes. Don't reintroduce the behavior they replaced.
 
 ## Verification (non-negotiable, enforced by a Stop hook)
 
