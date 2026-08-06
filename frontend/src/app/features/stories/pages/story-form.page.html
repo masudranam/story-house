@@ -1,0 +1,58 @@
+<div class="mx-auto max-w-2xl">
+  <h1>{{ isEdit() ? 'Edit story' : 'Write a story' }}</h1>
+
+  <div class="mt-6">
+    <app-card>
+      @if (loading()) {
+        <!-- Never render the form while a prefill is in flight: a late response
+             would overwrite whatever the author had already typed. -->
+        <div class="flex flex-col gap-4">
+          <app-skeleton height="1rem" width="20%" />
+          <app-skeleton height="2.5rem" />
+          <app-skeleton height="1rem" width="20%" />
+          <app-skeleton height="14rem" />
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4" novalidate>
+          @if (formError()) {
+            <p
+              class="rounded-lg bg-danger-600/10 px-3 py-2 text-sm text-danger-700 dark:text-danger-500"
+              role="alert"
+            >
+              {{ formError() }}
+            </p>
+          }
+
+          <app-form-field label="Title" for="title" [error]="error('title')">
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              placeholder="The Lighthouse at the Edge of the Map"
+              [attr.aria-invalid]="error('title') ? 'true' : null"
+              [attr.aria-describedby]="error('title') ? 'title-error' : null"
+            />
+          </app-form-field>
+
+          <app-form-field label="Story" for="content" [error]="error('content')">
+            <textarea
+              id="content"
+              rows="14"
+              formControlName="content"
+              placeholder="Once upon a time…"
+              [attr.aria-invalid]="error('content') ? 'true' : null"
+              [attr.aria-describedby]="error('content') ? 'content-error' : null"
+            ></textarea>
+          </app-form-field>
+
+          <div class="flex justify-end gap-3">
+            <app-button variant="ghost" (clicked)="cancel()">Cancel</app-button>
+            <app-button type="submit" [loading]="submitting()">
+              {{ isEdit() ? 'Save changes' : 'Publish' }}
+            </app-button>
+          </div>
+        </form>
+      }
+    </app-card>
+  </div>
+</div>
