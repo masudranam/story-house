@@ -45,9 +45,19 @@ describe('LoginPage', () => {
   const submitButton = (): HTMLButtonElement =>
     el().querySelector('button[type="submit"]') as HTMLButtonElement;
 
+  /** Types into the real inputs so a renamed formControlName fails the test. */
   function fill(identifier: string, password: string, remember = false): void {
-    const form = fixture.componentInstance['form'];
-    form.setValue({ identifier, password, rememberMe: remember });
+    const setInput = (selector: string, value: string) => {
+      const input = el().querySelector(selector) as HTMLInputElement;
+      input.value = value;
+      input.dispatchEvent(new Event('input'));
+    };
+    setInput('#identifier', identifier);
+    setInput('#password', password);
+    if (remember) {
+      const checkbox = el().querySelector('input[type="checkbox"]') as HTMLInputElement;
+      checkbox.click();
+    }
   }
 
   it('renders labelled inputs wired to real ids (legacy labels pointed nowhere)', () => {
