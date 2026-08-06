@@ -22,7 +22,8 @@
   --color-success-600: oklch(0.56 0.15 150);
 
   --radius-card: 1rem;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* System font stack — no webfont download, so no render-blocking request. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 @layer base {
