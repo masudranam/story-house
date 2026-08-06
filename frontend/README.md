@@ -1,59 +1,33 @@
-# Frontend
+# StoryHouse frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
-
-## Development server
-
-To start a local development server, run:
+Angular 21 (standalone, zoneless, signals) + Tailwind CSS v4. Consumes the API described in [../docs/API_CONTRACT.md](../docs/API_CONTRACT.md).
 
 ```bash
-ng serve
+npm install
+npm start          # http://localhost:4200 — proxies /api to http://localhost:3000
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The backend must be running (see [../backend/README.md](../backend/README.md)); `proxy.conf.json` forwards `/api` to it, so there is no API base URL to configure.
 
-## Code scaffolding
+## Checks
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Command         | Purpose                                                           |
+| --------------- | ----------------------------------------------------------------- |
+| `npm run lint`  | ESLint + angular-eslint, including template accessibility rules   |
+| `npm run build` | Production build — budget warnings count as failures              |
+| `npm test`      | Vitest unit/component tests (`CI=true npm test` for a single run) |
 
-```bash
-ng generate component component-name
+## Layout
+
+```
+src/app/
+  core/       api services, models, auth store, interceptors, guards
+  shared/     dumb UI kit (button, card, form-field, dialog, toast, paginator, skeleton) + layout
+  features/   auth · stories · profile · settings · admin · static   (all lazy-loaded)
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Conventions are enforced by [../.claude/rules/40-frontend-angular.md](../.claude/rules/40-frontend-angular.md): standalone components with `OnPush`, signals for state, new control flow (`@if`/`@for`/`@defer`), `inject()`, Tailwind design tokens from `src/styles.css`, and no component library.
 
-```bash
-ng generate --help
-```
+## Auth model
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The access token lives only in memory (an `AuthStore` signal). The refresh token is persisted — `localStorage` when "keep me logged in" is checked, otherwise `sessionStorage`. A 401 on a protected call triggers a single-flight refresh and one retry; if that fails the session is cleared and the user is sent to `/login`.
