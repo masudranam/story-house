@@ -11,6 +11,8 @@ import * as bcrypt from 'bcrypt';
 import { buildMeta, PaginationMetaDto } from '../../common/dto/paginated.dto';
 import { AuthUser } from '../../common/interfaces/auth-user.interface';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AuthService } from '../auth/auth.service';
+import { TokenPairEntity } from '../auth/entities/auth-tokens.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { UsersQueryDto } from './dto/users-query.dto';
@@ -26,6 +28,7 @@ export class UsersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: ConfigService,
+    private readonly authService: AuthService,
   ) {}
 
   async getMe(userId: string): Promise<UserEntity> {
@@ -49,8 +52,20 @@ export class UsersService {
     return new UserEntity(user);
   }
 
-  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+  /**
+   * Signs out every OTHER session and returns fresh credentials for the
+   * caller, so the acting session survives its own password change (the UI
+   * promises exactly that). Bumping `tokenVersion` kills previously issued
+   * access tokens; revoking refresh tokens kills the rest.
+   */
+  async changePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+  ): Promise<TokenPairEntity> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, passwordHash: true },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -66,17 +81,22 @@ export class UsersService {
       dto.newPassword,
       this.config.getOrThrow<number>('security.bcryptCost'),
     );
-    // Changing the password invalidates every other session (contract: Users notes).
     await this.prisma.$transaction([
       this.prisma.user.update({
         where: { id: userId },
-        data: { passwordHash, passwordChangedAt: new Date() },
+        data: {
+          passwordHash,
+          passwordChangedAt: new Date(),
+          tokenVersion: { increment: 1 },
+        },
       }),
       this.prisma.refreshToken.updateMany({
         where: { userId, revokedAt: null },
         data: { revokedAt: new Date() },
       }),
     ]);
+    // Re-credential the caller with the new token version.
+    return this.authService.issueTokensFor(userId);
   }
 
   async deleteMe(user: AuthUser): Promise<void> {

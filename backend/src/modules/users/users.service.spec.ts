@@ -10,6 +10,7 @@ import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { firstCallArg } from '../../../test/test-helpers';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AuthService } from '../auth/auth.service';
 import { UsersQueryDto } from './dto/users-query.dto';
 import { UsersService } from './users.service';
 
@@ -29,6 +30,13 @@ describe('UsersService', () => {
     comment: { count: jest.fn() },
     refreshToken: { updateMany: jest.fn() },
     $transaction: jest.fn(),
+  };
+
+  const authService = {
+    issueTokensFor: jest.fn().mockResolvedValue({
+      accessToken: 'new-access',
+      refreshToken: 'new-refresh',
+    }),
   };
 
   const dbUser = {
@@ -54,6 +62,7 @@ describe('UsersService', () => {
         UsersService,
         { provide: PrismaService, useValue: prisma },
         { provide: ConfigService, useValue: { getOrThrow: () => 4 } },
+        { provide: AuthService, useValue: authService },
       ],
     }).compile();
     service = module.get(UsersService);
@@ -101,6 +110,37 @@ describe('UsersService', () => {
           newPassword: 'Password123!',
         }),
       ).rejects.toThrow(BadRequestException);
+    });
+
+    it('bumps tokenVersion so older access tokens stop working', async () => {
+      prisma.user.findUnique.mockResolvedValue({ ...dbUser, passwordHash });
+      prisma.$transaction.mockResolvedValue([{}, {}]);
+
+      await service.changePassword('user-1', {
+        currentPassword: 'Password123!',
+        newPassword: 'NewPassword456!',
+      });
+
+      const updateArgs = firstCallArg<{
+        data: { tokenVersion: { increment: number } };
+      }>(prisma.user.update);
+      expect(updateArgs.data.tokenVersion).toEqual({ increment: 1 });
+    });
+
+    it('re-credentials the caller so the acting session survives', async () => {
+      prisma.user.findUnique.mockResolvedValue({ ...dbUser, passwordHash });
+      prisma.$transaction.mockResolvedValue([{}, {}]);
+
+      const tokens = await service.changePassword('user-1', {
+        currentPassword: 'Password123!',
+        newPassword: 'NewPassword456!',
+      });
+
+      expect(authService.issueTokensFor).toHaveBeenCalledWith('user-1');
+      expect(tokens).toEqual({
+        accessToken: 'new-access',
+        refreshToken: 'new-refresh',
+      });
     });
 
     it('rehashes, stamps passwordChangedAt, and revokes all refresh tokens', async () => {

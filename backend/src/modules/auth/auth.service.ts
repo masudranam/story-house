@@ -2,7 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '@prisma/client';
+
 import * as bcrypt from 'bcrypt';
 import type { StringValue } from 'ms';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -18,7 +18,7 @@ import { RefreshContext } from './strategies/jwt-refresh.strategy';
 interface TokenUser {
   id: string;
   username: string;
-  role: Role;
+  tokenVersion: number;
 }
 
 @Injectable()
@@ -61,8 +61,11 @@ export class AuthService {
   }
 
   async login(dto: LoginDto): Promise<AuthSessionEntity> {
+    // Explicit select: the hash is needed here, so name exactly what leaves
+    // the database rather than relying on later hand-picking (rule 30).
     const user = await this.prisma.user.findFirst({
       where: { OR: [{ username: dto.identifier }, { email: dto.identifier }] },
+      select: { ...userEntitySelect, passwordHash: true, tokenVersion: true },
     });
     // Same 401 AND same response time for unknown identifier vs wrong password
     // (contract: no user enumeration — by message or by timing).
@@ -106,6 +109,7 @@ export class AuthService {
     }
     const user = await this.prisma.user.findUnique({
       where: { id: row.userId },
+      select: { id: true, username: true, tokenVersion: true },
     });
     if (!user) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -126,6 +130,21 @@ export class AuthService {
     }
   }
 
+  /**
+   * Issues a fresh pair for a user. Public so `changePassword` can hand the
+   * acting session new credentials after bumping their token version.
+   */
+  async issueTokensFor(userId: string): Promise<TokenPairEntity> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, username: true, role: true, tokenVersion: true },
+    });
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    return new TokenPairEntity(await this.issueTokenPair(user));
+  }
+
   private async issueTokenPair(user: TokenUser): Promise<{
     accessToken: string;
     refreshToken: string;
@@ -133,7 +152,11 @@ export class AuthService {
     // TTLs come from Joi-validated env as duration strings ('15m', '7d') —
     // the cast narrows string to the ms StringValue union jsonwebtoken expects.
     const accessToken = await this.jwt.signAsync(
-      { sub: user.id, username: user.username, role: user.role },
+      {
+        sub: user.id,
+        username: user.username,
+        tokenVersion: user.tokenVersion,
+      },
       {
         secret: this.config.getOrThrow<string>('jwt.accessSecret'),
         expiresIn: this.config.getOrThrow<string>(
