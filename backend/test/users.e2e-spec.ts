@@ -244,6 +244,39 @@ describe('Users (e2e)', () => {
     });
   });
 
+  describe('password change invalidates existing access tokens', () => {
+    it('an access token minted before the change stops working immediately', async () => {
+      const victim = {
+        name: 'Eve Session',
+        username: 'eve_e2e',
+        email: 'eve.e2e@storyhouse.local',
+        password: 'Password123!',
+      };
+      const session = await signupAndLogin(http, victim);
+
+      // The token works before the change.
+      await request(http)
+        .get('/api/v1/users/me')
+        .set('Authorization', `Bearer ${session.accessToken}`)
+        .expect(200);
+
+      await request(http)
+        .patch('/api/v1/users/me/password')
+        .set('Authorization', `Bearer ${session.accessToken}`)
+        .send({
+          currentPassword: victim.password,
+          newPassword: 'NewPassword456!',
+        })
+        .expect(204);
+
+      // Same token, now rejected — no waiting out the 15-minute TTL.
+      await request(http)
+        .get('/api/v1/users/me')
+        .set('Authorization', `Bearer ${session.accessToken}`)
+        .expect(401);
+    });
+  });
+
   describe('DELETE /users/me', () => {
     it('admin gets 403; regular user gets 204 and the account is gone', async () => {
       await request(http)
@@ -256,10 +289,13 @@ describe('Users (e2e)', () => {
         .set('Authorization', bearer(carolSession))
         .expect(204);
 
+      // The access token now fails authentication rather than reaching the
+      // service: JwtStrategy resolves the principal from the DB, and that
+      // user no longer exists.
       await request(http)
         .get('/api/v1/users/me')
         .set('Authorization', bearer(carolSession))
-        .expect(404);
+        .expect(401);
     });
   });
 });
