@@ -80,7 +80,8 @@ describe('SecuritySettingsComponent', () => {
     // No request — afterEach verify() enforces it.
   });
 
-  it('sends the change and reports success', async () => {
+  it('sends the change and adopts the replacement tokens so the session survives', async () => {
+    await signIn();
     fillPasswords('OldPassword123!', 'NewPassword456!');
     await fixture.whenStable();
     submit().click();
@@ -91,10 +92,14 @@ describe('SecuritySettingsComponent', () => {
       currentPassword: 'OldPassword123!',
       newPassword: 'NewPassword456!',
     });
-    req.flush(null);
+    // The API returns a fresh pair because the change invalidated the old one.
+    req.flush({ accessToken: 'access-2', refreshToken: 'refresh-2' });
     await fixture.whenStable();
 
     expect(el().querySelector('[role="alert"]')).toBeNull();
+    expect(store.isAuthenticated()).toBe(true);
+    expect(store.accessToken()).toBe('access-2');
+    expect(localStorage.getItem('storyhouse.refreshToken')).toBe('refresh-2');
   });
 
   it('maps a 401 to a wrong-current-password message', async () => {

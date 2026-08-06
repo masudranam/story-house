@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, map, startWith } from 'rxjs';
 import { ProfileSettingsComponent } from '../components/profile-settings.component';
 import { SecuritySettingsComponent } from '../components/security-settings.component';
 
@@ -9,52 +11,43 @@ type Tab = 'profile' | 'security';
   selector: 'app-settings-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ProfileSettingsComponent, SecuritySettingsComponent],
-  template: `
-    <div class="mx-auto max-w-2xl">
-      <h1>Settings</h1>
-
-      <div class="mt-6 flex gap-2 border-b border-gray-200 dark:border-gray-700" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          [attr.aria-selected]="tab() === 'profile'"
-          [class]="tabClass('profile')"
-          (click)="select('profile')"
-        >
-          Profile
-        </button>
-        <button
-          type="button"
-          role="tab"
-          [attr.aria-selected]="tab() === 'security'"
-          [class]="tabClass('security')"
-          (click)="select('security')"
-        >
-          Security
-        </button>
-      </div>
-
-      <div class="mt-6">
-        @switch (tab()) {
-          @case ('profile') {
-            <app-profile-settings />
-          }
-          @case ('security') {
-            <app-security-settings />
-          }
-        }
-      </div>
-    </div>
-  `,
+  templateUrl: './settings.page.html',
 })
 export class SettingsPage {
   private readonly router = inject(Router);
-  protected readonly tab = signal<Tab>(
-    this.router.url.includes('security') ? 'security' : 'profile',
+
+  /** Derived from the URL so /settings/security is a real, shareable link. */
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+  protected readonly tab = computed<Tab>(() =>
+    this.url().includes('/settings/security') ? 'security' : 'profile',
   );
 
+  protected readonly tabs: { id: Tab; label: string; path: string }[] = [
+    { id: 'profile', label: 'Profile', path: '/settings' },
+    { id: 'security', label: 'Security', path: '/settings/security' },
+  ];
+
   protected select(tab: Tab): void {
-    this.tab.set(tab);
+    void this.router.navigateByUrl(tab === 'security' ? '/settings/security' : '/settings');
+  }
+
+  /** ArrowLeft/ArrowRight move between tabs (WAI-ARIA tabs pattern). */
+  protected onTabKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+      return;
+    }
+    event.preventDefault();
+    const current = this.tabs.findIndex((t) => t.id === this.tab());
+    const offset = event.key === 'ArrowRight' ? 1 : -1;
+    const next = this.tabs[(current + offset + this.tabs.length) % this.tabs.length];
+    this.select(next.id);
   }
 
   protected tabClass(tab: Tab): string {
