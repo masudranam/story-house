@@ -10,11 +10,12 @@
       <div class="ml-auto w-full max-w-xs">
         <label for="global-search" class="sr-only">Search stories</label>
         <input
+          #searchBox
           id="global-search"
           type="search"
           placeholder="Search stories…"
           [value]="searchTerm()"
-          (input)="onSearchInput($any($event.target).value)"
+          (input)="onSearchInput(searchBox.value)"
         />
       </div>
     }
@@ -34,9 +35,13 @@
           </button>
 
           @if (menuOpen()) {
+            <!-- tabindex="-1": the container is the arrow-key handler; focus
+                 lives on the menuitems themselves. -->
             <div
               class="absolute right-0 mt-2 w-44 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
               role="menu"
+              tabindex="-1"
+              (keydown)="onMenuKeydown($event)"
             >
               <a
                 routerLink="/profile"
