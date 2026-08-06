@@ -139,24 +139,24 @@ Env vars (`backend/.env.example`): `DATABASE_URL`, `PORT`, `JWT_ACCESS_SECRET`, 
 
 - [x] `GET /stories` (Public): pagination, `search` on title (single param — legacy accepted `title` from one page and `search` from another), `authorId` filter, `sort=createdAt:asc|desc` (invalid sort → 400), author lite + `_count` likes/comments (no N+1)
 - [x] `POST /stories` (author from JWT; client-supplied authorId rejected by forbidNonWhitelisted), `GET /stories/:id` (Public, `likedByMe` when authenticated — JwtAuthGuard now does optional auth on `@Public()` routes), `PATCH` (owner only, admin edit rejected per contract), `DELETE` (owner or ADMIN) — 403 vs 404 correctly split
-- [x] Unit specs (13: counts mapping, likedByMe branches, ownership/moderation matrix) + stories e2e (13 tests)
-- [x] Verify: lint 0 problems + tsc clean + unit 44/44 + e2e 36/36; e2e asserts no author email in any story response
+- [x] Service spec (13: counts mapping, likedByMe branches, ownership/moderation matrix) + controller spec (route wiring + StoriesQueryDto validation per rule 50) + stories e2e (14 tests)
+- [x] Verify: lint 0 problems + tsc clean + full backend unit 76/76 + e2e 53/53; e2e asserts no author email in any story response
 
 ## Phase 5 — Comments module
 
 - [x] `GET /stories/:id/comments` (Public, paginated newest-first) + `POST /stories/:id/comments` (404 unknown story) — nested `StoryCommentsController`
 - [x] `PATCH /comments/:id` (owner only — admin edit 403, bumps `updatedAt`), `DELETE /comments/:id` (owner or ADMIN)
 - [x] ADMIN `GET /comments` (search = content OR author username, `storyId` filter, paginated envelope)
-- [x] Unit (10) + e2e (12) specs
-- [x] Verify: lint 0 problems + tsc clean + unit 54/54 + e2e 48/48
+- [x] Service spec (10) + controller specs for both controllers (wiring + DTO validation per rule 50) + e2e (12)
+- [x] Verify: lint 0 problems + tsc clean + full backend unit 76/76 + e2e 53/53
 
 ## Phase 6 — Likes + backend parity gate
 
 - [x] `PUT /stories/:id/like` / `DELETE /stories/:id/like` — idempotent 204s via upsert/deleteMany (no "Already liked" errors), 404 unknown story
-- [x] `likedByMe` + counts confirmed on story detail (e2e: double-like counts once, per-viewer likedByMe, anonymous omits the field); specs (4) + e2e (6)
+- [x] `likedByMe` + counts confirmed on story detail (e2e: double-like counts once, per-viewer likedByMe, anonymous omits the field); service spec (4) + controller spec + e2e (5)
 - [x] `prisma/seed.ts` already ships realistic demo content since Phase 1 (3 authored stories, comments, likes) — verified idempotent
 - [x] Ran `/parity-check` for the whole backend against `legacy/backend` (2026-08-05): all 27 legacy endpoints/capabilities mapped — implemented, improved, or documented as deliberately dropped (3 previously-implicit drops now recorded in the contract's "Additional deliberate changes": admin-rename-user, updatedAt feed sort, public comment search). No missing-capability tasks needed.
-- [x] Verify: full backend suite green (lint 0, tsc clean, unit 59/59, e2e 53/53); every route Swagger-complete; contract file accurate
+- [x] Verify: full backend suite green (lint 0, tsc clean, unit 76/76, e2e 53/53); every route Swagger-complete; contract file accurate
 
 ## Phase 7 — Frontend foundation
 
@@ -176,40 +176,40 @@ Env vars (`backend/.env.example`): `DATABASE_URL`, `PORT`, `JWT_ACCESS_SECRET`, 
 
 ## Phase 9 — Stories feature
 
-- [ ] Feed `/` : paginated card grid, debounced search, newest/oldest sort, skeletons, empty state with CTA; `@defer` below-the-fold
-- [ ] Detail `/stories/:id`: story, author link, like button (optimistic, disabled when logged out), comments section (paginated, add/edit/delete inline with confirm dialog) — comments `@defer (on viewport)`
-- [ ] Create `/stories/new` + edit `/stories/:id/edit` (authGuard; prefill; the legacy "no changes" double-submit bug does not exist here)
-- [ ] Owner/admin action visibility identical to backend permissions
-- [ ] Verify: lint + build + specs for pagination/like/comment logic
+- [x] Feed `/` : paginated card grid (9/page), URL-driven search (`?q=` from the navbar) and `?page=`, newest/oldest sort, skeleton grid while loading, empty state with CTA, delete via confirm dialog
+- [x] Detail `/stories/:id`: story, author link, like button (**optimistic with rollback on failure**, disabled when logged out), comments section (paginated, add/inline-edit/delete with confirm) loaded with `@defer (on viewport)`
+- [x] Create `/stories/new` + edit `/stories/:id/edit` (authGuard; prefill from the API; no legacy "no changes" double-submit bug)
+- [x] Owner/admin action visibility identical to backend permissions (owner edits; owner **or** admin deletes — admin edit is not offered, matching the contract)
+- [x] Verify: lint clean + build 311.30 kB + 13 new specs (56/56 frontend tests) covering optimistic like/rollback/unlike, permission visibility, excerpt truncation, aria-labels, not-found state
 
 ## Phase 10 — Profile & settings features
 
-- [ ] `/profile` (own: info card + Edit profile + New story) and `/profile/:id` (public view) with the user's stories grid (paginated, searchable)
-- [ ] `/settings` shell with tabs: profile (name/username edit) and security (change password; delete account with typed-confirmation dialog → logout)
-- [ ] Verify: lint + build + specs
+- [x] `/profile` (own: info card with email + Edit profile + New story) and `/profile/:id` (public view — reads the no-email public endpoint) with the user's stories grid (paginated 6/page, searchable via `?q=`, owner/admin delete)
+- [x] `/settings` with tabs: profile (name + username edit, save disabled until dirty, 409 inline) and security (change password with 401/400 mapping + "signs out other sessions" notice; delete account behind a confirm dialog — hidden for admins since the backend forbids admin self-deletion)
+- [x] Verify: lint clean + build 311.75 kB + 12 new specs (68/68 frontend tests)
 
 ## Phase 11 — Admin feature
 
-- [ ] `/admin` behind `adminGuard`, admin layout with its own nav (dashboard/users/stories/comments)
-- [ ] Dashboard: stat cards from `GET /users/stats` including the two "new this week" stats the legacy UI fetched but never displayed
-- [ ] Users: paginated table/grid, role filter + search, delete (non-self) with confirm
-- [ ] Stories + comments moderation: search, paginate, delete with confirm; comment click-through to story
-- [ ] Verify: lint + build + adminGuard/table specs
+- [x] `/admin` behind `adminGuard` with a nested layout route + its own sub-nav (dashboard/users/stories/comments), each child lazy with its own title
+- [x] Dashboard: clickable stat cards from `GET /users/stats` **including** the two "new this week" stats the legacy UI fetched but never displayed
+- [x] Users: paginated accessible table (caption + scoped headers), role filter + `?q=` search, delete with confirm — the signed-in admin's own row shows "You" and offers no delete (the backend 403s it)
+- [x] Stories + comments moderation: search, sort, paginate, delete with confirm; comment rows link through to their story
+- [x] Verify: lint clean + build 313.67 kB + admin-users specs (73/73 frontend tests) covering self-row protection, delete+reload, role filtering, table a11y
 
 ## Phase 12 — Polish, a11y, performance
 
-- [ ] Decide the fate of `User.passwordChangedAt` (currently write-only): either enforce it in `JwtStrategy` (reject access tokens with `iat` < passwordChangedAt, killing outstanding sessions instantly on password change) or drop the column — don't leave it decorative
+- [x] `User.passwordChangedAt` — **enforced** (not dropped): `JwtStrategy` now resolves the principal from the database each request and rejects tokens issued before the last password change. The UI already promised "signs out your other sessions", which was only true of refresh tokens; now access tokens die immediately too. Bonus effects: a deleted user's token yields 401 (was 404 from the service), and role changes take effect at once instead of after the 15-minute TTL. Cost: one indexed PK lookup per authenticated request — accepted deliberately. Covered by 4 unit tests + an e2e that mints a token, changes the password, and proves the old token is rejected.
 
-- [ ] A11y pass: landmarks, single `h1`/page, aria-labels on icon buttons, keyboard-operable dialogs/menus, visible focus everywhere, label-input associations (broken in legacy)
-- [ ] Performance pass: route-level code splitting confirmed, `NgOptimizedImage`, no oversized initial bundle (`ng build` budget check), Lighthouse sanity run
-- [ ] Dark mode via tokens; 360px-width usability check on every page
-- [ ] Consistent copy (fix ported typos: "seccessful", "succesfully", "udpate", "Failed error to change password")
-- [ ] Verify: lint + build + full frontend suite
+- [x] A11y pass: **skip-to-content link**, semantic landmarks (header/main/footer/nav), verified single `h1` per page (admin children use `h2` under the layout's `h1`), aria-labels on every action button, keyboard-operable dialog (focus trap + Escape) and avatar menu, `:focus-visible` rings globally, real label↔input associations (broken throughout legacy), scoped table headers + captions, `aria-live` toasts
+- [x] Performance pass: route-level code splitting confirmed (lazy chunk per feature), initial bundle **314.76 kB** vs the 500 kB budget with zero budget warnings, `@defer (on viewport)` for comments, skeletons instead of blocking spinners, debounced search, paginated lists. `NgOptimizedImage` is **not applicable** — the UI ships no `<img>` (avatars are initial-letter tiles), so there is nothing to optimize; revisit if imagery is added
+- [x] Dark mode via tokens (`dark:` variants throughout, driven by `prefers-color-scheme`); mobile-first layouts (single-column grids, wrapping toolbars) usable at 360px
+- [x] Consistent copy — all UI text written fresh; none of the legacy typos ("seccessful", "succesfully", "udpate", "Failed error to change password") were carried over
+- [x] Verify: lint clean (incl. template a11y rules) + build green + 73/73 frontend tests; no `*ngIf`/`*ngFor` anywhere; OnPush on all 31 components
 
 ## Phase 13 — Final parity gate & legacy removal
 
-- [ ] `/parity-check all` — every legacy capability accounted for (implemented, or documented as deliberately dropped in the contract)
+- [x] `/parity-check all` — backend audited 2026-08-05 (all 27 legacy endpoints mapped); **frontend UI audited 2026-08-06** against a full legacy capability inventory: every user-facing capability is implemented or documented as a deliberate change in the contract's "Deliberate UI changes from the legacy frontend" section. Legacy capabilities intentionally **not** ported are all dead/broken code (unrouted Contact page, dead `UserContext`/`ToastConfig`, `/admin/settings/info`, unread `scrollToComment` state). Parity gap found and closed during the audit: password show/hide toggles on the change-password form.
 - [ ] `migration-reviewer` agent full-app PASS; both workspaces: lint + typecheck + full test suites green
-- [ ] READMEs current (root + backend + frontend); `.env.example` complete; Swagger complete
+- [x] READMEs rewritten for the new stack (root: real run steps + seeded login + feature summary; backend: Prisma 7 notes, port rationale, secret generation; frontend: proxy/auth model/checks). `.env.example` verified to cover every var in the Joi schema (diff = empty). Swagger complete: 25/25 routes carry `@ApiOperation`, every controller `@ApiTags`.
 - [ ] Delete `legacy/` (ask the user before this one — it's irreversible) and remove the migration-workflow rule's legacy references
 - [ ] Update this plan's status header to "complete"
