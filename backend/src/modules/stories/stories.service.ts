@@ -12,7 +12,6 @@ import { StoriesQueryDto } from './dto/stories-query.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import {
   StoryEntity,
-  StoryRow,
   storySelect,
   toStoryEntity,
 } from './entities/story.entity';
@@ -41,7 +40,7 @@ export class StoriesService {
       this.prisma.story.count({ where }),
     ]);
     return {
-      data: (rows as StoryRow[]).map((row) => toStoryEntity(row)),
+      data: rows.map((row) => toStoryEntity(row)),
       meta: buildMeta(query.page, query.limit, totalItems),
     };
   }

@@ -33,7 +33,8 @@ export class StoryEntity {
 
   @ApiPropertyOptional({
     example: true,
-    description: 'Only present on single-story reads for authenticated callers',
+    description:
+      'Present on single-story reads for authenticated callers (and false on create); omitted for anonymous readers and in list responses',
   })
   likedByMe?: boolean;
 
