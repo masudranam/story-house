@@ -5,23 +5,7 @@ export type ButtonVariant = 'primary' | 'ghost' | 'danger';
 @Component({
   selector: 'app-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <button
-      [type]="type()"
-      [class]="classes()"
-      [disabled]="disabled() || loading()"
-      [attr.aria-busy]="loading() ? 'true' : null"
-      (click)="clicked.emit()"
-    >
-      @if (loading()) {
-        <span
-          class="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-          aria-hidden="true"
-        ></span>
-      }
-      <ng-content />
-    </button>
-  `,
+  templateUrl: './button.component.html',
 })
 export class ButtonComponent {
   readonly variant = input<ButtonVariant>('primary');

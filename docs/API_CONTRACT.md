@@ -21,14 +21,18 @@ Validation: `username` `/^[a-z0-9_]{3,30}$/` (one rule for signup **and** login 
 |---|---|---|---|---|
 | `GET /users/me` | Bearer | — | **200** `User` (incl. email) | 401 |
 | `PATCH /users/me` | Bearer | `{ name?, username? }` | **200** `User` | 400; 409 duplicate username |
-| `PATCH /users/me/password` | Bearer | `{ currentPassword, newPassword }` | **204** | 400 (new = old, or too weak); 401 wrong current password |
+| `PATCH /users/me/password` | Bearer | `{ currentPassword, newPassword }` | **200** `{ accessToken, refreshToken }` — replacements for the caller | 400 (new = old, or too weak); 401 wrong current password |
 | `DELETE /users/me` | Bearer | — | **204** | 403 if ADMIN (admins can't self-delete — legacy rule kept) |
 | `GET /users/:id` | Bearer | uuid param | **200** `PublicUser` (no email) | 404 |
 | `GET /users` | **ADMIN** | `?page&limit&search&role` — search matches username OR name OR email (legacy ANDed them: bug, fixed) | **200** `{ data: User[], meta }` | 403 |
 | `DELETE /users/:id` | **ADMIN** | uuid param | **204** (cascades stories/comments/likes) | 403 own account; 404 |
 | `GET /users/stats` | **ADMIN** | — | **200** `{ totalUsers, totalStories, totalComments, newUsersThisWeek, newStoriesThisWeek }` | 403 |
 
-`User`: `{ id, name, username, email, role: "USER"|"ADMIN", createdAt, updatedAt }`. `PublicUser`: same minus `email`. Password/hash never serialized. Identity always derives from the JWT — no user id in URLs for self-operations (legacy `PATCH /users/change-password/:id` ignored `:id`; the IDOR-shaped route is gone). A successful password change revokes **all** of the user's refresh tokens **and invalidates every access token issued before it** — other sessions are signed out immediately, not after the 15-minute access-token TTL. The JWT guard resolves the principal from the database on each request, so a deleted user's token yields **401** and a role change takes effect at once (no stale `ADMIN` claim).
+`User`: `{ id, name, username, email, role: "USER"|"ADMIN", createdAt, updatedAt }`. `PublicUser`: same minus `email`. Password/hash never serialized. Identity always derives from the JWT — no user id in URLs for self-operations (legacy `PATCH /users/change-password/:id` ignored `:id`; the IDOR-shaped route is gone). A successful password change signs out **every other session immediately** — it revokes all refresh tokens and bumps the user's `tokenVersion`, which invalidates every previously issued access token (no waiting out the 15-minute TTL). Because that also invalidates the caller's own credentials, the endpoint returns a **replacement token pair**, which the client swaps in; the acting session continues uninterrupted.
+
+Invalidation is a **version comparison, not a timestamp** one: the access token carries `tokenVersion` and the guard rejects any value that isn't current. A timestamp check would depend on clock resolution and leave a sub-second window in which a token minted just before the change still passed.
+
+The JWT guard resolves the principal from the database on every request, so a deleted user's token yields **401** and a role change takes effect at once (no stale `ADMIN` claim).
 
 ## Stories — `/stories`
 
