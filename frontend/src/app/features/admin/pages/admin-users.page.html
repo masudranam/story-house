@@ -1,0 +1,124 @@
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <h2 class="text-xl font-semibold">Users</h2>
+  <div>
+    <label for="role-filter" class="sr-only">Filter by role</label>
+    <select
+      #roleSelect
+      id="role-filter"
+      class="w-auto"
+      [value]="roleFilter()"
+      (change)="setRole(roleSelect.value)"
+    >
+      <option value="">All roles</option>
+      <option value="USER">Users</option>
+      <option value="ADMIN">Admins</option>
+    </select>
+  </div>
+</div>
+
+@if (search()) {
+  <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Results for “{{ search() }}”</p>
+}
+
+@if (users.isLoading()) {
+  <div class="mt-4 flex flex-col gap-2">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton height="3rem" />
+    }
+  </div>
+} @else if (users.error()) {
+  <div class="mt-4"><app-empty-state title="Couldn't load users" /></div>
+} @else if (users.value(); as page) {
+  @if (page.data.length === 0) {
+    <div class="mt-4">
+      <app-empty-state title="No users match" message="Try a different search or filter." />
+    </div>
+  } @else {
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <caption class="sr-only">
+          Registered users
+        </caption>
+        <thead
+          class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500 dark:border-gray-700 dark:text-gray-400"
+        >
+          <tr>
+            <th scope="col" class="py-2 pr-4">User</th>
+            <th scope="col" class="py-2 pr-4">Email</th>
+            <th scope="col" class="py-2 pr-4">Role</th>
+            <th scope="col" class="py-2 pr-4">Joined</th>
+            <th scope="col" class="py-2"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          @for (user of page.data; track user.id) {
+            <tr>
+              <td class="py-3 pr-4">
+                <a
+                  [routerLink]="['/profile', user.id]"
+                  class="font-medium text-gray-800 hover:text-brand-700 dark:text-gray-100 dark:hover:text-brand-300"
+                >
+                  {{ user.name }}
+                </a>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">
+                  &#64;{{ user.username }}
+                </span>
+              </td>
+              <td class="py-3 pr-4 text-gray-600 dark:text-gray-300">{{ user.email }}</td>
+              <td class="py-3 pr-4">
+                <span
+                  class="rounded-full px-2 py-0.5 text-xs font-medium"
+                  [class]="
+                    user.role === 'ADMIN'
+                      ? 'bg-brand-100 text-brand-800 dark:bg-brand-900 dark:text-brand-200'
+                      : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                  "
+                >
+                  {{ user.role }}
+                </span>
+              </td>
+              <td class="py-3 pr-4 text-xs text-gray-500 dark:text-gray-400">
+                <time [attr.datetime]="user.createdAt">{{ user.createdAt | relativeDate }}</time>
+              </td>
+              <td class="py-3 text-right">
+                @if (isSelf(user)) {
+                  <span class="text-xs text-gray-400 dark:text-gray-500">You</span>
+                } @else {
+                  <button
+                    type="button"
+                    class="text-xs font-medium text-danger-600 hover:underline"
+                    [attr.aria-label]="'Delete user ' + user.username"
+                    (click)="confirmDelete(user)"
+                  >
+                    Delete
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginator
+      [page]="page.meta.page"
+      [totalPages]="page.meta.totalPages"
+      (pageChange)="goToPage($event)"
+    />
+  }
+}
+
+@if (pendingDelete(); as user) {
+  <app-confirm-dialog
+    title="Delete this user?"
+    [message]="
+      '@' +
+      user.username +
+      ' and all their stories, comments and likes will be permanently removed.'
+    "
+    confirmLabel="Delete user"
+    [loading]="deleting()"
+    (confirmed)="deleteUser()"
+    (cancelled)="cancelDelete()"
+  />
+}
