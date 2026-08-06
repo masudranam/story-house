@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { apiErrorMessage, apiErrorStatus } from '../../../core/api/api-error';
 import { AuthStore } from '../../../core/auth/auth-store';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -17,6 +17,7 @@ import { ToastService } from '../../../shared/ui/toast/toast.service';
 export class LoginPage {
   private readonly store = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly toast = inject(ToastService);
 
   protected readonly submitting = signal(false);
@@ -28,6 +29,18 @@ export class LoginPage {
     password: ['', [Validators.required]],
     rememberMe: [false],
   });
+
+  /**
+   * returnUrl comes from the URL, so it is attacker-controllable: only accept
+   * same-site absolute paths ("//evil.com" is protocol-relative, not a path).
+   */
+  private safeReturnUrl(): string {
+    const candidate = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (!candidate || !candidate.startsWith('/') || candidate.startsWith('//')) {
+      return '/';
+    }
+    return candidate;
+  }
 
   protected error(control: 'identifier' | 'password'): string | null {
     const field = this.form.controls[control];
@@ -54,8 +67,7 @@ export class LoginPage {
       next: () => {
         this.submitting.set(false);
         this.toast.success('Welcome back!');
-        const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-        void this.router.navigateByUrl(returnUrl ?? '/');
+        void this.router.navigateByUrl(this.safeReturnUrl());
       },
       error: (error: unknown) => {
         this.submitting.set(false);
