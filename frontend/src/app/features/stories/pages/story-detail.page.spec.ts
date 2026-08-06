@@ -53,12 +53,22 @@ describe('StoryDetailPage', () => {
   });
 
   afterEach(() => {
+    // The story resource re-keys on the viewer, so signing in mid-test
+    // legitimately refetches; drain before verifying unexpected calls.
+    flushStory();
     backend.verify();
     localStorage.clear();
     sessionStorage.clear();
   });
 
   const el = (): HTMLElement => fixture.nativeElement as HTMLElement;
+
+  /** Flush every pending story GET; returns how many there were. */
+  function flushStory(overrides: Partial<Story> = {}): number {
+    const requests = backend.match((req) => req.url.startsWith('/api/v1/stories/'));
+    requests.forEach((req) => req.flush({ ...story, ...overrides }));
+    return requests.length;
+  }
 
   async function signIn(): Promise<void> {
     const promise = firstValueFrom(store.login('bob', 'Password123!', true));
@@ -71,7 +81,7 @@ describe('StoryDetailPage', () => {
     // detectChanges (not whenStable) starts the resource: whenStable would
     // block on the very request this helper is about to flush.
     fixture.detectChanges();
-    backend.expectOne('/api/v1/stories/s1').flush({ ...story, ...overrides });
+    expect(flushStory(overrides)).toBeGreaterThan(0);
     await fixture.whenStable();
   }
 
@@ -154,6 +164,29 @@ describe('StoryDetailPage', () => {
     expect(el().textContent).toContain('Delete');
     // Admins may moderate (delete) but not edit — matches the contract.
     expect(el().textContent).not.toContain('Edit');
+  });
+
+  it('refetches once the session lands, so a restored user sees their own like', async () => {
+    // Regression: bootstrap no longer blocks on the session restore, so the
+    // first load is anonymous. If the story didn't re-key on the viewer,
+    // likedByMe would stay false for someone who has actually liked it.
+    await loadStory({ likedByMe: undefined });
+    expect(el().textContent).toContain('3 likes');
+    expect((el().querySelector('app-like-button button') as HTMLButtonElement).disabled).toBe(true);
+
+    await signIn();
+    fixture.detectChanges();
+
+    // The viewer changed, so the story is fetched again — this is the fix.
+    expect(flushStory({ likedByMe: true, likesCount: 4 })).toBe(1);
+    await fixture.whenStable();
+
+    expect(
+      (el().querySelector('app-like-button button') as HTMLButtonElement).getAttribute(
+        'aria-pressed',
+      ),
+    ).toBe('true');
+    expect(el().textContent).toContain('4 likes');
   });
 
   it('shows a not-found state when the story is missing', async () => {
