@@ -59,8 +59,13 @@ describe('route guards', () => {
     await promise;
   }
 
-  it('authGuard redirects anonymous visitors to /login with a returnUrl', () => {
-    const result = TestBed.runInInjectionContext(() => authGuard(route, state));
+  /** Guards await store.sessionReady, so every result is a promise. */
+  const run = (guard: typeof authGuard) =>
+    Promise.resolve(TestBed.runInInjectionContext(() => guard(route, state)));
+
+  it('authGuard redirects anonymous visitors to /login with a returnUrl', async () => {
+    await store.init(); // no stored token → resolves sessionReady immediately
+    const result = await run(authGuard);
 
     expect(result).toBeInstanceOf(UrlTree);
     expect((result as UrlTree).toString()).toContain('/login');
@@ -68,26 +73,46 @@ describe('route guards', () => {
   });
 
   it('authGuard admits an authenticated user', async () => {
+    await store.init();
     await signIn('USER');
-    expect(TestBed.runInInjectionContext(() => authGuard(route, state))).toBe(true);
+    await expect(run(authGuard)).resolves.toBe(true);
   });
 
   it('adminGuard blocks a regular user and admits an admin', async () => {
+    await store.init();
     await signIn('USER');
-    const blocked = TestBed.runInInjectionContext(() => adminGuard(route, state));
+    const blocked = await run(adminGuard);
     expect(blocked).toBeInstanceOf(UrlTree);
     expect((blocked as UrlTree).toString()).toBe('/');
 
     store.setUser({ ...sessionFor('ADMIN').user });
-    expect(TestBed.runInInjectionContext(() => adminGuard(route, state))).toBe(true);
+    await expect(run(adminGuard)).resolves.toBe(true);
   });
 
   it('guestGuard admits anonymous visitors and bounces signed-in users home', async () => {
-    expect(TestBed.runInInjectionContext(() => guestGuard(route, state))).toBe(true);
+    await store.init();
+    await expect(run(guestGuard)).resolves.toBe(true);
 
     await signIn('USER');
-    const bounced = TestBed.runInInjectionContext(() => guestGuard(route, state));
+    const bounced = await run(guestGuard);
     expect(bounced).toBeInstanceOf(UrlTree);
     expect((bounced as UrlTree).toString()).toBe('/');
+  });
+
+  it('authGuard waits for a persisted session to restore before deciding', async () => {
+    localStorage.setItem('storyhouse.refreshToken', 'refresh-1');
+    void store.init();
+
+    // Guard is asked while the restore is still in flight.
+    const decision = run(authGuard);
+
+    backend
+      .expectOne('/api/v1/auth/refresh')
+      .flush({ accessToken: 'access-2', refreshToken: 'refresh-2' });
+    await Promise.resolve();
+    backend.expectOne('/api/v1/users/me').flush(sessionFor('USER').user);
+
+    // It admits the restored user instead of bouncing to /login.
+    await expect(decision).resolves.toBe(true);
   });
 });

@@ -20,7 +20,10 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([authInterceptor, refreshInterceptor, errorToastInterceptor]),
     ),
-    // Restore a session from the persisted refresh token before first render.
-    provideAppInitializer(() => inject(AuthStore).init()),
+    // Start the session restore but DON'T block first render on it (a blank
+    // page for two round-trips). Guards await store.sessionReady instead.
+    provideAppInitializer(() => {
+      void inject(AuthStore).init();
+    }),
   ],
 };
