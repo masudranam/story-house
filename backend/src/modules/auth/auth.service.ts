@@ -137,7 +137,7 @@ export class AuthService {
   async issueTokensFor(userId: string): Promise<TokenPairEntity> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, username: true, role: true, tokenVersion: true },
+      select: { id: true, username: true, tokenVersion: true },
     });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

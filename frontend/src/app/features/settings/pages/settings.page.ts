@@ -29,9 +29,9 @@ export class SettingsPage {
     this.url().includes('/settings/security') ? 'security' : 'profile',
   );
 
-  protected readonly tabs: { id: Tab; label: string; path: string }[] = [
-    { id: 'profile', label: 'Profile', path: '/settings' },
-    { id: 'security', label: 'Security', path: '/settings/security' },
+  protected readonly tabs: { id: Tab; label: string }[] = [
+    { id: 'profile', label: 'Profile' },
+    { id: 'security', label: 'Security' },
   ];
 
   protected select(tab: Tab): void {
