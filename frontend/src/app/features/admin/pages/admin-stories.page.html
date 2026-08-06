@@ -1,0 +1,110 @@
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <h2 class="text-xl font-semibold">Stories</h2>
+  <div>
+    <label for="admin-story-sort" class="sr-only">Sort stories</label>
+    <select
+      #sortSelect
+      id="admin-story-sort"
+      class="w-auto"
+      [value]="sort()"
+      (change)="setSort(sortSelect.value)"
+    >
+      <option value="createdAt:desc">Newest first</option>
+      <option value="createdAt:asc">Oldest first</option>
+    </select>
+  </div>
+</div>
+
+@if (search()) {
+  <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Results for “{{ search() }}”</p>
+}
+
+@if (stories.isLoading()) {
+  <div class="mt-4 flex flex-col gap-2">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton height="3rem" />
+    }
+  </div>
+} @else if (stories.error()) {
+  <div class="mt-4"><app-empty-state title="Couldn't load stories" /></div>
+} @else if (stories.value(); as page) {
+  @if (page.data.length === 0) {
+    <div class="mt-4">
+      <app-empty-state title="No stories match" message="Try a different search term." />
+    </div>
+  } @else {
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <caption class="sr-only">
+          All published stories
+        </caption>
+        <thead
+          class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500 dark:border-gray-700 dark:text-gray-400"
+        >
+          <tr>
+            <th scope="col" class="py-2 pr-4">Title</th>
+            <th scope="col" class="py-2 pr-4">Author</th>
+            <th scope="col" class="py-2 pr-4">Engagement</th>
+            <th scope="col" class="py-2 pr-4">Published</th>
+            <th scope="col" class="py-2"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          @for (story of page.data; track story.id) {
+            <tr>
+              <td class="py-3 pr-4">
+                <a
+                  [routerLink]="['/stories', story.id]"
+                  class="font-medium text-gray-800 hover:text-brand-700 dark:text-gray-100 dark:hover:text-brand-300"
+                >
+                  {{ story.title }}
+                </a>
+              </td>
+              <td class="py-3 pr-4">
+                <a
+                  [routerLink]="['/profile', story.author.id]"
+                  class="text-gray-600 hover:text-brand-700 dark:text-gray-300 dark:hover:text-brand-300"
+                >
+                  &#64;{{ story.author.username }}
+                </a>
+              </td>
+              <td class="py-3 pr-4 text-xs text-gray-500 dark:text-gray-400">
+                {{ story.likesCount }} likes · {{ story.commentsCount }} comments
+              </td>
+              <td class="py-3 pr-4 text-xs text-gray-500 dark:text-gray-400">
+                <time [attr.datetime]="story.createdAt">{{ story.createdAt | relativeDate }}</time>
+              </td>
+              <td class="py-3 text-right">
+                <button
+                  type="button"
+                  class="text-xs font-medium text-danger-600 hover:underline"
+                  [attr.aria-label]="'Delete story ' + story.title"
+                  (click)="confirmDelete(story)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-paginator
+      [page]="page.meta.page"
+      [totalPages]="page.meta.totalPages"
+      (pageChange)="goToPage($event)"
+    />
+  }
+}
+
+@if (pendingDelete(); as story) {
+  <app-confirm-dialog
+    title="Remove this story?"
+    [message]="'“' + story.title + '” and its comments and likes will be permanently removed.'"
+    confirmLabel="Remove story"
+    [loading]="deleting()"
+    (confirmed)="deleteStory()"
+    (cancelled)="cancelDelete()"
+  />
+}

@@ -67,10 +67,35 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    title: 'Admin — StoryHouse',
     canActivate: [adminGuard],
     loadComponent: () =>
-      import('./features/admin/pages/admin-dashboard.page').then((m) => m.AdminDashboardPage),
+      import('./features/admin/pages/admin-layout.page').then((m) => m.AdminLayoutPage),
+    children: [
+      {
+        path: '',
+        title: 'Admin dashboard — StoryHouse',
+        loadComponent: () =>
+          import('./features/admin/pages/admin-dashboard.page').then((m) => m.AdminDashboardPage),
+      },
+      {
+        path: 'users',
+        title: 'Admin · Users — StoryHouse',
+        loadComponent: () =>
+          import('./features/admin/pages/admin-users.page').then((m) => m.AdminUsersPage),
+      },
+      {
+        path: 'stories',
+        title: 'Admin · Stories — StoryHouse',
+        loadComponent: () =>
+          import('./features/admin/pages/admin-stories.page').then((m) => m.AdminStoriesPage),
+      },
+      {
+        path: 'comments',
+        title: 'Admin · Comments — StoryHouse',
+        loadComponent: () =>
+          import('./features/admin/pages/admin-comments.page').then((m) => m.AdminCommentsPage),
+      },
+    ],
   },
   {
     path: 'about',
