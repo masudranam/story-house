@@ -66,6 +66,14 @@ export const routes: Routes = [
       import('./features/settings/pages/settings.page').then((m) => m.SettingsPage),
   },
   {
+    // Deep link parity with the legacy /users/settings/security page.
+    path: 'settings/security',
+    title: 'Security — StoryHouse',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/settings/pages/settings.page').then((m) => m.SettingsPage),
+  },
+  {
     path: 'admin',
     canActivate: [adminGuard],
     loadComponent: () =>
