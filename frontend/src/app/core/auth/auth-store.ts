@@ -22,9 +22,24 @@ export class AuthStore {
 
   private refreshInFlight$: Observable<string> | null = null;
 
-  /** App initializer: restore the session from a persisted refresh token, if any. */
+  /**
+   * Resolves once a persisted session has been restored (or proven dead).
+   * Guards await this instead of the app blocking on a blank page during
+   * bootstrap — the shell renders immediately.
+   */
+  readonly sessionReady: Promise<void>;
+  private resolveSessionReady!: () => void;
+
+  constructor() {
+    this.sessionReady = new Promise<void>((resolve) => {
+      this.resolveSessionReady = resolve;
+    });
+  }
+
+  /** Kicked off (not awaited) at bootstrap. */
   async init(): Promise<void> {
     if (!getStoredRefreshToken()) {
+      this.resolveSessionReady();
       return;
     }
     try {
@@ -33,6 +48,8 @@ export class AuthStore {
     } catch {
       // Stored token is stale/revoked — start anonymous.
       this.clearSession();
+    } finally {
+      this.resolveSessionReady();
     }
   }
 
