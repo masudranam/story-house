@@ -1,0 +1,116 @@
+@if (profile.isLoading()) {
+  <div class="flex flex-col gap-4">
+    <app-skeleton height="6rem" />
+  </div>
+} @else if (profile.error()) {
+  <app-empty-state title="Profile not found" message="This user may have deleted their account." />
+} @else if (profile.value(); as user) {
+  <app-card>
+    <div class="flex flex-wrap items-center gap-4">
+      <div
+        class="flex size-16 items-center justify-center rounded-full bg-brand-600 text-2xl font-semibold text-white"
+        aria-hidden="true"
+      >
+        {{ initial() }}
+      </div>
+      <div class="flex-1">
+        <h1>{{ user.name }}</h1>
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          &#64;{{ user.username }}
+          @if (email()) {
+            <span class="ml-2">· {{ email() }}</span>
+          }
+        </p>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Joined <time [attr.datetime]="user.createdAt">{{ user.createdAt | relativeDate }}</time>
+        </p>
+      </div>
+
+      @if (isOwnProfile()) {
+        <div class="flex gap-2">
+          <a
+            routerLink="/settings"
+            class="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+          >
+            Edit profile
+          </a>
+          <a
+            routerLink="/stories/new"
+            class="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            New story
+          </a>
+        </div>
+      }
+    </div>
+  </app-card>
+
+  <section class="mt-8" aria-labelledby="user-stories-heading">
+    <h2 id="user-stories-heading" class="text-xl font-semibold">
+      {{ isOwnProfile() ? 'My stories' : 'Stories by ' + user.name }}
+    </h2>
+
+    @if (stories.isLoading()) {
+      <div class="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (row of skeletonRows; track row) {
+          <div
+            class="flex flex-col gap-3 rounded-card border border-gray-200 p-5 dark:border-gray-700"
+          >
+            <app-skeleton height="1.25rem" width="80%" />
+            <app-skeleton height="3rem" />
+          </div>
+        }
+      </div>
+    } @else if (stories.error()) {
+      <p class="mt-4 text-sm text-danger-600" role="alert">Couldn't load stories.</p>
+    } @else if (stories.value(); as page) {
+      @if (page.data.length === 0) {
+        <div class="mt-4">
+          <app-empty-state
+            [title]="search() ? 'No stories match your search' : 'No stories yet'"
+            [message]="
+              isOwnProfile() ? 'Your published stories will appear here.' : 'Nothing published yet.'
+            "
+          >
+            @if (isOwnProfile()) {
+              <a
+                routerLink="/stories/new"
+                class="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+              >
+                Write your first story
+              </a>
+            }
+          </app-empty-state>
+        </div>
+      } @else {
+        <div class="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          @for (story of page.data; track story.id) {
+            <app-story-card
+              [story]="story"
+              [canEdit]="canEdit(story)"
+              [canDelete]="canDelete(story)"
+              (editRequested)="edit($event)"
+              (deleteRequested)="confirmDelete($event)"
+            />
+          }
+        </div>
+
+        <app-paginator
+          [page]="page.meta.page"
+          [totalPages]="page.meta.totalPages"
+          (pageChange)="goToPage($event)"
+        />
+      }
+    }
+  </section>
+}
+
+@if (pendingDelete(); as story) {
+  <app-confirm-dialog
+    title="Delete this story?"
+    [message]="'“' + story.title + '” and its comments and likes will be permanently removed.'"
+    [loading]="deleting()"
+    (confirmed)="deleteStory()"
+    (cancelled)="cancelDelete()"
+  />
+}
