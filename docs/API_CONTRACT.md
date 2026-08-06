@@ -28,7 +28,7 @@ Validation: `username` `/^[a-z0-9_]{3,30}$/` (one rule for signup **and** login 
 | `DELETE /users/:id` | **ADMIN** | uuid param | **204** (cascades stories/comments/likes) | 403 own account; 404 |
 | `GET /users/stats` | **ADMIN** | — | **200** `{ totalUsers, totalStories, totalComments, newUsersThisWeek, newStoriesThisWeek }` | 403 |
 
-`User`: `{ id, name, username, email, role: "USER"|"ADMIN", createdAt, updatedAt }`. `PublicUser`: same minus `email`. Password/hash never serialized. Identity always derives from the JWT — no user id in URLs for self-operations (legacy `PATCH /users/change-password/:id` ignored `:id`; the IDOR-shaped route is gone). A successful password change revokes **all** of the user's refresh tokens — other sessions must log in again.
+`User`: `{ id, name, username, email, role: "USER"|"ADMIN", createdAt, updatedAt }`. `PublicUser`: same minus `email`. Password/hash never serialized. Identity always derives from the JWT — no user id in URLs for self-operations (legacy `PATCH /users/change-password/:id` ignored `:id`; the IDOR-shaped route is gone). A successful password change revokes **all** of the user's refresh tokens **and invalidates every access token issued before it** — other sessions are signed out immediately, not after the 15-minute access-token TTL. The JWT guard resolves the principal from the database on each request, so a deleted user's token yields **401** and a role change takes effect at once (no stale `ADMIN` claim).
 
 ## Stories — `/stories`
 
@@ -36,9 +36,9 @@ Validation: `username` `/^[a-z0-9_]{3,30}$/` (one rule for signup **and** login 
 |---|---|---|---|---|
 | `GET /stories` | Public | `?page&limit&search&authorId&sort` — `search` filters title (contains, case-insensitive); `sort` = `createdAt:asc\|desc` (default `desc`) | **200** `{ data: Story[], meta }` | 400 |
 | `POST /stories` | Bearer | `{ title, content }` | **201** `Story` | 400; 401 |
-| `GET /stories/:id` | Public | uuid param | **200** `Story` (+ `likedByMe` when authenticated) | 404 |
-| `PATCH /stories/:id` | Owner | `{ title?, content? }` | **200** `Story` | 403 not owner; 404 |
-| `DELETE /stories/:id` | Owner or ADMIN | uuid param | **204** (cascades comments/likes) | 403; 404 |
+| `GET /stories/:id` | Public | uuid param | **200** `Story` (+ `likedByMe` when authenticated) | 400 malformed uuid; 404 |
+| `PATCH /stories/:id` | Owner | `{ title?, content? }` | **200** `Story` | 400 validation/uuid; 403 not owner; 404 |
+| `DELETE /stories/:id` | Owner or ADMIN | uuid param | **204** (cascades comments/likes) | 400 malformed uuid; 403; 404 |
 
 `Story`: `{ id, title, content, author: PublicUserLite, likesCount, commentsCount, createdAt, updatedAt }` where `PublicUserLite` = `{ id, name, username }`. Counts come from a grouped query (`_count`) — no N+1, and **author email is no longer exposed** (legacy leaked it in every list). Legacy field `description` is renamed `content`; `lastModifierId`/`lastModificationTime` are dropped (`updatedAt` covers it). Editing is owner-only (legacy allowed admin edits the UI never used — deliberate change); moderation = delete.
 
@@ -67,6 +67,20 @@ Like count and `likedByMe` ship inside `Story` — the legacy `GET /likes/:story
 | `DELETE /comments/:id` | Owner or ADMIN | uuid param | **204** | 403; 404 |
 
 `Comment`: `{ id, content, storyId, author: { id, name, username }, createdAt, updatedAt }`. Comments are flat (no threading — matches legacy). Comment edits now bump `updatedAt` (legacy had no edit timestamp).
+
+## Deliberate UI changes from the legacy frontend
+
+Recorded from the Phase 13 parity audit; each is a fix, not a gap:
+
+- **Other users' emails are no longer shown.** Legacy printed `Email :` on every profile, including other people's. Public profiles now omit it entirely (the API doesn't even send it).
+- **Story detail is genuinely public.** Legacy's detail page called auth-only like endpoints and replaced the whole page with an error for logged-out readers — the story was unreachable. Likes/counts now come with the story itself.
+- **Admin routes are guarded.** Legacy gated `/admin` only by hiding a navbar link; any logged-in user could open the full panel.
+- **Search actually filters everywhere.** Legacy's admin Users/Posts/Comments searches were no-ops or self-cancelling (`content` AND `author`); one term now filters each list server-side.
+- **Feed sorts by `createdAt`** (labelled Newest/Oldest first, newest by default). Legacy sorted by `updatedAt` and defaulted to oldest-first under a misleading label.
+- **Every destructive action confirms in a real dialog** (message, backdrop, focus trap, Escape) and every admin action reports success. Legacy had two inconsistent confirm widgets, one with no question text, and silent admin deletes.
+- **Comment timestamps show a date** (relative), not time-only; edited comments are marked.
+- **Dead legacy surfaces are not ported**: the unrouted Contact page, the duplicate `UserContext`/`ToastConfig`, `/admin/settings/info`, and the `scrollToComment` router state nothing consumed.
+- **Kept deliberately**: admins may delete any user except themselves (legacy hid delete for all admins), and admin moderation is delete-only — admins never edit others' content.
 
 ## Additional deliberate changes from legacy behavior
 
