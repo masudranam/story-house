@@ -14,50 +14,7 @@ const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/;
   selector: 'app-profile-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, ButtonComponent, CardComponent, FormFieldComponent],
-  template: `
-    <app-card>
-      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4" novalidate>
-        <h2 class="text-lg font-semibold">Profile</h2>
-
-        @if (formError()) {
-          <p
-            class="rounded-lg bg-danger-600/10 px-3 py-2 text-sm text-danger-700 dark:text-danger-500"
-            role="alert"
-          >
-            {{ formError() }}
-          </p>
-        }
-
-        <app-form-field label="Name" for="settings-name" [error]="error('name')">
-          <input id="settings-name" type="text" formControlName="name" autocomplete="name" />
-        </app-form-field>
-
-        <app-form-field
-          label="Username"
-          for="settings-username"
-          [error]="error('username')"
-          hint="Lowercase letters, numbers and underscore"
-        >
-          <input
-            id="settings-username"
-            type="text"
-            formControlName="username"
-            autocomplete="username"
-          />
-        </app-form-field>
-
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          Email: {{ currentUser()?.email }} (contact support to change it)
-        </p>
-
-        <div class="flex justify-end">
-          <app-button type="submit" [loading]="saving()" [disabled]="form.pristine">
-            Save changes
-          </app-button>
-        </div>
-      </form>
-    </app-card>
-  `,
+  templateUrl: './profile-settings.component.html',
 })
 export class ProfileSettingsComponent {
   private readonly usersApi = inject(UsersApi);

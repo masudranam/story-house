@@ -1,0 +1,44 @@
+<div class="mx-auto max-w-2xl">
+  <h1>Settings</h1>
+
+  <div
+    class="mt-6 flex gap-2 border-b border-gray-200 dark:border-gray-700"
+    role="tablist"
+    aria-label="Settings sections"
+  >
+    @for (item of tabs; track item.id) {
+      <!-- Roving tabindex: only the selected tab is in the tab order, and
+           arrow keys move between them (WAI-ARIA tabs pattern). -->
+      <button
+        type="button"
+        role="tab"
+        [id]="'tab-' + item.id"
+        [attr.aria-selected]="tab() === item.id"
+        [attr.aria-controls]="'panel-' + item.id"
+        [tabindex]="tab() === item.id ? 0 : -1"
+        [class]="tabClass(item.id)"
+        (click)="select(item.id)"
+        (keydown)="onTabKeydown($event)"
+      >
+        {{ item.label }}
+      </button>
+    }
+  </div>
+
+  <div
+    class="mt-6"
+    role="tabpanel"
+    [id]="'panel-' + tab()"
+    [attr.aria-labelledby]="'tab-' + tab()"
+    tabindex="0"
+  >
+    @switch (tab()) {
+      @case ('profile') {
+        <app-profile-settings />
+      }
+      @case ('security') {
+        <app-security-settings />
+      }
+    }
+  </div>
+</div>

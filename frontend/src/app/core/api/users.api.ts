@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Page, PublicUser, Role, Stats, User } from '../models/api.models';
+import { Page, PublicUser, Role, Stats, TokenPair, User } from '../models/api.models';
 
 export interface UsersQuery {
   page?: number;
@@ -22,8 +22,12 @@ export class UsersApi {
     return this.http.patch<User>('/api/v1/users/me', changes);
   }
 
-  changePassword(currentPassword: string, newPassword: string): Observable<void> {
-    return this.http.patch<void>('/api/v1/users/me/password', { currentPassword, newPassword });
+  /** Returns replacement tokens: the change invalidates the caller's old ones. */
+  changePassword(currentPassword: string, newPassword: string): Observable<TokenPair> {
+    return this.http.patch<TokenPair>('/api/v1/users/me/password', {
+      currentPassword,
+      newPassword,
+    });
   }
 
   deleteMe(): Observable<void> {

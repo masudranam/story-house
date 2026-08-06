@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { finalize, firstValueFrom, map, Observable, shareReplay, tap, throwError } from 'rxjs';
 import { AuthApi } from '../api/auth.api';
 import { UsersApi } from '../api/users.api';
-import { AuthSession, User } from '../models/api.models';
+import { AuthSession, TokenPair, User } from '../models/api.models';
 import { clearRefreshToken, getStoredRefreshToken, storeRefreshToken } from './token-storage';
 
 @Injectable({ providedIn: 'root' })
@@ -113,5 +113,14 @@ export class AuthStore {
   /** Keeps the store in sync after profile edits. */
   setUser(user: User): void {
     this._user.set(user);
+  }
+
+  /**
+   * Adopts a replacement token pair — used after a password change, which
+   * invalidates the credentials the caller was using.
+   */
+  applyTokens(pair: TokenPair): void {
+    storeRefreshToken(pair.refreshToken);
+    this._accessToken.set(pair.accessToken);
   }
 }
