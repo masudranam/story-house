@@ -41,7 +41,6 @@
       "PowerShell(git branch*)",
       "Edit(backend/**)",
       "Edit(frontend/**)",
-      "Edit(legacy/**)",
       "Edit(docs/**)",
       "Edit(.claude/**)"
     ],
@@ -100,17 +99,6 @@
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop-verify.mjs\"",
             "timeout": 10,
             "statusMessage": "Checking that edits were verified"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.mjs\"",
-            "timeout": 10
           }
         ]
       }
