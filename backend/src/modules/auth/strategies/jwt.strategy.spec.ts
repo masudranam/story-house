@@ -9,8 +9,7 @@ describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
 
   const prisma = { user: { findUnique: jest.fn() } };
-  const nowSeconds = Math.floor(Date.now() / 1000);
-  const payload = { sub: 'user-1', username: 'alice', iat: nowSeconds };
+  const payload = { sub: 'user-1', username: 'alice', tokenVersion: 0 };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -32,10 +31,10 @@ describe('JwtStrategy', () => {
       id: 'user-1',
       username: 'alice_renamed',
       role: Role.ADMIN,
-      passwordChangedAt: null,
+      tokenVersion: 0,
     });
 
-    // The token says username "alice" / no role; the DB is authoritative.
+    // The token says username "alice" and carries no role; the DB wins.
     await expect(strategy.validate(payload)).resolves.toEqual({
       id: 'user-1',
       username: 'alice_renamed',
@@ -51,28 +50,32 @@ describe('JwtStrategy', () => {
     );
   });
 
-  it('rejects a token issued before the last password change', async () => {
+  it('rejects a token carrying a superseded version, however recently minted', async () => {
+    // The bug this replaced: a timestamp comparison let a token minted in the
+    // same second as the password change survive. Version compare cannot.
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       username: 'alice',
       role: Role.USER,
-      passwordChangedAt: new Date(Date.now() + 60_000),
+      tokenVersion: 1,
     });
 
-    await expect(strategy.validate(payload)).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(
+      strategy.validate({ ...payload, tokenVersion: 0 }),
+    ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('accepts a token issued after the last password change', async () => {
+  it('accepts a token whose version matches the current one', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       username: 'alice',
       role: Role.USER,
-      passwordChangedAt: new Date(Date.now() - 60_000),
+      tokenVersion: 3,
     });
 
-    await expect(strategy.validate(payload)).resolves.toMatchObject({
+    await expect(
+      strategy.validate({ ...payload, tokenVersion: 3 }),
+    ).resolves.toMatchObject({
       id: 'user-1',
     });
   });

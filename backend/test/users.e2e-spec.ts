@@ -137,14 +137,26 @@ describe('Users (e2e)', () => {
         .send({ currentPassword: dave.password, newPassword: dave.password })
         .expect(400);
 
-      await request(http)
+      const changed = await request(http)
         .patch('/api/v1/users/me/password')
         .set('Authorization', bearer(daveSession))
         .send({
           currentPassword: dave.password,
           newPassword: 'NewPassword456!',
         })
-        .expect(204);
+        .expect(200);
+      // The caller is re-credentialled so their own session survives.
+      const rotated = changed.body as {
+        accessToken: string;
+        refreshToken: string;
+      };
+      expect(rotated.accessToken).toBeDefined();
+      expect(rotated.refreshToken).toBeDefined();
+
+      await request(http)
+        .get('/api/v1/users/me')
+        .set('Authorization', `Bearer ${rotated.accessToken}`)
+        .expect(200);
 
       // Old refresh token was revoked by the password change.
       await request(http)
@@ -245,35 +257,65 @@ describe('Users (e2e)', () => {
   });
 
   describe('password change invalidates existing access tokens', () => {
-    it('an access token minted before the change stops working immediately', async () => {
+    it('kills other sessions instantly while re-credentialling the caller', async () => {
       const victim = {
         name: 'Eve Session',
         username: 'eve_e2e',
         email: 'eve.e2e@storyhouse.local',
         password: 'Password123!',
       };
-      const session = await signupAndLogin(http, victim);
+      // Two independent sessions for the same account: one changes the
+      // password, the other must die. This runs well inside a second, which
+      // is exactly the case an iat-vs-timestamp check used to let through.
+      const acting = await signupAndLogin(http, victim);
+      const otherRes = await request(http)
+        .post('/api/v1/auth/login')
+        .send({ identifier: victim.username, password: victim.password })
+        .expect(200);
+      const other = otherRes.body as SessionBody;
 
-      // The token works before the change.
       await request(http)
         .get('/api/v1/users/me')
-        .set('Authorization', `Bearer ${session.accessToken}`)
+        .set('Authorization', `Bearer ${other.accessToken}`)
         .expect(200);
 
-      await request(http)
+      const changed = await request(http)
         .patch('/api/v1/users/me/password')
-        .set('Authorization', `Bearer ${session.accessToken}`)
+        .set('Authorization', `Bearer ${acting.accessToken}`)
         .send({
           currentPassword: victim.password,
           newPassword: 'NewPassword456!',
         })
-        .expect(204);
+        .expect(200);
+      const rotated = changed.body as {
+        accessToken: string;
+        refreshToken: string;
+      };
 
-      // Same token, now rejected — no waiting out the 15-minute TTL.
+      // The other session is dead on both credentials...
       await request(http)
         .get('/api/v1/users/me')
-        .set('Authorization', `Bearer ${session.accessToken}`)
+        .set('Authorization', `Bearer ${other.accessToken}`)
         .expect(401);
+      await request(http)
+        .post('/api/v1/auth/refresh')
+        .send({ refreshToken: other.refreshToken })
+        .expect(401);
+
+      // ...and the token that performed the change is superseded too, but the
+      // caller was handed working replacements.
+      await request(http)
+        .get('/api/v1/users/me')
+        .set('Authorization', `Bearer ${acting.accessToken}`)
+        .expect(401);
+      await request(http)
+        .get('/api/v1/users/me')
+        .set('Authorization', `Bearer ${rotated.accessToken}`)
+        .expect(200);
+      await request(http)
+        .post('/api/v1/auth/refresh')
+        .send({ refreshToken: rotated.refreshToken })
+        .expect(200);
     });
   });
 

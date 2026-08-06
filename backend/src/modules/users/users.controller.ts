@@ -28,6 +28,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { PaginationMetaDto } from '../../common/dto/paginated.dto';
 import type { AuthUser } from '../../common/interfaces/auth-user.interface';
+import { TokenPairEntity } from '../auth/entities/auth-tokens.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateMeDto } from './dto/update-me.dto';
 import { UsersQueryDto } from './dto/users-query.dto';
@@ -64,9 +65,12 @@ export class UsersController {
   }
 
   @Patch('me/password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Change own password (revokes all refresh tokens)' })
-  @ApiNoContentResponse({ description: 'Password changed' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary:
+      'Change own password — signs out other sessions, re-credentials this one',
+  })
+  @ApiOkResponse({ type: TokenPairEntity })
   @ApiBadRequestResponse({
     description: 'New password invalid or same as current',
   })
@@ -76,7 +80,7 @@ export class UsersController {
   changePassword(
     @CurrentUser() user: AuthUser,
     @Body() dto: ChangePasswordDto,
-  ): Promise<void> {
+  ): Promise<TokenPairEntity> {
     return this.usersService.changePassword(user.id, dto);
   }
 

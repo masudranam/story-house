@@ -11,5 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [PassportModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, JwtRefreshStrategy],
+  // UsersModule needs it to re-issue tokens after a password change.
+  exports: [AuthService],
 })
 export class AuthModule {}
