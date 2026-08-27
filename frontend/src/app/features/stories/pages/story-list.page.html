@@ -1,0 +1,102 @@
+<div class="flex flex-wrap items-center justify-between gap-4">
+  <div>
+    <h1>Stories</h1>
+    @if (search()) {
+      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Results for “{{ search() }}”</p>
+    }
+  </div>
+
+  <div class="flex items-center gap-3">
+    <label for="sort" class="sr-only">Sort stories</label>
+    <select
+      #sortSelect
+      id="sort"
+      class="w-auto"
+      [value]="sort()"
+      (change)="setSort(sortSelect.value)"
+    >
+      <option value="createdAt:desc">Newest first</option>
+      <option value="createdAt:asc">Oldest first</option>
+    </select>
+
+    @if (isAuthenticated()) {
+      <a
+        routerLink="/stories/new"
+        class="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+      >
+        Write a story
+      </a>
+    }
+  </div>
+</div>
+
+@if (stories.isLoading()) {
+  <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    @for (row of skeletonRows; track row) {
+      <div class="flex flex-col gap-3 rounded-card border border-gray-200 p-5 dark:border-gray-700">
+        <app-skeleton height="1.25rem" width="80%" />
+        <app-skeleton height="3rem" />
+        <app-skeleton height="0.75rem" width="40%" />
+      </div>
+    }
+  </div>
+} @else if (stories.error()) {
+  <div class="mt-6">
+    <app-empty-state
+      title="Couldn't load stories"
+      message="Something went wrong reaching the server. Try again."
+    >
+      <app-button variant="ghost" (clicked)="stories.reload()">Retry</app-button>
+    </app-empty-state>
+  </div>
+} @else if (stories.value(); as page) {
+  @if (page.data.length === 0) {
+    <div class="mt-6">
+      <app-empty-state
+        [title]="search() ? 'No stories match your search' : 'No stories yet'"
+        [message]="
+          search()
+            ? 'Try a different search term.'
+            : 'Be the first to publish something worth reading.'
+        "
+      >
+        @if (isAuthenticated()) {
+          <a
+            routerLink="/stories/new"
+            class="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            Write the first story
+          </a>
+        }
+      </app-empty-state>
+    </div>
+  } @else {
+    <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      @for (story of page.data; track story.id) {
+        <app-story-card
+          [story]="story"
+          [canEdit]="canEdit(story)"
+          [canDelete]="canDelete(story)"
+          (editRequested)="edit($event)"
+          (deleteRequested)="confirmDelete($event)"
+        />
+      }
+    </div>
+
+    <app-paginator
+      [page]="page.meta.page"
+      [totalPages]="page.meta.totalPages"
+      (pageChange)="goToPage($event)"
+    />
+  }
+}
+
+@if (pendingDelete(); as story) {
+  <app-confirm-dialog
+    title="Delete this story?"
+    [message]="'“' + story.title + '” and its comments and likes will be permanently removed.'"
+    [loading]="deleting()"
+    (confirmed)="deleteStory()"
+    (cancelled)="cancelDelete()"
+  />
+}

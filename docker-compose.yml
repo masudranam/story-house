@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: storyhouse-db
+    environment:
+      POSTGRES_USER: storyhouse
+      POSTGRES_PASSWORD: storyhouse
+      POSTGRES_DB: storyhouse
+    ports:
+      # 5434 on the host: this machine runs a native PostgreSQL on 5432/5433
+      - '5434:5432'
+    volumes:
+      - storyhouse_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U storyhouse -d storyhouse']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Disposable database for backend e2e tests (no volume — data is throwaway).
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: storyhouse-db-test
+    environment:
+      POSTGRES_USER: storyhouse
+      POSTGRES_PASSWORD: storyhouse
+      POSTGRES_DB: storyhouse_test
+    ports:
+      - '5435:5432'
+
+volumes:
+  storyhouse_pgdata:

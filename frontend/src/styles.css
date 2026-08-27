@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+
+/* StoryHouse design tokens — use these, never arbitrary hex values
+   (see .claude/rules/40-frontend-angular.md). */
+@theme {
+  --color-brand-50: oklch(0.97 0.015 262);
+  --color-brand-100: oklch(0.93 0.03 262);
+  --color-brand-200: oklch(0.87 0.06 262);
+  --color-brand-300: oklch(0.78 0.1 262);
+  --color-brand-400: oklch(0.67 0.16 262);
+  --color-brand-500: oklch(0.55 0.2 262);
+  --color-brand-600: oklch(0.5 0.21 262);
+  --color-brand-700: oklch(0.44 0.2 262);
+  --color-brand-800: oklch(0.37 0.17 262);
+  --color-brand-900: oklch(0.3 0.13 262);
+
+  --color-danger-500: oklch(0.62 0.2 27);
+  --color-danger-600: oklch(0.55 0.21 27);
+  --color-danger-700: oklch(0.48 0.19 27);
+
+  --color-success-500: oklch(0.65 0.16 150);
+  --color-success-600: oklch(0.56 0.15 150);
+
+  --radius-card: 1rem;
+  /* System font stack — no webfont download, so no render-blocking request. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 font-sans text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-50;
+  }
+
+  /* Every interactive element gets a visible keyboard focus ring. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600;
+  }
+
+  h1 {
+    @apply text-2xl font-bold tracking-tight sm:text-3xl;
+  }
+
+  /* Shared input styling so form controls look identical everywhere. */
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='search'],
+  textarea,
+  select {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-brand-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-50;
+  }
+}

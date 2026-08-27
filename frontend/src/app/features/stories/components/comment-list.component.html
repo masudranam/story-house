@@ -1,0 +1,142 @@
+<section class="mt-10" aria-labelledby="comments-heading">
+  <h2 id="comments-heading" class="text-xl font-semibold">Comments</h2>
+
+  @if (isAuthenticated()) {
+    <form [formGroup]="newComment" (ngSubmit)="post()" class="mt-4 flex flex-col gap-2" novalidate>
+      <label for="new-comment" class="sr-only">Add a comment</label>
+      <textarea
+        id="new-comment"
+        rows="3"
+        formControlName="content"
+        placeholder="Share what you thought…"
+        [attr.aria-invalid]="newCommentError() ? 'true' : null"
+        [attr.aria-describedby]="newCommentError() ? 'new-comment-error' : null"
+      ></textarea>
+      @if (newCommentError()) {
+        <p id="new-comment-error" class="text-sm text-danger-600" role="alert">
+          {{ newCommentError() }}
+        </p>
+      }
+      <div class="flex justify-end">
+        <app-button type="submit" [loading]="posting()">Post comment</app-button>
+      </div>
+    </form>
+  } @else {
+    <p class="mt-3 text-sm text-gray-600 dark:text-gray-300">
+      <a routerLink="/login" class="font-medium text-brand-600 hover:underline dark:text-brand-300">
+        Log in
+      </a>
+      to join the conversation.
+    </p>
+  }
+
+  @if (comments.isLoading()) {
+    <div class="mt-6 flex flex-col gap-4">
+      @for (row of skeletonRows; track row) {
+        <div class="flex flex-col gap-2">
+          <app-skeleton height="0.75rem" width="30%" />
+          <app-skeleton height="2.5rem" />
+        </div>
+      }
+    </div>
+  } @else if (comments.error()) {
+    <p class="mt-6 text-sm text-danger-600" role="alert">Couldn't load comments.</p>
+  } @else if (comments.value(); as page) {
+    @if (page.data.length === 0) {
+      <div class="mt-6">
+        <app-empty-state title="No comments yet" message="Be the first to respond." />
+      </div>
+    } @else {
+      <ul class="mt-6 flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
+        @for (comment of page.data; track comment.id) {
+          <li class="py-4">
+            <div class="flex items-baseline gap-2 text-sm">
+              <a
+                [routerLink]="['/profile', comment.author.id]"
+                class="font-medium text-gray-800 hover:text-brand-700 dark:text-gray-100 dark:hover:text-brand-300"
+              >
+                {{ comment.author.name }}
+              </a>
+              <time
+                class="text-xs text-gray-500 dark:text-gray-400"
+                [attr.datetime]="comment.createdAt"
+              >
+                {{ comment.createdAt | relativeDate }}
+              </time>
+              @if (comment.updatedAt !== comment.createdAt) {
+                <span class="text-xs text-gray-400 dark:text-gray-500">(edited)</span>
+              }
+            </div>
+
+            @if (editingId() === comment.id) {
+              <form
+                [formGroup]="editForm"
+                (ngSubmit)="saveEdit(comment)"
+                class="mt-2 flex flex-col gap-2"
+                novalidate
+              >
+                <label [for]="'edit-' + comment.id" class="sr-only">Edit comment</label>
+                <textarea
+                  [id]="'edit-' + comment.id"
+                  rows="3"
+                  formControlName="content"
+                  [attr.aria-invalid]="editError() ? 'true' : null"
+                ></textarea>
+                @if (editError()) {
+                  <p class="text-sm text-danger-600" role="alert">{{ editError() }}</p>
+                }
+                <div class="flex justify-end gap-2">
+                  <app-button variant="ghost" (clicked)="cancelEdit()">Cancel</app-button>
+                  <app-button type="submit" [loading]="savingEdit()">Save</app-button>
+                </div>
+              </form>
+            } @else {
+              <p class="mt-1 whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-200">
+                {{ comment.content }}
+              </p>
+
+              @if (canModify(comment) || canDelete(comment)) {
+                <div class="mt-2 flex gap-3">
+                  @if (canModify(comment)) {
+                    <button
+                      type="button"
+                      class="text-xs font-medium text-brand-600 hover:underline dark:text-brand-300"
+                      (click)="startEdit(comment)"
+                    >
+                      Edit
+                    </button>
+                  }
+                  @if (canDelete(comment)) {
+                    <button
+                      type="button"
+                      class="text-xs font-medium text-danger-600 hover:underline"
+                      (click)="confirmDelete(comment)"
+                    >
+                      Delete
+                    </button>
+                  }
+                </div>
+              }
+            }
+          </li>
+        }
+      </ul>
+
+      <app-paginator
+        [page]="page.meta.page"
+        [totalPages]="page.meta.totalPages"
+        (pageChange)="goToPage($event)"
+      />
+    }
+  }
+</section>
+
+@if (pendingDelete()) {
+  <app-confirm-dialog
+    title="Delete this comment?"
+    message="This cannot be undone."
+    [loading]="deleting()"
+    (confirmed)="deleteComment()"
+    (cancelled)="cancelDelete()"
+  />
+}

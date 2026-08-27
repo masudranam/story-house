@@ -1,0 +1,98 @@
+@if (story.isLoading()) {
+  <div class="mx-auto flex max-w-3xl flex-col gap-4">
+    <app-skeleton height="2rem" width="70%" />
+    <app-skeleton height="0.875rem" width="30%" />
+    <app-skeleton height="12rem" />
+  </div>
+} @else if (story.error()) {
+  <div class="mx-auto max-w-lg">
+    @if (notFound()) {
+      <app-empty-state
+        title="Story not found"
+        message="It may have been deleted, or the link is wrong."
+      >
+        <a
+          routerLink="/"
+          class="inline-flex rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+        >
+          Browse stories
+        </a>
+      </app-empty-state>
+    } @else {
+      <app-empty-state
+        title="Couldn't load this story"
+        message="Something went wrong reaching the server."
+      >
+        <app-button variant="ghost" (clicked)="story.reload()">Try again</app-button>
+      </app-empty-state>
+    }
+  </div>
+} @else if (story.value(); as current) {
+  <article class="mx-auto max-w-3xl">
+    <h1>{{ current.title }}</h1>
+
+    <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+      <a
+        [routerLink]="['/profile', current.author.id]"
+        class="font-medium text-gray-800 hover:text-brand-700 dark:text-gray-100 dark:hover:text-brand-300"
+      >
+        {{ current.author.name }}
+      </a>
+      <span aria-hidden="true">·</span>
+      <time [attr.datetime]="current.createdAt">{{ current.createdAt | relativeDate }}</time>
+      @if (current.updatedAt !== current.createdAt) {
+        <span class="text-xs text-gray-400 dark:text-gray-500">(updated)</span>
+      }
+    </div>
+
+    <div
+      class="prose mt-6 max-w-none whitespace-pre-wrap text-base leading-relaxed text-gray-800 dark:text-gray-100"
+    >
+      {{ current.content }}
+    </div>
+
+    <div
+      class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 pt-6 dark:border-gray-800"
+    >
+      <app-like-button
+        [liked]="liked()"
+        [count]="likesCount()"
+        [disabled]="!isAuthenticated() || likeInFlight()"
+        (toggled)="toggleLike()"
+      />
+
+      @if (canEdit() || canDelete()) {
+        <div class="flex gap-2">
+          @if (canEdit()) {
+            <a
+              [routerLink]="['/stories', current.id, 'edit']"
+              class="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+            >
+              Edit
+            </a>
+          }
+          @if (canDelete()) {
+            <app-button variant="danger" (clicked)="confirmDelete()">Delete</app-button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Below the fold: load comments only when the reader scrolls to them. -->
+    @defer (on viewport) {
+      <app-comment-list [storyId]="current.id" />
+    } @placeholder {
+      <div class="mt-10 h-24"></div>
+    }
+  </article>
+}
+
+@if (pendingDelete()) {
+  <app-confirm-dialog
+    title="Delete this story?"
+    message="The story and all its comments and likes will be permanently removed."
+    [loading]="deleting()"
+    (confirmed)="deleteStory()"
+    (cancelled)="cancelDelete()"
+  />
+}

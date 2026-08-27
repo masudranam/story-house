@@ -1,69 +1,33 @@
-# React + TypeScript + Vite
+# StoryHouse frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Angular 21 (standalone, zoneless, signals) + Tailwind CSS v4. Consumes the API described in [../docs/API_CONTRACT.md](../docs/API_CONTRACT.md).
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm start          # http://localhost:4200 — proxies /api to http://localhost:3000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The backend must be running (see [../backend/README.md](../backend/README.md)); `proxy.conf.json` forwards `/api` to it, so there is no API base URL to configure.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Checks
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Command         | Purpose                                                           |
+| --------------- | ----------------------------------------------------------------- |
+| `npm run lint`  | ESLint + angular-eslint, including template accessibility rules   |
+| `npm run build` | Production build — budget warnings count as failures              |
+| `npm test`      | Vitest unit/component tests (`CI=true npm test` for a single run) |
+
+## Layout
+
 ```
+src/app/
+  core/       api services, models, auth store, interceptors, guards
+  shared/     dumb UI kit (button, card, form-field, dialog, toast, paginator, skeleton) + layout
+  features/   auth · stories · profile · settings · admin · static   (all lazy-loaded)
+```
+
+Conventions are enforced by [../.claude/rules/40-frontend-angular.md](../.claude/rules/40-frontend-angular.md): standalone components with `OnPush`, signals for state, new control flow (`@if`/`@for`/`@defer`), `inject()`, Tailwind design tokens from `src/styles.css`, and no component library.
+
+## Auth model
+
+The access token lives only in memory (an `AuthStore` signal). The refresh token is persisted — `localStorage` when "keep me logged in" is checked, otherwise `sessionStorage`. A 401 on a protected call triggers a single-flight refresh and one retry; if that fails the session is cleared and the user is sent to `/login`.
